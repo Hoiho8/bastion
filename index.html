@@ -59,6 +59,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .tb.selo{box-shadow:0 0 0 3px #ffd34a,0 0 18px #ffd34a}
 .tb.hide{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.35)}
 .tb.ok{background:linear-gradient(#4f9a36,#24561a);border-color:#b8f08a}
+.tb.armed{background:linear-gradient(#c0392b,#6e1a12)!important;border-color:#ffb0a0!important;animation:pulseR .5s infinite alternate}@keyframes pulseR{to{filter:brightness(1.35)}}
 .tb.cancel{background:linear-gradient(#a03e2c,#561a12);border-color:#f0a08a}
 </style>
 <script type="importmap">{"imports":{"three":"./three.min.js"}}</script>
@@ -85,6 +86,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   <button class="tb opt wood hide" style="left:-150px;top:-122px"></button>
   <button class="tb opt wood hide" style="left:-120px;top:-200px"></button>
   <button class="tb opt wood hide" style="left:-46px;top:-226px"></button>
+  <button class="tb opt wood hide" id="bSell" style="left:-142px;top:-42px"></button>
 </div>
 <div id="banner"><div class="a"></div><div class="b"></div></div>
 <div id="toast" class="wood"></div>
@@ -512,7 +514,7 @@ function newGame(){clearBuildings();
   addBuilding('archer',BASE.tx-1,BASE.ty-1,true);addBuilding('wheat',BASE.tx+3,BASE.ty-5,true);
   cam.tx=BASE.tx+2;cam.tz=BASE.ty+0.5;cam.D=W<H?34:30;computeFlow();closeMenu();$('over').classList.add('hidden')}
 function addBuilding(type,tx,ty,instant){const T=BT[type],s=T.size;
-  const b={id:nextId++,type,tx,ty,s,px:tx*TILE,py:ty*TILE,x:(tx+s/2)*TILE,y:(ty+s/2)*TILE,lvl:1,hp:T.hp,maxhp:T.hp,cd:0,aim:-2.3,raim:-2.3,respawnT:1,focus:null,hit:0,build:instant?1:0,pulse:0,recoil:0};
+  const b={id:nextId++,type,tx,ty,s,px:tx*TILE,py:ty*TILE,x:(tx+s/2)*TILE,y:(ty+s/2)*TILE,lvl:1,hp:T.hp,maxhp:T.hp,cd:0,aim:-2.3,raim:-2.3,respawnT:1,focus:null,hit:0,build:instant?1:0,pulse:0,recoil:0,spent:{...BT[type].cost}};
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++)occ[x+y*GW]=b.id;
   b.X=tx+s/2;b.Z=ty+s/2;b.Y=flattenAt(tx,ty,s);
   if(type==='barracks')b.formAng=Math.atan2(SPY-b.y,SPX-b.x);
@@ -572,9 +574,10 @@ function moveUnit(u,tx,ty,spd,dt,others,keep){let dx=tx-u.x,dy=ty-u.y,d=Math.hyp
   if(walkable(nx,u.y))u.x=nx;if(walkable(u.x,ny))u.y=ny;u.ang=Math.atan2(dy,dx);u.walk+=dt*spd*0.25;u.mvT=0.18}
 function nearestBuilding(x,y){let b=null,bd=1e9;for(const o of buildings){if(o.type==='wall'&&!wallMode)continue;const d=edgeDist(o,x,y);if(d<bd){bd=d;b=o}}return[b,bd]}
 function hurtBuilding(b,d){b.hp-=d;b.hit=0.15;const[X,Y,Z]=[b.X,b.Y,b.Z];if(Math.random()<0.35)fx(X+(Math.random()-.5)*b.s*0.8,Y+0.3,Z+(Math.random()-.5)*b.s*0.8,2,'#8a8070',1.2,0.12,0.6,4,2);if(b.hp<=0)destroyBuilding(b)}
-function destroyBuilding(b){const i=buildings.indexOf(b);if(i<0)return;buildings.splice(i,1);scene.remove(b.group);
+function destroyBuilding(b,sold){const i=buildings.indexOf(b);if(i<0)return;buildings.splice(i,1);scene.remove(b.group);
   for(let y=b.ty;y<b.ty+b.s;y++)for(let x=b.tx;x<b.tx+b.s;x++)occ[x+y*GW]=0;
   for(const k of knights)if(k.b===b)k.hp=0;if(b.disc)scene.remove(b.disc);selSet.delete(b);if(b.type==='wall')refreshWalls(b.tx,b.ty);
+  if(sold){fx(b.X,b.Y+0.3,b.Z,10+b.s*6,'#cdbb94',2,0.35,1.1,0,0,0.4);fx(b.X,b.Y+0.5,b.Z,8,'#ffd34a',1.6,0.07,0.9,-0.5,1,1);if(sel===b)sel=null;if(hold&&hold.b===b)hold=null;return}
   fx(b.X,b.Y+0.6,b.Z,26,'#7a6a58',3,0.16,1.6,7,2,1.2);fx(b.X,b.Y+0.6,b.Z,22,'#8a8580',1.4,0.55,2.8,-0.3,0,0.8);fx(b.X,b.Y+0.5,b.Z,10,'#ff9a30',1.5,0.3,0.6,0,1);
   const rp=[];for(let k=0;k<6+b.s*4;k++)rp.push(P(dod(0.14+Math.random()*0.16),['#8f897c','#6c675d','#7d5432'][k%3],(Math.random()-.5)*b.s*0.9,0.05,(Math.random()-.5)*b.s*0.9,Math.random(),Math.random(),0,1,0.6,1));
   const rm=new THREE.Mesh(merge(rp),VM);rm.position.set(b.X,b.Y,b.Z);rm.castShadow=true;scene.add(rm);rubble.push({mesh:rm,life:25});
@@ -664,8 +667,8 @@ function pickGround(sx,sy){ndc.set(sx/W*2-1,-(sy/H)*2+1);ray.setFromCamera(ndc,c
 function pickBuilding(sx,sy,slop=0.7){ndc.set(sx/W*2-1,-(sy/H)*2+1);ray.setFromCamera(ndc,camera);const hits=ray.intersectObjects(buildings.map(b=>b.group),true);
   for(const h of hits)if(h.object.userData.b)return h.object.userData.b;
   const pt=pickGround(sx,sy);if(!pt)return null;let best=null,bd=slop;for(const b of buildings){const d=Math.hypot(Math.max(b.tx-pt.x,0,pt.x-b.tx-b.s),Math.max(b.ty-pt.z,0,pt.z-b.ty-b.s));if(d<bd){bd=d;best=b}}return best}
-function addSel(b){if(!b||selSet.has(b))return false;selSet.add(b);sel=b;b.selPop=1;AU.tick();return true}
-function clearSel(){selSet.clear();sel=null}
+function addSel(b){if(!b||selSet.has(b))return false;selSet.add(b);sel=b;b.selPop=1;AU.tick();sellArm=0;renderThumb();return true}
+function clearSel(){selSet.clear();sel=null;sellArm=0;renderThumb()}
 function buildWallHere(){if(!place||place.type!=='wall')return;if(!canPlace('wall',place.tx,place.ty)||!afford(BT.wall.cost))return;pay(BT.wall.cost);const b=addBuilding('wall',place.tx,place.ty);computeFlow();AU.place();fx(b.X,b.Y+0.1,b.Z,5,'#cdbb94',1.2,0.25,0.7,0,0,0.3)}
 function moveGhostTo(sx,sy){if(!place)return;const pt=pickGround(sx,sy);if(!pt)return;const s=BT[place.type].size,fx0=pt.x-s/2,fz0=pt.z-s/2;let tx=Math.round(fx0),ty=Math.round(fz0);
   const painting=gdrag&&place.type==='wall';
@@ -725,7 +728,7 @@ function shortCost(c){return['grain','wool','gold'].filter(k=>c[k]).map(k=>`<spa
 function onPress(el,fn){el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();el.classList.add('press');fn(e)});const up=()=>el.classList.remove('press');
   for(const ev of['pointerup','pointercancel','pointerleave'])el.addEventListener(ev,up);el.addEventListener('click',e=>e.preventDefault());el.addEventListener('contextmenu',e=>e.preventDefault())}
 const MENU={def:['archer','cannon','barracks','wall'],eco:['wheat','sheep','mine']},SHORTN={archer:'Archer',cannon:'Cannon',barracks:'Knights',wall:'Wall',wheat:'Wheat',sheep:'Sheep',mine:'Gold Mine'};let menu=null;
-const optEls=[...document.querySelectorAll('.tb.opt')];
+const optEls=[...document.querySelectorAll('.tb.opt:not(#bSell)')];let sellArm=0;
 function setBtn(el,ic,lb,cls){const k=ic+lb+cls;if(el.dataset.k===k)return;el.dataset.k=k;el.innerHTML=`<span class="ic">${ic}</span><span class="lb">${lb}</span>`;el.classList.toggle('ok',cls==='ok');el.classList.toggle('cancel',cls==='cancel')}
 function renderThumb(){const d=$('bDef'),e=$('bEco');
   if(place){setBtn(d,'✓',place.type==='wall'?'BUILD ⟳':'BUILD','ok');setBtn(e,'✕',place.type==='wall'?'Done':'Cancel','cancel');d.classList.toggle('no',!canPlace(place.type,place.tx,place.ty)||!afford(BT[place.type].cost))}
@@ -733,7 +736,14 @@ function renderThumb(){const d=$('bDef'),e=$('bEco');
   const list=menu?MENU[menu]:null;
   optEls.forEach((el,i)=>{if(!list||i>=list.length){el.classList.add('hide');return}const k=list[i],T=BT[k],can=afford(T.cost);el.classList.remove('hide');
     const key=k+['grain','wool','gold'].map(r=>res[r]>=T.cost[r]?1:0).join('');if(el.dataset.k!==key){el.dataset.k=key;el.innerHTML=`<span class="ic">${T.ic}</span><span class="nm">${SHORTN[k]}</span><span class="cs">${shortCost(T.cost)}</span>`}
-    el.classList.toggle('no',!can);el.classList.toggle('selo',!!(place&&place.type===k))})}
+    el.classList.toggle('no',!can);el.classList.toggle('selo',!!(place&&place.type===k))});
+  const sb=$('bSell'),group=[...selSet].filter(b=>buildings.includes(b));if(!place&&!menu&&group.length){sb.classList.remove('hide');const r=refundOf(group);const key='s'+sellArm+r.grain+'_'+r.wool+'_'+r.gold+group.length;
+    if(sb.dataset.k!==key){sb.dataset.k=key;sb.innerHTML=sellArm?`<span class="ic">⚠️</span><span class="nm">Tap to confirm</span><span class="cs">sell ${group.length}</span>`:`<span class="ic">🗑️</span><span class="nm">Sell${group.length>1?' '+group.length:''}</span><span class="cs">${['grain','wool','gold'].filter(k=>r[k]).map(k=>'+'+r[k]+SHORT[k]).join(' ')}</span>`}
+    sb.classList.toggle('armed',!!sellArm)}else{sb.classList.add('hide');sellArm=0}}
+function refundOf(list){const r={grain:0,wool:0,gold:0};for(const b of list)for(const k in r)r[k]+=Math.floor((b.spent?b.spent[k]:BT[b.type].cost[k])*0.5);return r}
+function sellSel(){const list=[...selSet].filter(b=>buildings.includes(b));if(!list.length)return;if(list.length>=buildings.length){toast("Can't sell your last building");AU.deny();sellArm=0;renderThumb();return}
+  const r=refundOf(list);for(const k in r)res[k]+=r[k];for(const b of list){texts.push({X:b.X,Y:b.Y+b.barH*0.6,Z:b.Z,s:'+'+Math.floor((b.spent||BT[b.type].cost).grain*0.5)+'🌾',life:1.2,c:'#ffe9a8'});destroyBuilding(b,true)}
+  computeFlow();clearSel();AU.place();toast(`Sold ${list.length} for ${['grain','wool','gold'].filter(k=>r[k]).map(k=>r[k]+SHORT[k]).join(' ')}`)}
 function openMenu(m){menu=m;clearSel();setPlace(null);renderThumb();AU.tick()}
 function closeMenu(){menu=null;setPlace(null);renderThumb()}
 function setPlace(p){place=p;if(ghost){scene.remove(ghost);ghost=null}footprint.visible=false;rangeRing.visible=guardRing.visible=false;
@@ -770,7 +780,7 @@ function confirmPlace(){if(!place)return;const T=BT[place.type];if(!canPlace(pla
   if(b.type==='cannon'&&!ach.can){ach.can=1;toast('First Cannon Tower — rams beware!')}
   if(type==='wall'){const sp=chooseSpot('wall');if(sp&&afford(T.cost)){place.tx=sp.tx;place.ty=sp.ty;place.pop=1;renderThumb();return}}
   setPlace(null)}
-function doUpgrade(b){const uc=upCost(b);pay(uc);b.lvl++;const T=BT[b.type];b.maxhp=T.hp*hpMulOf(b);b.hp=b.maxhp;makeVisual(b,true);b.pulse=0;b.build=0;
+function doUpgrade(b){const uc=upCost(b);pay(uc);for(const k in uc)b.spent[k]+=uc[k];b.lvl++;const T=BT[b.type];b.maxhp=T.hp*hpMulOf(b);b.hp=b.maxhp;makeVisual(b,true);b.pulse=0;b.build=0;
   const L=b.lvl,gold=L===3;beams.push(makeBeam(b,gold?'#ffe27a':'#e8e0d0'));waves.push(makeWave(b,gold?'#ffd34a':'#d8d0c0'));
   if(gold){fx(b.X,b.Y+0.6,b.Z,40,'#ffd34a',3.4,0.1,1.6,-0.4,1,1.6);fx(b.X,b.Y+0.6,b.Z,14,'#9fe8ff',3,0.08,1.4,-0.4,1,1.6);fx(b.X,b.Y+0.6,b.Z,10,'#ff8ab0',3,0.08,1.4,-0.4,1,1.6)}
   else{fx(b.X,b.Y+0.5,b.Z,26,'#9a958a',3.2,0.12,1.3,7,2,1.4);fx(b.X,b.Y+0.3,b.Z,18,'#d8d0c0',2.2,0.4,1.5,-0.2,0,0.6)}
@@ -787,6 +797,7 @@ function repairSel(){const list=[...selSet].filter(b=>buildings.includes(b)&&b.h
 let beams=[];
 function makeBeam(b,col){const m=new THREE.Mesh(new THREE.CylinderGeometry(b.s*0.42,b.s*0.55,9,24,1,true),GLOWM(col,0.75));m.position.set(b.X,b.Y+4.5,b.Z);scene.add(m);return{m,life:1.0}}
 function makeWave(b,col){const m=new THREE.Mesh(new THREE.RingGeometry(0.85,1,64).rotateX(-Math.PI/2),GLOWM(col,0.8));m.position.set(b.X,b.Y+0.12,b.Z);scene.add(m);return{m,t:0}}
+onPress($('bSell'),()=>{if(!sellArm){sellArm=1;renderThumb();AU.tick();clearTimeout(sellSel.t);sellSel.t=setTimeout(()=>{sellArm=0;renderThumb()},2200)}else{sellArm=0;sellSel()}});
 onPress($('bDef'),()=>{if(place)confirmPlace();else if(menu==='def')closeMenu();else openMenu('def')});
 onPress($('bEco'),()=>{if(place){setPlace(null);AU.tick()}else if(menu==='eco')closeMenu();else openMenu('eco')});
 optEls.forEach((el,i)=>onPress(el,()=>{if(!menu)return;const t=MENU[menu][i];if(!t)return;if(place&&place.type===t)confirmPlace();else startPlace(t)}));
@@ -794,6 +805,7 @@ addEventListener('keydown',e=>{if(!started||gameOver)return;const k=e.key,all=[.
   if(k>='1'&&k<='7'){const t=all[+k-1];menu=MENU.def.includes(t)?'def':'eco';if(place&&place.type===t)confirmPlace();else startPlace(t);renderThumb()}
   else if(k==='Enter'||k===' '){e.preventDefault();if(place)confirmPlace()}
   else if(k==='Escape'){if(place)setPlace(null);else closeMenu();clearSel()}
+  else if((k==='Delete'||k==='Backspace')&&selSet.size)sellSel();
   else if((k==='u'||k==='U')&&selSet.size)upgradeSel();else if((k==='r'||k==='R')&&selSet.size)repairSel()});
 onPress($('wave'),()=>{if(started&&!gameOver&&waveT>3){waveT=0.01;toast('Calling the next wave early!')}});
 onPress($('bSpeed'),()=>{speed=speed===1?2:speed===2?3:1;$('bSpeed').textContent=speed+'×'});
@@ -957,7 +969,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   const run=started&&!paused&&!gameOver;if(run)for(let i=0;i<speed;i++)update(dt);
   frameDt=dt;inputTick(dt);applyCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
-window.__G={get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
+window.__G={get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
   get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render};
 </script>
 </body>
