@@ -279,7 +279,7 @@ const ET={
   cav:{name:'Cavalry',hp:95,speed:54,dmg:9,rate:0.8,range:16,r:10,bounty:8},
   boss:{name:'Warlord',hp:1700,speed:16,dmg:32,rate:1.2,range:18,r:15,bounty:90},
 };
-const KN={hp:140,dmg:14,rate:0.8,speed:50,r:12};
+const KN={hp:140,dmg:14,rate:0.8,speed:66,r:12};
 const MAXLVL=3,MUL=[1,2.2,4.5],HPM=[1,2.5,6],RNG=[1,1.15,1.32],CDM=[1,1.15,1.35],SQ=[5,7,9],ZONE=[560,690,820],TIERN=['','WOOD','STONE','JEWELED'];
 const mulOf=b=>MUL[b.lvl-1],hpMulOf=b=>HPM[b.lvl-1],rangeOf=b=>(BT[b.type].range||0)*RNG[b.lvl-1],squadSize=b=>SQ[b.lvl-1],zoneR=b=>ZONE[b.lvl-1],respawnTime=b=>BT.barracks.respawn/[1,1.4,1.9][b.lvl-1];
 function upCost(b){const c=BT[b.type].cost;if(b.lvl===1)return{grain:Math.round((c.grain+60)*3),wool:Math.round((c.wool+40)*3),gold:Math.round((c.gold+40)*2)};return{grain:Math.round((c.grain+60)*9),wool:Math.round((c.wool+40)*9),gold:Math.round((c.gold+60)*8)}}
@@ -558,7 +558,7 @@ function addBuilding(type,tx,ty,instant){const T=BT[type],s=T.size;
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++)occ[x+y*GW]=b.id;
   b.X=tx+s/2;b.Z=ty+s/2;b.Y=flattenAt(tx,ty,s);
   if(type==='barracks')b.formAng=Math.atan2(SPY-b.y,SPX-b.x);
-  buildings.push(b);makeVisual(b);if(type==='wall')refreshWalls(tx,ty);return b}
+  buildings.push(b);makeVisual(b);if(type==='wall')refreshWalls(tx,ty);navCache.clear();return b}
 const discTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,225,110,0.55)');gr.addColorStop(0.6,'rgba(255,200,60,0.3)');gr.addColorStop(0.82,'rgba(255,200,60,0.25)');gr.addColorStop(0.9,'rgba(255,225,100,0.85)');gr.addColorStop(0.97,'rgba(255,210,80,0.3)');gr.addColorStop(1,'rgba(255,200,60,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t})();
 const discMat=new THREE.MeshBasicMaterial({map:discTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true,polygonOffset:true,polygonOffsetFactor:-4});
 let oldG=[],waves=[];
@@ -616,7 +616,7 @@ function nearestBuilding(x,y){let b=null,bd=1e9;for(const o of buildings){if(o.t
 function hurtBuilding(b,d){const real=Math.min(d,Math.max(0,b.hp));if(b.st)b.st.taken+=real;ST.taken+=real;ST.acc.taken+=real;b.hp-=d;b.hit=0.15;const[X,Y,Z]=[b.X,b.Y,b.Z];if(Math.random()<0.35)fx(X+(Math.random()-.5)*b.s*0.8,Y+0.3,Z+(Math.random()-.5)*b.s*0.8,2,'#8a8070',1.2,0.12,0.6,4,2);if(b.hp<=0)destroyBuilding(b)}
 function destroyBuilding(b,sold){const i=buildings.indexOf(b);if(i<0)return;if(b.st){b.st.died=time;b.st.sold=!!sold}if(sold)ST.sold++;else ST.lost++;buildings.splice(i,1);scene.remove(b.group);
   for(let y=b.ty;y<b.ty+b.s;y++)for(let x=b.tx;x<b.tx+b.s;x++)occ[x+y*GW]=0;
-  for(const k of knights)if(k.b===b)k.hp=0;if(b.disc)scene.remove(b.disc);selSet.delete(b);if(b.type==='wall')refreshWalls(b.tx,b.ty);
+  for(const k of knights)if(k.b===b)k.hp=0;if(b.disc)scene.remove(b.disc);selSet.delete(b);navCache.clear();if(b.type==='wall')refreshWalls(b.tx,b.ty);
   if(sold){fx(b.X,b.Y+0.3,b.Z,10+b.s*6,'#cdbb94',2,0.35,1.1,0,0,0.4);fx(b.X,b.Y+0.5,b.Z,8,'#ffd34a',1.6,0.07,0.9,-0.5,1,1);if(sel===b)sel=null;if(hold&&hold.b===b)hold=null;return}
   fx(b.X,b.Y+0.6,b.Z,26,'#7a6a58',3,0.16,1.6,7,2,1.2);fx(b.X,b.Y+0.6,b.Z,22,'#8a8580',1.4,0.55,2.8,-0.3,0,0.8);fx(b.X,b.Y+0.5,b.Z,10,'#ff9a30',1.5,0.3,0.6,0,1);
   const rp=[];for(let k=0;k<6+b.s*4;k++)rp.push(P(dod(0.14+Math.random()*0.16),['#8f897c','#6c675d','#7d5432'][k%3],(Math.random()-.5)*b.s*0.9,0.05,(Math.random()-.5)*b.s*0.9,Math.random(),Math.random(),0,1,0.6,1));
@@ -624,7 +624,7 @@ function destroyBuilding(b,sold){const i=buildings.indexOf(b);if(i<0)return;if(b
   if(sel===b)sel=null;if(hold&&hold.b===b)hold=null;shake=0.35;AU.crumble();computeFlow();
   if(!buildings.length){gameOver=true;setTimeout(()=>showStats('over'),1600)}
   else toast(`${BT[b.type].name} destroyed!`)}
-function updEnemy(e,dt){const T=ET[e.type];if(e.cd>0)e.cd-=dt;if(e.swing>0)e.swing-=dt;if(e.flash>0)e.flash-=dt;if(e.mvT>0)e.mvT-=dt;
+function updEnemy(e,dt){if(e.frozen)return;const T=ET[e.type];if(e.cd>0)e.cd-=dt;if(e.swing>0)e.swing-=dt;if(e.flash>0)e.flash-=dt;if(e.mvT>0)e.mvT-=dt;
   if(!T.bldOnly){let k=null,kd=34;for(const o of knights){const d=dst(o.x,o.y,e.x,e.y)-o.r;if(d<kd){kd=d;k=o}}
     if(k){if(kd<=T.range){e.ang=Math.atan2(k.y-e.y,k.x-e.x);if(e.cd<=0){k.hp-=T.dmg*e.dm;k.flash=0.1;e.cd=T.rate;e.swing=0.25}}else moveUnit(e,k.x,k.y,T.speed,dt,enemies);return}}
   const i=tileAt(e.x,e.y),fd=i>=0?flow[i]:1e9;
@@ -635,14 +635,30 @@ function updEnemy(e,dt){const T=ET[e.type];if(e.cd>0)e.cd-=dt;if(e.swing>0)e.swi
     if(dx&&dy&&(flow[x+dx+y*GW]>=1e9||flow[x+(y+dy)*GW]>=1e9))continue;const j=nx+ny*GW;if(flow[j]<best){best=flow[j];bx=nx;by=ny}}
   if(bx>=0)moveUnit(e,bx*TILE+16,by*TILE+16,T.speed,dt,enemies)}
 const D8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-function navTo(b,X,Y){const tx=clamp((X/TILE)|0,0,GW-1),ty=clamp((Y/TILE)|0,0,GH-1),key=tx+ty*GW;if(b.navKey===key&&b.navAge<0.6)return;b.navKey=key;b.navAge=0;
-  if(!b.nav)b.nav=new Int32Array(GW*GH);const f=b.nav;f.fill(1e9);const q=new Int32Array(GW*GH);let h=0,t=0;f[key]=0;q[t++]=key;
-  const blk=j=>terrain[j]>=1||occ[j];
-  while(h<t){const i=q[h++],x=i%GW,y=(i/GW)|0,d=f[i]+1;for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(blk(j))continue;if(dx&&dy&&(blk(x+dx+y*GW)||blk(x+(y+dy)*GW)))continue;if(f[j]>d){f[j]=d;q[t++]=j}}}}
-function knightGo(k,X,Y,spd,dt,NX,NY){const b=k.b;if(dst(k.x,k.y,X,Y)<TILE*2.2){moveUnit(k,X,Y,spd,dt,knights);return}
-  navTo(b,NX,NY);const i=tileAt(k.x,k.y);if(i<0){moveUnit(k,X,Y,spd,dt,knights);return}const f=b.nav,x=i%GW,y=(i/GW)|0;let best=f[i],bx=-1,by=-1;
-  for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<best){best=f[j];bx=nx;by=ny}}
-  if(bx>=0)moveUnit(k,bx*TILE+16,by*TILE+16,spd,dt,knights);else moveUnit(k,X,Y,spd,dt,knights)}
+// ---- knight navigation: per-target flow fields (cached), line-of-sight smoothing, steering ----
+const navCache=new Map();
+function getNav(tx,ty){tx=clamp(tx,0,GW-1);ty=clamp(ty,0,GH-1);const key=tx+ty*GW;let c=navCache.get(key);if(c&&time-c.t<0.7)return c.f;
+  const f=c?c.f:new Int32Array(GW*GH);f.fill(1e9);const q=new Int32Array(GW*GH);let h=0,t=0;f[key]=0;q[t++]=key;const blk=j=>terrain[j]>=1||occ[j];
+  while(h<t){const i=q[h++],x=i%GW,y=(i/GW)|0,d=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(blk(j))continue;if(dx&&dy&&(blk(x+dx+y*GW)||blk(x+(y+dy)*GW)))continue;const nd=d+(dx&&dy?14:10);if(f[j]>nd){f[j]=nd;q[t++]=j}}}
+  navCache.delete(key);navCache.set(key,{f,t:time});if(navCache.size>24)navCache.delete(navCache.keys().next().value);return f}
+function los(x0,y0,x1,y1,r){const d=Math.hypot(x1-x0,y1-y0);if(d<1)return true;const n=Math.ceil(d/8),px=-(y1-y0)/d*r,py=(x1-x0)/d*r;
+  for(let i=1;i<=n;i++){const x=x0+(x1-x0)*i/n,y=y0+(y1-y0)*i/n;if(!walkable(x,y)||!walkable(x+px,y+py)||!walkable(x-px,y-py))return false}return true}
+function steerPoint(k,X,Y){if(los(k.x,k.y,X,Y,k.r*0.7))return[X,Y];
+  const f=getNav((X/TILE)|0,(Y/TILE)|0);let i=tileAt(k.x,k.y);if(i<0)return[X,Y];let best=null;
+  for(let step=0;step<10;step++){const x=i%GW,y=(i/GW)|0;let bi=-1,bv=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<bv){bv=f[j];bi=j}}
+    if(bi<0)break;i=bi;const cx=(i%GW)*TILE+16,cy=((i/GW)|0)*TILE+16;if(step===0||los(k.x,k.y,cx,cy,k.r*0.7))best=[cx,cy];else break}
+  return best||[X,Y]}
+function knightMove(k,X,Y,spd,dt,stopAt=0){const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.8;k.vy=(k.vy||0)*0.8;return}
+  let [tx,ty]=steerPoint(k,X,Y);let dx=tx-k.x,dy=ty-k.y;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;
+  let sx=0,sy=0;for(const o of knights){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+3;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
+  if(k.nudge>0){k.nudge-=dt;dx+=Math.cos(k.nudgeA)*0.9;dy+=Math.sin(k.nudgeA)*0.9}
+  let wx=dx+sx*1.2,wy=dy+sy*1.2;const wl=Math.hypot(wx,wy)||1;wx/=wl;wy/=wl;
+  const sp=Math.min(spd,(d-stopAt)/dt+5);k.vx=(k.vx||0)+(wx*sp-(k.vx||0))*Math.min(1,dt*7);k.vy=(k.vy||0)+(wy*sp-(k.vy||0))*Math.min(1,dt*7);
+  const vl=Math.hypot(k.vx,k.vy);if(vl<0.5)return;const base=Math.atan2(k.vy,k.vx),step=vl*dt;
+  for(const da of[0,0.4,-0.4,0.8,-0.8,1.25,-1.25,1.7,-1.7]){const a=base+da,nx=k.x+Math.cos(a)*step,ny=k.y+Math.sin(a)*step;
+    if(walkable(nx,ny)&&walkable(nx+Math.cos(a)*k.r*0.6,ny+Math.sin(a)*k.r*0.6)){k.x=nx;k.y=ny;if(da){k.vx=Math.cos(a)*vl;k.vy=Math.sin(a)*vl}k.ang=a;k.walk+=dt*vl*0.25;k.mvT=0.18;return}}
+  k.vx*=0.3;k.vy*=0.3}
+function knightGo(k,X,Y,spd,dt){knightMove(k,X,Y,spd,dt)}
 function slotPos(b,slot){const n=squadSize(b),a=b.formAng+slot/n*Math.PI*2,r=b.s*TILE*0.5+46;let x=b.x+Math.cos(a)*r,y=b.y+Math.sin(a)*r;
   for(let e=0;e<4&&!walkable(x,y);e++){x+=Math.cos(a)*18;y+=Math.sin(a)*18}if(!walkable(x,y)){x=b.x+Math.cos(b.formAng)*r;y=b.y+Math.sin(b.formAng)*r}return[x,y]}
 function spawnKnight(b){const used=new Set(knights.filter(k=>k.b===b).map(k=>k.slot));let slot=0;while(used.has(slot))slot++;const[x,y]=slotPos(b,slot);
@@ -656,12 +672,18 @@ function updBarracks(b,dt){b.navAge=(b.navAge||0)+dt;const mine=knights.filter(k
   else if(sq.state==='engage'){sq.state='hold';sq.hold=5}
   else if(sq.state==='hold'){sq.hold-=dt;if(sq.hold<=0)sq.state='return'}
   else if(sq.state==='return'){if(mine.every(k=>{const p=slotPos(b,k.slot);return dst(p[0],p[1],k.x,k.y)<10}))sq.state='home'}}
+function pickTarget(k,sq){let t=null,bs=1e9;for(const e of sq.inZ){if(e.hp<=0)continue;const d=dst(e.x,e.y,k.x,k.y);let sc=d+(e.tgtBy||0)*34;
+    if(e.type==='ram')sc-=70;if(e.type==='boss')sc-=90;const fi=tileAt(e.x,e.y);if(fi>=0&&flow[fi]<=2)sc-=55;if(!los(k.x,k.y,e.x,e.y,k.r*0.7))sc+=40;if(e===k.tgt)sc-=45;if(e===k.badTgt)sc+=400;if(sc<bs){bs=sc;t=e}}return t}
 function updKnight(k,dt){const b=k.b,sq=b.sq;if(k.cd>0)k.cd-=dt;if(k.swing>0)k.swing-=dt;if(k.flash>0)k.flash-=dt;if(k.mvT>0)k.mvT-=dt;if(!sq)return;
-  if(sq.state==='engage'){let t=null,bd=1e9;for(const e of sq.inZ){if(e.hp<=0)continue;const d=dst(e.x,e.y,k.x,k.y)+(e.tgtBy||0)*22;if(d<bd){bd=d;t=e}}
-    if(t){t.tgtBy=(t.tgtBy||0)+1;const d=dst(t.x,t.y,k.x,k.y);if(d<=k.r+t.r+6){k.ang=Math.atan2(t.y-k.y,t.x-k.x);if(k.cd<=0){hitEnemy(t,k.dmg,b);t.flash=0.1;k.cd=KN.rate;k.swing=0.25;if(k.tier===3){const[X,Y,Z]=W3(t.x,t.y);fx(X,Y+0.4,Z,3,'#9fe8ff',1.2,0.06,0.4,0,1)}}}
-      else knightGo(k,t.x,t.y,KN.speed,dt,(sq.focus||t).x,(sq.focus||t).y);return}}
-  if(sq.state==='hold'){const a=k.slot/squadSize(b)*Math.PI*2,px=sq.x+Math.cos(a)*34,py=sq.y+Math.sin(a)*34;if(dst(px,py,k.x,k.y)>5)knightGo(k,px,py,KN.speed*0.55,dt,sq.x,sq.y);else k.ang=a;k.hp=Math.min(k.maxhp,k.hp+dt*3);return}
-  const p=slotPos(b,k.slot);if(dst(p[0],p[1],k.x,k.y)>4)knightGo(k,p[0],p[1],KN.speed*(sq.state==='return'?0.42:0.7),dt,b.x,b.y);else k.ang=Math.atan2(p[1]-b.y,p[0]-b.x);k.hp=Math.min(k.maxhp,k.hp+dt*5)}
+  // stuck watchdog
+  k.prT=(k.prT||0)+dt;if(k.prT>0.7){const mv=dst(k.x,k.y,k.px??k.x,k.py??k.y);if(k.wantMove&&mv<4){k.nudge=0.45;k.nudgeA=Math.random()*6.28;k.badTgt=k.tgt;k.tgt=null}k.prT=0;k.px=k.x;k.py=k.y}k.wantMove=false;
+  if(sq.state==='engage'){k.tgtT=(k.tgtT||0)-dt;if(!k.tgt||k.tgt.hp<=0||k.tgtT<=0||!sq.inZ.includes(k.tgt)){k.tgt=pickTarget(k,sq);k.tgtT=0.7}const t=k.tgt;
+    if(t){t.tgtBy=(t.tgtBy||0)+1;const d=dst(t.x,t.y,k.x,k.y),reach=k.r+t.r+6;
+      if(d<=reach){k.ang=Math.atan2(t.y-k.y,t.x-k.x);k.vx*=0.5;k.vy*=0.5;if(k.cd<=0){hitEnemy(t,k.dmg,b);t.flash=0.1;k.cd=KN.rate;k.swing=0.25;if(k.tier===3){const[X,Y,Z]=W3(t.x,t.y);fx(X,Y+0.4,Z,3,'#9fe8ff',1.2,0.06,0.4,0,1)}}}
+      else{let ax=t.x,ay=t.y;if(d<TILE*2.6){const a=(k.slot*2.4)+Math.atan2(k.y-t.y,k.x-t.x)*0.5;const ox=t.x+Math.cos(a)*(reach-3),oy=t.y+Math.sin(a)*(reach-3);if(walkable(ox,oy)){ax=ox;ay=oy}}
+        const charge=d<TILE*3.5?1.3:1;k.wantMove=true;knightMove(k,ax,ay,KN.speed*charge,dt)}return}}
+  if(sq.state==='hold'){const a=k.slot/squadSize(b)*Math.PI*2,px=sq.x+Math.cos(a)*36,py=sq.y+Math.sin(a)*36;if(dst(px,py,k.x,k.y)>5){k.wantMove=true;knightMove(k,px,py,KN.speed*0.55,dt)}else k.ang=a;k.hp=Math.min(k.maxhp,k.hp+dt*3);return}
+  const p=slotPos(b,k.slot);if(dst(p[0],p[1],k.x,k.y)>4){k.wantMove=true;knightMove(k,p[0],p[1],KN.speed*(sq.state==='return'?0.42:0.7),dt)}else{k.ang=Math.atan2(p[1]-b.y,p[0]-b.x);k.vx=0;k.vy=0}k.hp=Math.min(k.maxhp,k.hp+dt*5)}
 function updTower(b,dt){b.cd-=dt;if(b.cd>0)return;const T=BT[b.type],R=rangeOf(b);let t=null,bd=1e9;
   for(const e of enemies){const d=dst(e.x,e.y,b.x,b.y);if(d<R&&d<bd){bd=d;t=e}}if(!t)return;
   b.cd=T.rate/CDM[b.lvl-1];b.aim=Math.atan2(t.y-b.y,t.x-b.x);const dmg=T.dmg*mulOf(b);
@@ -1089,7 +1111,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   const run=started&&!paused&&!gameOver;if(run)for(let i=0;i<speed;i++)update(dt);
   frameDt=dt;inputTick(dt);applyCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
-window.__G={get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
+window.__G={spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
   get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render};
 </script>
 </body>
