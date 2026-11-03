@@ -528,7 +528,7 @@ function ram(){const body=merge([P(box(0.92,0.08,0.44),'#6b4a28',0,0.17,0),P(pri
   const wheel=(x,z)=>({geo:merge([P(cyl(0.11,0.11,0.05,8),'#4a3018',0,0,0,Math.PI/2),P(box(0.2,0.03,0.055),'#2a1a0c',0,0,0)]),pivot:[x,0.11,z]});
   const log=merge([P(cyl(0.06,0.065,0.92,7),'#5a3a1e',0.08,0,0,0,0,Math.PI/2),P(box(0.15,0.16,0.16),'#55504a',0.58,0,0),P(box(0.04,0.18,0.18),'#3a3632',0.66,0,0)]);
   return[{geo:body,pivot:[0,0,0]},wheel(0.3,0.25),wheel(-0.3,0.25),wheel(0.3,-0.25),wheel(-0.3,-0.25),{geo:log,pivot:[0,0.3,0]}]}
-function buildRigs(){makeRig('spear',human('red','spear'),420,1.35);makeRig('bowman',human('red','bow'),220,1.35);makeRig('shield',human('red','shield'),220,1.45);makeRig('sapper',human('red','sapper'),120,1.3);makeRig('boss',human('red','axe'),12,2.1);makeRig('cav',horse('red','lance'),160,1.2);makeRig('knight1',horse('blue','sword',1),200,1.2);makeRig('knight2',horse('blue','sword',2),200,1.27);makeRig('knight3',horse('blue','sword',3),200,1.36);makeRig('ram',ram(),70,1.1)}
+function buildRigs(){makeRig('spear',human('red','spear'),420,1.12);makeRig('bowman',human('red','bow'),220,1.12);makeRig('shield',human('red','shield'),220,1.2);makeRig('sapper',human('red','sapper'),120,1.08);makeRig('boss',human('red','axe'),12,1.85);makeRig('cav',horse('red','lance'),160,1.02);makeRig('knight1',horse('blue','sword',1),200,1.04);makeRig('knight2',horse('blue','sword',2),200,1.1);makeRig('knight3',horse('blue','sword',3),200,1.18);makeRig('ram',ram(),70,0.95)}
 const POSE=Array.from({length:8},()=>[0,0,0,0,0,0]);
 function poseOf(kind,u,t){const m=u.mvb||0,k=u.swing>0?clamp(u.swing/0.25,0,1):0,a=Math.sin(k*Math.PI),o=POSE;for(const p of o)p.fill(0);
   if(kind==='spear'||kind==='boss'||kind==='bowman'||kind==='shield'||kind==='sapper'){const s=u.walk,sw=Math.sin(s)*0.7*m,bob=Math.abs(Math.cos(s))*0.03*m;
@@ -636,8 +636,8 @@ function spawnEnemy(type,n,side){const T=ET[type];const cx=side===1?SP2X:SPX,cy=
 
 // =============== SIMULATION ===============
 function moveUnit(u,tx,ty,spd,dt,others,keep){let dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy);if(d<0.5)return;dx/=d;dy/=d;
-  let sx=0,sy=0;for(const o of others){if(o===u)continue;const ox=u.x-o.x,oy=u.y-o.y,rr=u.r+o.r+2;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=ox*ox+oy*oy;if(dd<rr*rr&&dd>0.01){const l=Math.sqrt(dd);sx+=ox/l*(rr-l)/rr;sy+=oy/l*(rr-l)/rr}}
-  let vx=dx+sx*1.6,vy=dy+sy*1.6;const vl=Math.hypot(vx,vy)||1;const ti=tileAt(u.x,u.y);if(ti>=0&&terrain[ti]===1)spd*=0.72;
+  let sx=0,sy=0;for(const o of others){if(o===u)continue;const ox=u.x-o.x,oy=u.y-o.y,rr=(u.r+o.r)*1.2+5;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=ox*ox+oy*oy;if(dd<rr*rr&&dd>0.01){const l=Math.sqrt(dd);sx+=ox/l*(rr-l)/rr;sy+=oy/l*(rr-l)/rr}}
+  let vx=dx+sx*2.2,vy=dy+sy*2.2;const vl=Math.hypot(vx,vy)||1;const ti=tileAt(u.x,u.y);if(ti>=0&&terrain[ti]===1)spd*=0.72;
   const step=Math.min(spd*dt,Math.max(0,d-(keep||0))+spd*dt*0.3);const nx=u.x+vx/vl*step,ny=u.y+vy/vl*step;
   if(walkable(nx,u.y))u.x=nx;if(walkable(u.x,ny))u.y=ny;u.ang=Math.atan2(dy,dx);u.walk+=dt*spd*0.25;u.mvT=0.18}
 function nearestBuilding(x,y){let b=null,bd=1e9;for(const o of buildings){if(o.type==='wall'&&!wallMode)continue;const d=edgeDist(o,x,y);if(d<bd){bd=d;b=o}}return[b,bd]}
@@ -666,7 +666,7 @@ function updEnemy(e,dt){if(e.frozen)return;const T=ET[e.type];if(e.cd>0)e.cd-=dt
   if(!T.bldOnly){let k=null,kd=34;for(const o of knights){const d=dst(o.x,o.y,e.x,e.y)-o.r;if(d<kd){kd=d;k=o}}
     if(k){if(kd<=T.range){e.ang=Math.atan2(k.y-e.y,k.x-e.x);if(e.cd<=0){k.hp-=T.dmg*e.dm;k.flash=0.1;e.cd=T.rate;e.swing=0.25}}else moveUnit(e,k.x,k.y,T.speed,dt,enemies);return}}
   const i=tileAt(e.x,e.y),fd=i>=0?flow[i]:1e9;
-  if(fd<=2){const[b,bd]=nearestBuilding(e.x,e.y);if(b){if(bd<=T.range){e.ang=Math.atan2(b.y-e.y,b.x-e.x);if(e.cd<=0){hurtBuilding(b,T.dmg*e.dm);e.cd=T.rate;e.swing=0.25}return}moveUnit(e,b.x,b.y,T.speed,dt,enemies);return}}
+  if(fd<=2){const[b,bd]=nearestBuilding(e.x,e.y);if(b){if(e.slotA==null)e.slotA=Math.random()*Math.PI*2;if(bd>T.range&&bd<TILE*1.6){const hs=b.s*TILE/2+T.r+4,ax=b.x+Math.cos(e.slotA)*hs,ay=b.y+Math.sin(e.slotA)*hs;if(walkable(ax,ay)&&dst(ax,ay,e.x,e.y)>4){moveUnit(e,ax,ay,T.speed,dt,enemies);return}}if(bd<=T.range){e.ang=Math.atan2(b.y-e.y,b.x-e.x);if(e.cd<=0){hurtBuilding(b,T.dmg*e.dm);e.cd=T.rate;e.swing=0.25}return}moveUnit(e,b.x,b.y,T.speed,dt,enemies);return}}
   if(fd>=1e9){if(buildings.length)moveUnit(e,buildings[0].x,buildings[0].y,T.speed,dt,enemies);return}
   const x=i%GW,y=(i/GW)|0;let best=fd,bx=-1,by=-1;
   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;
@@ -787,30 +787,48 @@ function moveGhostTo(sx,sy){if(!place)return;const pt=pickGround(sx,sy);if(!pt)r
   if(tx!==place.tx||ty!==place.ty){
     if(painting){const ox=place.tx,oy=place.ty,steps=Math.max(Math.abs(tx-ox),Math.abs(ty-oy));for(let i=1;i<=steps;i++){place.tx=Math.round(ox+(tx-ox)*i/steps);place.ty=Math.round(oy+(ty-oy)*i/steps);buildWallHere()}}
     place.tx=tx;place.ty=ty;place.pop=0.7;AU.tick()}}
-cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY});applyCam(0);camGoal=null;
-  if(ptrs.size===1){moved=false;anchor=toPlane(e.clientX,e.clientY);lastPt=[e.clientX,e.clientY];paint=null;
+let camVel=null,velS=null,boxSel=null,lsel=null,rdrag=null;
+function bAtScreen(sx,sy){const pt=pickGround(sx,sy);if(pt){const tx=Math.floor(pt.x),ty=Math.floor(pt.z);const o=bAt(tx,ty);if(o)return o}return pickBuilding(sx,sy,0.25)}
+function paintAlong(x0,y0,x1,y1){const n=Math.max(1,Math.ceil(Math.hypot(x1-x0,y1-y0)/9));for(let i=1;i<=n;i++)addSel(bAtScreen(x0+(x1-x0)*i/n,y0+(y1-y0)*i/n))}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener("pointerdown",e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,px:e.clientX,py:e.clientY});applyCam(0);camGoal=null;camVel=null;velS=[];
+  if(e.button===2&&e.pointerType==='mouse'){rdrag={x:e.clientX,yaw:cam.yaw,anchor:toPlane(W/2,H/2)};anchor=null;moved=true;return}
+  if(ptrs.size===1){moved=false;anchor=toPlane(e.clientX,e.clientY);lastPt=[e.clientX,e.clientY];paint=null;lsel=null;
     if(place&&place.type==='wall'){const t=tileUnder(e.clientX,e.clientY);if(t){wdraw={id:e.pointerId,a:t,b:t};anchor=null;AU.tick()}}
     else if(place){const g=scr(place.vx,place.vy+0.4,place.vz);const rad=Math.max(58,BT[place.type].size*34*34/cam.D);
-      if(g&&Math.hypot(g[0]-e.clientX,g[1]-e.clientY)<rad){gdrag={id:e.pointerId,ox:g[0]-e.clientX,oy:g[1]-e.clientY};anchor=null;place.lift=1}else lp={id:e.pointerId,t:0}}
-    else if(started&&!gameOver){const b=pickBuilding(e.clientX,e.clientY);if(b){hold={b,id:e.pointerId,t:0,fail:false,ups:0};paint={id:e.pointerId,b0:b,on:false}}}}
-  if(ptrs.size===2){hold=null;lp=null;paint=null;wdraw=null;if(gdrag){gdrag=null;if(place)place.lift=0}const[a,b]=[...ptrs.values()];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,D:cam.D,anchor:toPlane(mx,my)};moved=true}});
-cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;p.x=e.clientX;p.y=e.clientY;lastPt=[p.x,p.y];
+      if(g&&Math.hypot(g[0]-e.clientX,g[1]-e.clientY)<rad){gdrag={id:e.pointerId,ox:g[0]-e.clientX,oy:g[1]-e.clientY};anchor=null;place.lift=1}else lp={id:e.pointerId,t0:performance.now()}}
+    else if(started&&!gameOver){const b=bAtScreen(e.clientX,e.clientY)||pickBuilding(e.clientX,e.clientY);if(b){hold={b,id:e.pointerId,t:0,fail:false,ups:0};paint={id:e.pointerId,b0:b,on:false}}else lsel={id:e.pointerId,t0:performance.now()}}}
+  if(ptrs.size===2){hold=null;lp=null;paint=null;wdraw=null;lsel=null;boxSel=null;if(gdrag){gdrag=null;if(place)place.lift=0}const[a,b]=[...ptrs.values()];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,D:cam.D,anchor:toPlane(mx,my),a0:Math.atan2(b.y-a.y,b.x-a.x),yaw0:cam.yaw,rot:false};moved=true}});
+cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const px=p.x,py=p.y;p.x=e.clientX;p.y=e.clientY;lastPt=[p.x,p.y];
+  if(rdrag){cam.yaw=cam.yawT=rdrag.yaw+(p.x-rdrag.x)*0.008;applyCam(0);const q=toPlane(W/2,H/2);if(q&&rdrag.anchor){cam.tx+=rdrag.anchor.x-q.x;cam.tz+=rdrag.anchor.z-q.z;clampCam()}return}
   if(wdraw&&wdraw.id===e.pointerId){const t=tileUnder(p.x,p.y);if(t&&(t[0]!==wdraw.b[0]||t[1]!==wdraw.b[1])){wdraw.b=t;AU.tick()}return}
   if(gdrag&&gdrag.id===e.pointerId){applyCam(0);moveGhostTo(p.x+gdrag.ox,p.y+gdrag.oy);return}
-  if(paint&&paint.id===e.pointerId){if(!paint.on&&Math.hypot(p.x-p.sx,p.y-p.sy)>11){paint.on=true;moved=true;hold=null;addSel(paint.b0)}if(paint.on){addSel(pickBuilding(p.x,p.y,0.35));return}}
-  if(ptrs.size===1&&anchor){if(!moved&&Math.hypot(p.x-p.sx,p.y-p.sy)>11){moved=true;hold=null;lp=null}if(moved){applyCam(0);const q=toPlane(p.x,p.y);if(q){cam.tx+=anchor.x-q.x;cam.tz+=anchor.z-q.z;clampCam()}}}
-  else if(ptrs.size===2&&pinch){const[a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;cam.D=clamp(pinch.D*pinch.d/d,10,80);applyCam(0);const q=toPlane(mx,my);if(q&&pinch.anchor){cam.tx+=pinch.anchor.x-q.x;cam.tz+=pinch.anchor.z-q.z;clampCam()}}});
+  if(boxSel&&boxSel.id===e.pointerId){boxSel.x1=p.x;boxSel.y1=p.y;return}
+  if(paint&&paint.id===e.pointerId){if(!paint.on&&Math.hypot(p.x-p.sx,p.y-p.sy)>12){paint.on=true;moved=true;hold=null;addSel(paint.b0);paintAlong(p.sx,p.sy,p.x,p.y)}else if(paint.on)paintAlong(px,py,p.x,p.y);if(paint.on)return}
+  if(ptrs.size===1&&anchor){if(!moved&&Math.hypot(p.x-p.sx,p.y-p.sy)>11){moved=true;hold=null;lp=null;lsel=null}
+    if(moved){applyCam(0);const q=toPlane(p.x,p.y);if(q){const ox=cam.tx,oz=cam.tz;cam.tx+=anchor.x-q.x;cam.tz+=anchor.z-q.z;clampCam();const now=performance.now();velS.push([now,cam.tx-ox,cam.tz-oz]);while(velS.length&&now-velS[0][0]>90)velS.shift()}}}
+  else if(ptrs.size===2&&pinch){const[a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    let da=Math.atan2(b.y-a.y,b.x-a.x)-pinch.a0;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;if(!pinch.rot&&Math.abs(da)>0.14){pinch.rot=true;pinch.a0+=Math.sign(da)*0.14;da-=Math.sign(da)*0.14}
+    cam.D=clamp(pinch.D*pinch.d/d,10,80);if(pinch.rot){cam.yaw=cam.yawT=pinch.yaw0+da}applyCam(0);const q=toPlane(mx,my);if(q&&pinch.anchor){cam.tx+=pinch.anchor.x-q.x;cam.tz+=pinch.anchor.z-q.z;clampCam()}}});
 function pend(e){if(!ptrs.has(e.pointerId))return;
+  if(rdrag){rdrag=null;ptrs.delete(e.pointerId);return}
   if(wdraw&&wdraw.id===e.pointerId){if(e.type==='pointerup')commitWall();wdraw=null}
   else if(gdrag&&gdrag.id===e.pointerId){gdrag=null;if(place)place.lift=0}
+  else if(boxSel&&boxSel.id===e.pointerId){finishBox();boxSel=null}
   else if(ptrs.size===1&&!moved&&e.type==='pointerup'){if(!(hold&&(hold.ups>0||hold.fail||hold.t>0.3)))onTap(e.clientX,e.clientY)}
-  hold=null;lp=null;paint=null;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
-  if(ptrs.size===1){const r=[...ptrs.values()][0];applyCam(0);anchor=toPlane(r.x,r.y);r.sx=-999}else anchor=null}
+  else if(ptrs.size===1&&moved&&anchor&&!paint&&velS&&velS.length>1){const t0=velS[0][0],t1=velS[velS.length-1][0],dtv=Math.max(16,t1-t0)/1000;let vx=0,vz=0;for(const v of velS){vx+=v[1];vz+=v[2]}vx/=dtv;vz/=dtv;const sp=Math.hypot(vx,vz);if(sp>1.5&&performance.now()-t1<60){const k=Math.min(1,cam.D*1.6/sp);camVel=[vx*k,vz*k]}}
+  hold=null;lp=null;paint=null;lsel=null;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
+  if(ptrs.size===1){const r=[...ptrs.values()][0];applyCam(0);anchor=toPlane(r.x,r.y);r.sx=-999;velS=[]}else anchor=null}
+function finishBox(){const b=boxSel;const x0=Math.min(b.x0,b.x1),x1=Math.max(b.x0,b.x1),y0=Math.min(b.y0,b.y1),y1=Math.max(b.y0,b.y1);if(x1-x0<8&&y1-y0<8)return;let n=0;
+  for(const o of buildings){const s2=scr(o.X,o.Y+0.4,o.Z);if(s2&&s2[0]>=x0&&s2[0]<=x1&&s2[1]>=y0&&s2[1]<=y1){if(!selSet.has(o)){selSet.add(o);o.selPop=1;n++;sel=o}}}if(n){AU.tick();renderThumb();toast(`${selSet.size} selected · hold one to upgrade all`)}}
 cv.addEventListener('pointerup',pend);cv.addEventListener('pointercancel',pend);
 cv.addEventListener('wheel',e=>{e.preventDefault();applyCam(0);const a=toPlane(e.clientX,e.clientY);cam.D=clamp(cam.D*Math.exp(e.deltaY*0.0012),10,80);applyCam(0);const q=toPlane(e.clientX,e.clientY);if(a&&q){cam.tx+=a.x-q.x;cam.tz+=a.z-q.z}clampCam()},{passive:false});
 function inputTick(dt){
+  if(camVel&&!ptrs.size){cam.tx+=camVel[0]*dt;cam.tz+=camVel[1]*dt;clampCam();const k=Math.exp(-dt*4.5);camVel[0]*=k;camVel[1]*=k;if(Math.hypot(camVel[0],camVel[1])<0.3)camVel=null}
+  if(lsel&&!moved){if(performance.now()-lsel.t0>380&&lastPt){boxSel={id:lsel.id,x0:lastPt[0],y0:lastPt[1],x1:lastPt[0],y1:lastPt[1]};lsel=null;anchor=null;moved=true;AU.tick()}}
   if(hold&&!moved){hold.t+=dt;if(hold.t>HOLD_D){if(!selSet.has(hold.b)){clearSel();addSel(hold.b)}if(!hold.fail&&hold.t>=HOLD_D+HOLD_F){if(upgradeSel(hold.b)){hold.ups++;hold.t=HOLD_D-0.2}else hold.fail=true}}}
-  if(lp&&!moved){lp.t+=dt;if(lp.t>0.28&&lastPt){gdrag={id:lp.id,ox:0,oy:-60};lp=null;anchor=null;if(place)place.lift=1;applyCam(0);moveGhostTo(lastPt[0],lastPt[1]-60);AU.tick()}}
+  if(lp&&!moved){if(performance.now()-lp.t0>280&&lastPt){gdrag={id:lp.id,ox:0,oy:-60};lp=null;anchor=null;if(place)place.lift=1;applyCam(0);moveGhostTo(lastPt[0],lastPt[1]-60);AU.tick()}}
   if(gdrag&&lastPt){const m=48,sp=cam.D*0.85*dt;let ex=0,ey=0;if(lastPt[0]<m)ex=-1;else if(lastPt[0]>W-m)ex=1;if(lastPt[1]<m+50)ey=-1;else if(lastPt[1]>H-m)ey=1;
     if(ex||ey){const cy=Math.cos(cam.yaw),sy=Math.sin(cam.yaw);cam.tx+=(ex*cy+ey*sy)*sp;cam.tz+=(-ex*sy+ey*cy)*sp;clampCam();applyCam(0);moveGhostTo(lastPt[0]+gdrag.ox,lastPt[1]+gdrag.oy)}}
   if(camGoal){const k=Math.min(1,dt*5);cam.tx+=(camGoal.x-cam.tx)*k;cam.tz+=(camGoal.z-cam.tz)*k;if(Math.hypot(camGoal.x-cam.tx,camGoal.z-cam.tz)<0.05)camGoal=null}}
@@ -954,7 +972,7 @@ function renderWorld(rdt){const t=time;
     if(b.build<1)b.build=Math.min(1,b.build+frameDt*1.5);const xb=b.build-1,e=b.build<1?1+2.9*xb*xb*xb+1.9*xb*xb:1;
     let sy=Math.max(0.02,e),sxz=b.build<1?0.85+0.15*Math.min(1,b.build*2):1;
     if(b.disc){const on=selSet.has(b);b.disc.visible=on;if(on){b.selPop=Math.max(0,(b.selPop||0)-frameDt*4);const k=1+(b.selPop||0)*0.35+Math.sin(performance.now()/260)*0.04;b.disc.scale.set(k,1,k)}}if(b.pulse>0){b.pulse=Math.max(0,b.pulse-rdt*1.6);sxz=1+Math.sin(b.pulse*Math.PI*3)*0.05*b.pulse;sy*=1+Math.sin(b.pulse*Math.PI*3)*0.06*b.pulse}
-    b.group.scale.set(sxz,sy,sxz);
+    const vs=(BT[b.type].kind==='def'&&b.type!=='wall')||b.type==='mine'?0.88:1;b.group.scale.set(sxz*vs,sy,sxz*vs);
     if(b.type==='cannon'){b.raim=smoothAng(b.raim,b.aim,Math.min(1,rdt*8));b.group.userData.tur.rotation.y=-b.raim;b.recoil=Math.max(0,b.recoil-rdt*3);b.group.userData.barrel.position.x=-b.recoil*0.12}}
   {let nw=0;if(place&&place.type==='wall'&&wdraw){const GOOD=new THREE.Color('#7dff7d'),BAD=new THREE.Color('#ff5a4a'),POOR=new THREE.Color('#ffc04a');for(const p of wallPlan()){if(nw>=64)break;_M.makeTranslation(p.x+0.5,Math.max(-0.1,heightAt(p.x+0.5,p.y+0.5)),p.y+0.5);wallPrev.setMatrixAt(nw,_M);wallPrev.setColorAt(nw,p.can?GOOD:p.ok?POOR:BAD);nw++}}wallPrev.count=nw;wallPrev.instanceMatrix.needsUpdate=true;if(wallPrev.instanceColor)wallPrev.instanceColor.needsUpdate=true}
   if(ghost){for(const f of ghost.userData.anims)f(t);const s=BT[place.type].size;const TX=place.tx+s/2,TZ=place.ty+s/2,TY=Math.max(-0.1,heightAt(TX,TZ));const gk=Math.min(1,frameDt*22);place.vx+=(TX-place.vx)*gk;place.vz+=(TZ-place.vz)*gk;place.vy+=(TY-place.vy)*gk;place.pop=Math.max(0,(place.pop||0)-frameDt*4);const X=place.vx,Z=place.vz,Y=place.vy;const lift=place.lift?0.32+Math.sin(performance.now()/170)*0.04:0;ghost.position.set(X,Y+lift,Z);const gsc=1+place.pop*0.12;ghost.scale.set(gsc,1+place.pop*0.22,gsc);
@@ -1002,6 +1020,7 @@ function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H
   for(const b of buildings){if(b.hp<b.maxhp)bar(b.X,b.Y+b.barH,b.Z,44*zf,b.hp/b.maxhp,b.hp/b.maxhp>0.4?'#5fd04a':'#e05a3a');
     if(b.type==='barracks'){const n=knights.reduce((a,k)=>a+(k.b===b),0);if(n<squadSize(b))bar(b.X,b.Y+b.barH+0.35,b.Z,34*zf,1-b.respawnT/respawnTime(b),'#8fb8ff')}}
   drawBadges(zf);
+  if(boxSel){const x0=Math.min(boxSel.x0,boxSel.x1),y0=Math.min(boxSel.y0,boxSel.y1),w=Math.abs(boxSel.x1-boxSel.x0),h=Math.abs(boxSel.y1-boxSel.y0);octx.fillStyle='rgba(255,211,74,0.12)';octx.fillRect(x0,y0,w,h);octx.setLineDash([6,4]);octx.strokeStyle='#ffd34a';octx.lineWidth=2;octx.strokeRect(x0,y0,w,h);octx.setLineDash([]);if(w<10&&h<10){octx.font='bold 12px Georgia';octx.textAlign='center';octx.fillStyle='#ffe08a';octx.fillText('Drag to box-select',boxSel.x0,boxSel.y0-18)}}
   drawSelUI();drawPlaceUI();
   octx.font='bold 12px Georgia';octx.textAlign='center';for(const t of texts){const s=scr(t.X,t.Y,t.Z);if(!s)continue;octx.globalAlpha=Math.min(1,t.life);octx.fillStyle='#000';octx.fillText(t.s,s[0]+1,s[1]+1);if(t.big){octx.font='bold 22px Georgia';octx.lineWidth=4;octx.strokeStyle='rgba(40,20,0,0.85)';octx.strokeText(t.s,s[0],s[1])}octx.fillStyle=t.c||'#ffe9a8';octx.fillText(t.s,s[0],s[1]);octx.font='bold 12px Georgia'}octx.globalAlpha=1}
 
@@ -1022,7 +1041,7 @@ function badge(x,y,atk,hp,frac,sc){octx.font=`bold ${Math.round(10*sc)}px Georgi
   const a=atk?`⚔${Math.max(1,Math.round(atk))}`:'',h=`♥${Math.max(1,Math.ceil(hp))}`;const wa=a?octx.measureText(a).width+4:0,wh=octx.measureText(h).width,w=wa+wh+8,hh=14*sc;
   rrect(x,y-hh/2,w,hh,hh/2);octx.fillStyle='rgba(20,12,4,0.72)';octx.fill();
   if(a){octx.fillStyle='#ffb070';octx.fillText(a,x+4,y+0.5)}octx.fillStyle=frac>0.6?'#9dff8a':frac>0.3?'#ffe070':'#ff7a6a';octx.fillText(h,x+4+wa,y+0.5)}
-function drawBadges(zf){if(cam.D>60)return;const sc=clamp(zf,0.85,1.25);
+function drawBadges(zf){if(cam.D>44)return;const sc=clamp(zf,0.85,1.25);
   for(const b of buildings){if(BT[b.type].kind!=='def'||selSet.has(b)&&b===sel||(b.type==='wall'&&b.hp>=b.maxhp-0.5&&!selSet.has(b)))continue;const s=scr(b.X,b.Y+b.barH-0.15,b.Z);if(!s||s[0]<-40||s[0]>W||s[1]<60||s[1]>H)continue;
     badge(s[0]+10*sc,s[1],towerAtk(b),b.hp/HPU,b.hp/b.maxhp,sc)}
   for(const e of enemies){if(e.type==='spear'||e.type==='bowman')continue;const X=e.x/TILE,Z=e.y/TILE,ht=e.type==='boss'?1.7:e.type==='cav'?1.35:1.1;const s=scr(X,heightAt(X,Z)+ht,Z);if(!s||s[0]<-40||s[0]>W||s[1]<60||s[1]>H)continue;
@@ -1187,7 +1206,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   const run=started&&!paused&&!gameOver;if(run)for(let i=0;i<speed;i++)update(dt);
   frameDt=dt;inputTick(dt);applyCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
-window.__G={ser:()=>serialize(),load:d=>loadGame(d),get age(){return age},set age(v){age=v},depos:DEPOS,startWave:n=>{wave=n;startWave(n)},get spawnQ(){return spawnQ},cost:t=>costOf(t),spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
+window.__G={dbg:()=>({lt:lsel&&lsel.t,lp:lastPt,box:!!boxSel,moved,hold:!!hold,paint:!!paint,anchor:!!anchor,ptrs:ptrs.size}),ser:()=>serialize(),load:d=>loadGame(d),get age(){return age},set age(v){age=v},depos:DEPOS,startWave:n=>{wave=n;startWave(n)},get spawnQ(){return spawnQ},cost:t=>costOf(t),spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
   get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render};
 </script>
 </body>
