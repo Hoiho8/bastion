@@ -82,6 +82,12 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #bAge .bad{color:#ff8a7a}
 .diffs{display:flex;gap:5px;justify-content:center;margin:6px 0 2px}.diffs button{flex:1;max-width:74px;padding:6px 2px;border-radius:8px;border:1px solid #6a4f24;background:#2a1a0c;color:#e8dcc0;font-family:inherit;font-size:11px;line-height:1.2}.diffs button b{display:block;font-size:17px}.diffs button.on{border-color:#ffd34a;background:#5a3c0e;color:#fff3c0;box-shadow:0 0 10px rgba(255,211,74,.5)}
 .hof{font-size:12px;text-align:left;margin-top:8px}.hof table{width:100%;border-collapse:collapse}.hof td{padding:3px 4px;border-bottom:1px solid rgba(169,130,63,.25);color:#efe3c6}.hof td.r{text-align:right;color:#ffe08a}.hof .tabs{display:flex;gap:6px;margin-bottom:4px}.hof .tabs span{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #6a4f24;color:#c3b38a}.hof .tabs span.on{border-color:#ffd34a;color:#ffe08a}.hof .note{font-size:10px;color:#a8987a;margin-top:4px}
+#achPop{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-140%);display:flex;gap:10px;align-items:center;padding:9px 14px;border-radius:12px;background:linear-gradient(#5a3c0e,#2e1d0e);border:2px solid #ffd34a;box-shadow:0 0 22px rgba(255,211,74,.5),0 4px 12px rgba(0,0,0,.6);z-index:15;transition:transform .45s cubic-bezier(.2,1.4,.4,1);max-width:92vw;pointer-events:none}
+#achPop.show{transform:translate(-50%,0)}#achPop .am{font-size:34px}#achPop .at{font-size:10px;letter-spacing:2px;color:#ffd36a}#achPop .at b{display:block;font-size:16px;letter-spacing:.5px;color:#fff3c0}#achPop .ad{font-size:11px;color:#e8dcc0}
+#achOv{position:fixed;inset:0;z-index:18;background:rgba(14,9,4,.95);overflow-y:auto;touch-action:pan-y}#achBox{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 12px 0}
+#achGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ach{background:#22160a;border:1px solid #6a4f24;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:flex-start}.ach .m{font-size:28px;line-height:1}.ach b{display:block;font-size:12px;color:#ffe08a}.ach span{font-size:10.5px;color:#d8cba8;line-height:1.3;display:block}.ach small{font-size:9.5px;color:#9fd88a}
+.ach.lock{opacity:.5;filter:grayscale(.9)}.ach.lock b{color:#c3b38a}.ach.new{border-color:#ffd34a;box-shadow:0 0 12px rgba(255,211,74,.4)}
+#achFoot{position:sticky;bottom:0;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);background:linear-gradient(transparent,rgba(14,9,4,.98) 35%);display:flex;justify-content:center}
 </style>
 <script type="importmap">{"imports":{"three":"./three.min.js"}}</script>
 </head>
@@ -112,6 +118,8 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 </div>
 <div id="banner"><div class="a"></div><div class="b"></div></div>
 <div id="toast" class="wood"></div>
+<div id="achPop"><div class="am"></div><div><div class="at"></div><div class="ad"></div></div></div>
+<div id="achOv" class="hidden"><div id="achBox"><div style="text-align:center"><h1 style="margin:0;font-size:26px;letter-spacing:3px;color:#ffd36a">ACHIEVEMENTS</h1><p id="achSum" style="margin:4px 0 10px;font-size:12px;color:#c3b38a"></p></div><div id="achGrid"></div><div style="height:80px"></div></div><div id="achFoot"><button class="go wood" id="bAchBack">◀ Back</button></div></div>
 <div id="start" class="ov hidden"><div class="box wood">
   <h1>BASTION</h1>
   <p>Blue holds the high ground. Red comes from the southwest — and later, the west.<br>Grow grain, wool and gold. Raise towers. Survive the boss waves.</p>
@@ -119,10 +127,11 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   <div style="margin:6px 0 4px;font-size:12px;opacity:.85">Your name <input id="pName" maxlength="16" style="width:120px;font-family:inherit;font-size:14px;padding:4px 6px;border-radius:6px;border:1px solid #a9823f;background:#1e1308;color:#ffe9a8;text-align:center"></div>
   <div class="diffs" id="diffStart"></div><div id="diffDesc" style="font-size:11px;opacity:.8;min-height:28px;margin:2px 0 6px"></div>
   <button class="go wood" id="bStart">Begin</button>
+  <div style="margin-top:8px"><button class="wood" id="bAchS" style="font-family:inherit;color:#ffe08a;padding:6px 12px;font-size:13px">🏅 Achievements</button></div>
   <div id="hofStart" class="hof"></div>
 </div></div>
 <div id="pauseOv" class="ov hidden"><div class="box wood"><h1 style="font-size:30px">PAUSED</h1><p id="pauseTxt"></p>
-  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button></div></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button><button class="go wood" id="bAchP">🏅 Achievements</button></div></div></div>
 <div id="statsOv" class="hidden"><div id="statsBox">
   <div id="stHead"></div>
   <div class="stTiles" id="stTiles"></div>
@@ -572,6 +581,10 @@ function drawUnitInst(kind,u,t,dead){const R=rigs[kind];if(R.n>=R.max)return;con
 // =============== FX MESHES ===============
 const GLOWM_A=c=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
 const arrowMesh=new THREE.InstancedMesh(merge([P(box(0.34,0.022,0.022),'#5a3f22',0,0,0),P(cone(0.025,0.06,4),'#ccc',0.19,0,0,0,0,-Math.PI/2),P(box(0.07,0.05,0.005),'#eee',-0.15,0,0)]),VM,400);
+const kvAura=new THREE.InstancedMesh(new THREE.RingGeometry(0.3,0.46,28).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0.95,depthWrite:false}),240);
+const kvDisc=new THREE.InstancedMesh(new THREE.CircleGeometry(0.42,24).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0.32,depthWrite:false}),240);
+const kvFlame=new THREE.InstancedMesh(new THREE.ConeGeometry(0.06,0.3,7).translate(0,0.15,0),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0.95,depthWrite:false}),240);
+for(const m of[kvAura,kvDisc,kvFlame]){m.frustumCulled=false;m.count=0;m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);for(let i=0;i<240;i++)m.setColorAt(i,WHITE);m.renderOrder=3;scene.add(m)}
 const arrowGlow=new THREE.InstancedMesh(new THREE.BoxGeometry(0.42,0.06,0.06),GLOWM_A('#7fe8ff'),200);arrowGlow.frustumCulled=false;arrowGlow.count=0;scene.add(arrowGlow);
 const ballMesh=new THREE.InstancedMesh(merge([P(sph(0.1,8,6),'#1c1c1e')]),VM,80);
 const smokeMesh=new THREE.InstancedMesh(merge([P(ico(0.5,1),'#ffffff')]),new THREE.MeshLambertMaterial({vertexColors:true,flatShading:true,transparent:true,opacity:0.62,depthWrite:false}),900);
@@ -641,7 +654,7 @@ const W3=(x,y)=>[x/TILE,heightAt(x/TILE,y/TILE),y/TILE];
 // =============== WAVES ===============
 const eraOf=n=>Math.floor((Math.max(1,n)-1)/5)+1,ERAN=['','I','II','III','IV','V','VI','VII','VIII','IX','X'];
 function pickW(w){let t=0;for(const k in w)t+=w[k];let r=Math.random()*t;for(const k in w){r-=w[k];if(r<=0)return k}return 'spear'}
-function startWave(n){const boss=n%5===0,era=eraOf(n),list=[];if(boss)ST.bosses.push({t:time,n});ST.bestWave=n;const walls=buildings.filter(b=>b.type==='wall').length;
+function startWave(n){if(ST.bossMark&&ST.bossMark.n===n-1&&ST.lost===ST.bossMark.lost)ST.cleanBoss=true;const boss=n%5===0,era=eraOf(n),list=[];if(boss)ST.bossMark={n,lost:ST.lost};if(boss)ST.bosses.push({t:time,n});ST.bestWave=n;const walls=buildings.filter(b=>b.type==='wall').length;
   const cnt=Math.min(24,4+Math.round(n*0.8));const w={spear:1};if(era>=2)w.bowman=0.4;if(era>=3){w.shield=0.4;w.cav=0.15}if(era>=4)w.sapper=walls>4?0.35:0.12;if(era>=5){w.spear=0.6}
   const cntT=t=>buildings.filter(b=>b.type===t).length,nA=cntT('archer'),nC=cntT('cannon'),nK=cntT('barracks');grpState[n]={charge:AI()<2,wait0:null,spread:false};
   if(AI()>=3){if(era>=3)w.shield=(w.shield||0)+nA*0.07;if(era>=2)w.bowman=(w.bowman||0)+nK*0.18;if(era>=4)w.sapper=(w.sapper||0)+walls*0.025;if(era>=3)w.cav=(w.cav||0)+nC*0.05;if(nC>=3)grpState[n].spread=true;lureNext=nK&&era>=3?2:0}
@@ -776,7 +789,7 @@ function updProj(p,dt){
   else{p.time+=dt;if(p.time>=p.dur){p.dead=1;if(p.src&&vetOf(p.src)>=5)fires.push({x:p.tx,y:p.ty,r:p.splash*0.75,t:3.2,dps:p.dmg*0.3,src:p.src});for(const e of enemies){const d=dst(e.x,e.y,p.tx,p.ty);if(d<p.splash){hitEnemy(e,p.dmg*(d<p.splash*0.4?1:0.6),p.src);e.flash=0.1}}
     const[X,Y,Z]=W3(p.tx,p.ty);fx(X,Y+0.1,Z,p.lv===3?16:9,p.lv===3?'#7fd8ff':'#ffae3a',p.lv===3?3.2:2.4,0.22,0.35,0,1,0.8);fx(X,Y+0.1,Z,10,'#857a6c',1.6,0.4,1.4,-0.2,0,0.7);fx(X,Y+0.1,Z,8,'#5e4a32',3,0.07,0.9,8,2,1.1);
     AU.boom(0.8);shake=Math.max(shake,0.12)}}}
-function update(dt){time+=dt;if(AI()>=2)for(const g in grpState){const gs=grpState[g];if(gs.charge)continue;let al=0,wt=0;for(const e of enemies)if(e.g==g){al++;if(e.wait)wt++}const pend=spawnQ.some(s=>s.n==g);if(!pend&&al&&(wt/al>=0.7||(gs.wait0!=null&&time-gs.wait0>12))){gs.charge=true;if(wt>3)toast('⚔ The enemy charges!')}if(!al&&!pend)delete grpState[g]}if(ageRes){ageRes.t+=dt;if(ageRes.t>=ageRes.dur)completeAge()}waveHeld=wave>0&&enemies.length+spawnQ.length>fieldCap();ST.sampT+=dt;if(ST.sampT>=5)stSample();if(enemies.length>ST.peakE){ST.peakE=enemies.length;ST.peakT=time}if(!waveHeld)waveT-=dt;if(waveT<=0)startWave(++wave);
+function update(dt){time+=dt;checkAch(dt);if(AI()>=2)for(const g in grpState){const gs=grpState[g];if(gs.charge)continue;let al=0,wt=0;for(const e of enemies)if(e.g==g){al++;if(e.wait)wt++}const pend=spawnQ.some(s=>s.n==g);if(!pend&&al&&(wt/al>=0.7||(gs.wait0!=null&&time-gs.wait0>12))){gs.charge=true;if(wt>3)toast('⚔ The enemy charges!')}if(!al&&!pend)delete grpState[g]}if(ageRes){ageRes.t+=dt;if(ageRes.t>=ageRes.dur)completeAge()}waveHeld=wave>0&&enemies.length+spawnQ.length>fieldCap();ST.sampT+=dt;if(ST.sampT>=5)stSample();if(enemies.length>ST.peakE){ST.peakE=enemies.length;ST.peakT=time}if(!waveHeld)waveT-=dt;if(waveT<=0)startWave(++wave);
   for(let i=spawnQ.length-1;i>=0;i--){const s=spawnQ[i];s.t-=dt;if(s.t<=0){spawnEnemy(s.type,s.n,s.side||0);spawnQ.splice(i,1)}}
   for(const b of buildings){const T=BT[b.type];if(b.hit>0)b.hit-=dt;if(T.prod){const m=mulOf(b);for(const k in T.prod){const v=T.prod[k]*m*dt;res[k]+=v;ST.earned[k]+=v;ST.acc[k==='grain'?'g':k==='wool'?'w':'o']+=v}}
     if(b.type==='archer'||b.type==='cannon')updTower(b,dt);if(b.type==='wall'&&b.hp<b.maxhp&&b.lvl===3)b.hp=Math.min(b.maxhp,b.hp+dt*6);if(b.type==='barracks')updBarracks(b,dt)}
@@ -998,7 +1011,7 @@ addEventListener('keydown',e=>{if(!started||gameOver||!$('statsOv').classList.co
 onPress($('wave'),()=>{if(started&&!gameOver&&waveT>3){waveT=0.01;toast('Calling the next wave early!')}});
 onPress($('bSpeed'),()=>{speed=speed===1?2:speed===2?3:speed===3?0:1;$('bSpeed').textContent=speed+'×';$('bSpeed').style.color=speed===0?'#9fe8ff':'';if(speed===0)toast('⏸ Time stopped — build, upgrade & sell freely');hudT=0})
 function setPaused(v){paused=v;renderDiffs();$('bPause').textContent=paused?'▶':'❚❚';if(paused){$('pauseTxt').innerHTML=`Wave ${wave} · ${AGEN[age]} · ${kills} enemies defeated · ${fmtT(time)}<br><small style="opacity:.7">Progress auto-saves</small>`;saveGame();$('pauseOv').classList.remove('hidden')}else{$('pauseOv').classList.add('hidden');$('statsOv').classList.add('hidden')}}
-onPress($('bPause'),()=>setPaused(!paused));onPress($('bResume'),()=>setPaused(false));onPress($('bStatsP'),()=>showStats('pause'));
+onPress($('bPause'),()=>setPaused(!paused));onPress($('bResume'),()=>setPaused(false));onPress($('bStatsP'),()=>showStats('pause'));onPress($('bAchP'),()=>showAch('pause'));onPress($('bAchBack'),()=>{$('achOv').classList.add('hidden');if(achFrom==='pause'&&paused)$('pauseOv').classList.remove('hidden')});$('bAchS').onclick=()=>showAch('start');
 onPress($('bMute'),()=>{AU.toggle();$('bMute').textContent=AU.on?'♪':'✕'});
 onPress($('bRotL'),()=>{cam.yawT-=Math.PI/2});onPress($('bRotR'),()=>{cam.yawT+=Math.PI/2});
 onPress($('bHome'),()=>{const b=buildings[0];if(b)camGoal={x:b.X,z:b.Z}});
@@ -1062,7 +1075,12 @@ function renderWorld(rdt){const t=time;
   for(const b of buildings){const v=b.vet||0;if(!v||(b.type!=='archer'&&b.type!=='cannon')){if(b.flame){scene.remove(b.flame);b.flame=null}continue}
     if(!b.flame||b.flame.userData.v!==v){if(b.flame)scene.remove(b.flame);const g=new THREE.Group();const o=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.55,10).translate(0,0.27,0),new THREE.MeshBasicMaterial({color:VETC[v],transparent:true,opacity:0.92,depthWrite:false}));const c=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.32,8).translate(0,0.16,0),GLOWM(v===5?'#ffd8ff':'#fff2c0',0.9));const h=new THREE.Mesh(sph(0.3,10,8),GLOWM(VETC[v],0.22));h.position.y=0.18;g.add(o,c,h);g.userData={v,o,c,h};scene.add(g);b.flame=g}
     const g=b.flame;let X=b.X,Z=b.Z,Y=b.Y+b.barH-0.6;if(b.type==='cannon'){const a=b.raim||0;X+=Math.cos(a)*0.85;Z+=Math.sin(a)*0.85;Y=b.Y+b.top-0.15}g.position.set(X,Y,Z);const fl=0.85+0.3*Math.random(),k=FSC[v];g.scale.set(k*(0.9+0.15*Math.random()),k*fl,k*(0.9+0.15*Math.random()));g.userData.h.material.opacity=0.16+0.12*Math.random()}
-  for(const k of knights){const v=k.b.vet||0;if(!v||Math.random()>FR[v]*0.35*frameDt)continue;const sc=rigs['knight'+k.tier].scale,a=k.rAng,sw=k.swing>0?0.25:0;
+  {let nk=0;const KC=VETC.map(c=>c?new THREE.Color(c):null),KS=[0,0.8,1,1.2,1.45,1.9];const tnow=performance.now()/1000;
+    for(const k of knights){const v=k.b.vet||0;if(!v||nk>=240)continue;const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z),sc=rigs['knight'+k.tier].scale,pul=1+0.08*Math.sin(tnow*5+k.slot);
+      _M.compose(_av.set(X,Y+0.06,Z),_q.identity(),_s.set(KS[v]*pul*sc,1,KS[v]*pul*sc));kvAura.setMatrixAt(nk,_M);kvAura.setColorAt(nk,KC[v]);kvDisc.setMatrixAt(nk,_M);kvDisc.setColorAt(nk,KC[v]);
+      const a=k.rAng,sw=k.swing>0?0.25:0,fl=(0.85+0.3*Math.random())*KS[v];_M.compose(_av.set(X+Math.cos(a)*(0.36+sw)*sc,Y+0.78*sc,Z+Math.sin(a)*(0.36+sw)*sc),_q.identity(),_s.set(fl*0.9,fl,fl*0.9));kvFlame.setMatrixAt(nk,_M);kvFlame.setColorAt(nk,KC[v]);nk++}
+    for(const m of[kvAura,kvDisc,kvFlame]){m.count=nk;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}
+  for(const k of knights){const v=k.b.vet||0;if(!v||Math.random()>FR[v]*0.7*frameDt)continue;const sc=rigs['knight'+k.tier].scale,a=k.rAng,sw=k.swing>0?0.25:0;
     fx(k.x/TILE+Math.cos(a)*(0.38+sw)*sc,heightAt(k.x/TILE,k.y/TILE)+0.86*sc,k.y/TILE+Math.sin(a)*(0.38+sw)*sc,1,VETC[v],0.25,FS[v]*0.75,0.35,-1.4,1,1.3)}
   for(const p of projs){if(!p.src||!(p.src.vet>0)||Math.random()>0.55)continue;let X,Y,Z;if(p.k==='arrow'){X=p.x/TILE;Z=p.y/TILE;const rem=Math.hypot(p.lx-p.x,p.ly-p.y)/p.d0;Y=lerp(heightAt(p.lx/TILE,p.ly/TILE)+0.4,p.h0,rem)+Math.sin((1-rem)*Math.PI)*p.d0/TILE*0.12}
     else if(p.k==='ball'){const k=p.time/p.dur;X=lerp(p.sx,p.tx,k)/TILE;Z=lerp(p.sy,p.ty,k)/TILE;Y=lerp(p.h0,heightAt(p.tx/TILE,p.ty/TILE),k)+Math.sin(k*Math.PI)*(1.2+p.dur*1.5)}else continue;
@@ -1179,6 +1197,41 @@ function renderHof(){const tabs=boardOn()?['local','global','recent']:['local'];
   for(const id of['hofStart','stHof']){const el=$(id);if(!el)continue;el.innerHTML=html;for(const sp of el.querySelectorAll('.tabs span'))sp.addEventListener('pointerdown',()=>{hofTab=sp.dataset.t;renderHof()})}}
 $('pName').value=pname;$('pName').addEventListener('input',e=>{pname=e.target.value.trim();try{localStorage.setItem('bastion_name',pname)}catch(_){}});
 
+// =============== ACHIEVEMENTS ===============
+const cnt=(t,minL=1)=>buildings.filter(b=>b.type===t&&b.lvl>=minL).length,defCount=()=>buildings.filter(b=>b.type==='archer'||b.type==='cannon'||b.type==='barracks').length,legends=()=>buildings.filter(b=>(b.vet||0)>=5).length;
+const ACH=[
+ {id:'medici',m:'📜',n:'Medici Ledger',d:'Raise a Gold Mine to the Jeweled tier.',c:()=>cnt('mine',3)>=1},
+ {id:'ottoman',m:'🏦',n:'Ottoman Banker',d:'Mine every gold deposit on the map — all at the Jeweled tier.',c:()=>DEPOS.length>0&&cnt('mine',3)>=DEPOS.length},
+ {id:'fugger',m:'💰',n:"Fugger's Fortune",d:'Hold 5,000 gold at once.',c:()=>res.gold>=5000},
+ {id:'musa',m:'👑',n:'Treasury of Mansa Musa',d:'Earn 25,000 resources in a single battle.',c:()=>ST.earned.grain+ST.earned.wool+ST.earned.gold>=25000},
+ {id:'byzantium',m:'🌾',n:'Breadbasket of Byzantium',d:'Keep 6 Wheat Fields at Stone tier or better.',c:()=>cnt('wheat',2)>=6},
+ {id:'flanders',m:'🐑',n:'Weavers of Flanders',d:'Run 5 Sheep Farms at once.',c:()=>cnt('sheep')>=5},
+ {id:'hadrian',m:'🧱',n:"Hadrian's Wall",d:'Have 40 wall sections standing.',c:()=>cnt('wall')>=40},
+ {id:'theodosian',m:'🏰',n:'Theodosian Walls',d:'Have 20 Jeweled wall sections standing.',c:()=>cnt('wall',3)>=20},
+ {id:'agincourt',m:'🏹',n:'Agincourt',d:'Archer towers defeat 400 enemies in one battle.',c:()=>ST.killsBy.archer>=400},
+ {id:'orban',m:'💣',n:"Orban's Great Bombard",d:'A Cannon Tower reaches Veteran V.',c:()=>buildings.some(b=>b.type==='cannon'&&(b.vet||0)>=5)},
+ {id:'templar',m:'⚔️',n:'Knights Templar',d:'A knight squad reaches Veteran V.',c:()=>buildings.some(b=>b.type==='barracks'&&(b.vet||0)>=5)},
+ {id:'saladin',m:'🔥',n:"Saladin's Respect",d:'Command 3 legendary (purple-flame) defenders at once.',c:()=>legends()>=3},
+ {id:'charlemagne',m:'⚜️',n:'Crown of Charlemagne',d:'Advance to Age III.',c:()=>age>=3},
+ {id:'hastings',m:'🪓',n:'Hastings',d:'Slay a Warlord.',c:()=>ST.killsE.boss>=1},
+ {id:'thermopylae',m:'🛡️',n:'Thermopylae',d:'Reach wave 10 with no more than 3 defense towers.',c:()=>wave>=10&&defCount()<=3&&defCount()>0},
+ {id:'belgrade',m:'🕯️',n:'Siege of Belgrade',d:'Survive a boss wave without losing a single building.',c:()=>!!ST.cleanBoss},
+ {id:'vienna',m:'🦅',n:'Gates of Vienna',d:'Reach wave 20 on Lord or Emperor.',c:()=>wave>=20&&diff>=2},
+ {id:'constantinople',m:'🌙',n:'Constantinople Holds',d:'Reach wave 25 on Emperor.',c:()=>wave>=25&&diff>=3},
+ {id:'kingmaker',m:'🗡️',n:'Kingmaker',d:'Defeat 1,000 enemies in one battle.',c:()=>kills>=1000},
+];
+let achDone={};try{achDone=JSON.parse(localStorage.getItem('bastion_ach')||'{}')}catch(e){}
+const achQ=[];let achBusy=false,achT=0;
+function popAch(a){achQ.push(a);if(!achBusy)nextAch()}
+function nextAch(){const a=achQ.shift();if(!a){achBusy=false;return}achBusy=true;const el=$('achPop');el.querySelector('.am').textContent=a.m;el.querySelector('.at').innerHTML=`ACHIEVEMENT UNLOCKED<b>${a.n}</b>`;el.querySelector('.ad').textContent=a.d;el.classList.add('show');AU.levelUp(4);
+  setTimeout(()=>{el.classList.remove('show');setTimeout(nextAch,500)},3600)}
+function checkAch(dt){achT+=dt;if(achT<1)return;achT=0;for(const a of ACH){if(achDone[a.id]||(ST.achs&&ST.achs.includes(a.id)))continue;let ok=false;try{ok=a.c()}catch(e){}
+  if(ok){(ST.achs=ST.achs||[]).push(a.id);if(!achDone[a.id]){achDone[a.id]={at:Date.now(),wave,diff:DIFF[diff].n};try{localStorage.setItem('bastion_ach',JSON.stringify(achDone))}catch(e){}popAch(a)}}}}
+function showAch(from){const n=Object.keys(achDone).length;$('achSum').textContent=`${n} of ${ACH.length} earned · saved on this device`;const run=(ST&&ST.achs)||[];
+  $('achGrid').innerHTML=ACH.map(a=>{const d=achDone[a.id];return`<div class="ach ${d?'':'lock'} ${run.includes(a.id)?'new':''}"><span class="m">${d?a.m:'🔒'}</span><div><b>${a.n}</b><span>${a.d}</span>${d?`<small>✓ ${new Date(d.at).toLocaleDateString()} · wave ${d.wave} · ${d.diff}</small>`:''}</div></div>`}).join('');
+  $('achOv').classList.remove('hidden');achFrom=from;if(from==='pause')$('pauseOv').classList.add('hidden')}
+let achFrom=null;
+
 // =============== BATTLE STATS SCREEN ===============
 const SC={archer:'#3987e5',cannon:'#d95926',barracks:'#199e70',grain:'#c98500',wool:'#9085e9',gold:'#d55181',enemy:'#d55181',taken:'#d95926'};
 const SURF='#22160a',INK='#efe3c6',INK2='#b9a882',GRID='rgba(233,215,170,0.12)';
@@ -1233,7 +1286,8 @@ function showStats(mode){statsFrom=mode;setTimeout(renderHof,0);if(mode==='pause
   barRows($('stKillsBy'),kb,mkb);
   const longest=S.all.filter(r=>r.died==null).sort((a,b)=>a.born-b.born)[0];const tank=[...buildings,...[]].filter(b=>b.st).sort((a,b)=>b.st.taken-a.st.taken)[0];
   const sumC=c=>Math.round(c.grain)+'🌾 '+Math.round(c.wool)+'🐑 '+Math.round(c.gold)+'🪙';
-  $('stFacts').innerHTML=`<h4>Chronicle</h4><div class="facts">
+  const ea=(S.achs||[]).map(id=>ACH.find(a=>a.id===id)).filter(Boolean);
+  $('stFacts').innerHTML=`<h4>Chronicle</h4><div class="facts">${ea.length?`Medals earned <b>${ea.map(a=>a.m+' '+a.n).join(' · ')}</b><br>`:''}
    Earned <b>${sumC(S.earned)}</b><br>Spent <b>${sumC(S.spent)}</b><br>
    Buildings raised <b>${S.built}</b> · lost <b>${S.lost}</b> · sold <b>${S.sold}</b><br>
    Knights fallen in battle <b>${S.kLost}</b><br>
