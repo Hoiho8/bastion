@@ -805,14 +805,14 @@ function addBuilding(type,tx,ty,instant){const T=BT[type],s=T.size;
   if(type==='barracks')b.formAng=Math.atan2(SPY-b.y,SPX-b.x);
   buildings.push(b);makeVisual(b);if(type==='wall')refreshWalls(tx,ty);navCache.clear();return b}
 const discTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,225,110,0.55)');gr.addColorStop(0.6,'rgba(255,200,60,0.3)');gr.addColorStop(0.82,'rgba(255,200,60,0.25)');gr.addColorStop(0.9,'rgba(255,225,100,0.85)');gr.addColorStop(0.97,'rgba(255,210,80,0.3)');gr.addColorStop(1,'rgba(255,200,60,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t})();
-const discMat=new THREE.MeshBasicMaterial({map:discTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true,polygonOffset:true,polygonOffsetFactor:-4});
+const discMat=new THREE.MeshBasicMaterial({map:discTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true});
 let oldG=[],waves=[];
 const bAt=(x,y)=>{if(x<0||y<0||x>=GW||y>=GH)return null;const id=occ[x+y*GW];return id?buildings.find(b=>b.id===id):null};
 function wallNb(b){const w=(x,y)=>{const o=bAt(x,y);return!!(o&&o.type==='wall')};return{n:w(b.tx,b.ty-1),e:w(b.tx+1,b.ty),s:w(b.tx,b.ty+1),w:w(b.tx-1,b.ty)}}
 function refreshWalls(tx,ty){for(const[dx,dy]of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const o=bAt(tx+dx,ty+dy);if(o&&o.type==='wall')makeVisual(o)}}
 function makeVisual(b,keepOld){if(b.group){if(keepOld){oldG.push({g:b.group,t:0})}else scene.remove(b.group)}
   const m=buildModel(b.type,b.lvl,b.type==='wall'?wallNb(b):null);b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);b.group.userData.b=b;b.group.traverse(o=>{o.userData.b=b});scene.add(b.group);
-  if(!b.disc){b.disc=new THREE.Mesh(new THREE.CircleGeometry(b.s*0.82+0.2,40).rotateX(-Math.PI/2),discMat);b.disc.renderOrder=2;b.disc.visible=false;b.disc.position.set(b.X,b.Y+0.06,b.Z);scene.add(b.disc)}}
+  if(!b.disc){b.disc=new THREE.Mesh(new THREE.CircleGeometry(b.s*0.82+0.2,40).rotateX(-Math.PI/2),discMat);b.disc.renderOrder=2;b.disc.visible=false;b.disc.position.set(b.X,b.Y+0.14,b.Z);scene.add(b.disc)}}
 function canPlace(type,tx,ty){const s=BT[type].size;
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++){if(x<1||y<1||x>=GW-1||y>=GH-1)return false;const i=x+y*GW;if(terrain[i]!==0||occ[i]||!reach[i])return false}
   if(nearSpawn(tx,ty,11))return false;if(type==='mine'){if(!depAt(tx,ty))return false}else if(onDeposit(tx,ty,s))return false;
@@ -1280,7 +1280,13 @@ function renderWorld(rdt){const t=time;
   for(const o of oldG){o.t+=frameDt;o.g.scale.set(1+o.t*0.6,Math.max(0.01,1-o.t*3.5),1+o.t*0.6);o.g.position.y-=frameDt*1.2}oldG=oldG.filter(o=>{if(o.t>0.3){scene.remove(o.g);return false}return true});
   for(const w of waves){w.t+=frameDt;const r=0.5+w.t*9;w.m.scale.set(r,1,r);w.m.material.opacity=Math.max(0,0.8*(1-w.t/0.7))}waves=waves.filter(w=>{if(w.t>0.7){scene.remove(w.m);return false}return true});
   if(shake>0)shake=Math.max(0,shake-rdt*1.2)}
-function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H);
+function selOutline(X,Y,Z,r,lw,pulse){let first=true;octx.beginPath();for(let i=0;i<=28;i++){const a=i/28*Math.PI*2,p=scr(X+Math.cos(a)*r,Y,Z+Math.sin(a)*r);if(!p){first=true;continue}if(first){octx.moveTo(p[0],p[1]);first=false}else octx.lineTo(p[0],p[1])}
+  octx.lineWidth=lw+3;octx.strokeStyle=`rgba(255,200,60,${0.25+0.15*pulse})`;octx.stroke();octx.lineWidth=lw;octx.strokeStyle='#ffe08a';octx.stroke()}
+function drawSelection(){if(!selSet.size)return;const t=performance.now()/260,pulse=0.5+0.5*Math.sin(t);octx.save();octx.lineJoin='round';
+  for(const b of selSet){if(!buildings.includes(b))continue;const pop=b.selPop||0;selOutline(b.X,b.Y+0.12,b.Z,(b.s*0.62+0.25)*(1+pop*0.3+pulse*0.03),2.2,pulse);
+    if(b.type==='barracks')for(const k of knights)if(k.b===b){const X=k.x/TILE,Z=k.y/TILE;selOutline(X,heightAt(X,Z)+0.05,Z,0.42+pulse*0.04,1.6,pulse)}}
+  octx.restore()}
+function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H);drawSelection();
   const bar=(X,Y,Z,w,f,col)=>{const s=scr(X,Y,Z);if(!s||s[0]<-20||s[0]>W+20||s[1]<-20||s[1]>H+20)return;octx.fillStyle='rgba(0,0,0,.6)';octx.fillRect(s[0]-w/2-1,s[1]-1,w+2,5);octx.fillStyle=col;octx.fillRect(s[0]-w/2,s[1],w*clamp(f,0,1),3)};
   const zf=clamp(34/cam.D,0.6,1.6);
   for(const e of enemies)if(e.hp<e.maxhp){const X=e.x/TILE,Z=e.y/TILE;const ht=e.type==='boss'?1.5:e.type==='cav'?1.25:e.type==='ram'?0.95:0.85;bar(X,heightAt(X,Z)+ht,Z,(e.type==='boss'?36:e.type==='ram'?26:16)*zf,e.hp/e.maxhp,'#ff5a40')}
