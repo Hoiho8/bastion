@@ -80,10 +80,10 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #bAge.res .ring{opacity:1}#bAge.no{filter:grayscale(.85) brightness(.7)}#bAge.ready{animation:agePulse 1.1s infinite alternate;border-color:#ffd34a;background:linear-gradient(#9a7420,#5a3c0e)}#bAge.ready .nm{color:#fff3c0}#bAge.press{transform:scale(.88)}#bAge.max{opacity:.55}
 @keyframes agePulse{from{box-shadow:0 0 0 0 rgba(255,211,74,.0),0 2px 8px rgba(0,0,0,.5)}to{box-shadow:0 0 0 5px rgba(255,211,74,.45),0 0 22px rgba(255,211,74,.7)}}
 #bAge .bad{color:#ff8a7a}
-.diffs{display:flex;gap:5px;justify-content:center;margin:6px 0 2px}.diffs button{flex:1;max-width:74px;padding:6px 2px;border-radius:8px;border:1px solid #6a4f24;background:#2a1a0c;color:#e8dcc0;font-family:inherit;font-size:11px;line-height:1.2}.diffs button b{display:block;font-size:17px}.diffs button.on{border-color:#ffd34a;background:#5a3c0e;color:#fff3c0;box-shadow:0 0 10px rgba(255,211,74,.5)}
+.diffs{display:flex;gap:5px;justify-content:center;margin:6px 0 2px}.diffs button{flex:1;max-width:74px;padding:6px 2px;border-radius:8px;border:1px solid #6a4f24;background:#2a1a0c;color:#e8dcc0;font-family:inherit;font-size:11px;line-height:1.2}.diffs button b{display:block;font-size:17px}.diffs.lang button{max-width:120px;font-size:13px;padding:7px 4px}.diffs button.on{}.diffs button.on{border-color:#ffd34a;background:#5a3c0e;color:#fff3c0;box-shadow:0 0 10px rgba(255,211,74,.5)}
 .hof{font-size:12px;text-align:left;margin-top:8px}.hof table{width:100%;border-collapse:collapse}.hof td{padding:3px 4px;border-bottom:1px solid rgba(169,130,63,.25);color:#efe3c6}.hof td.r{text-align:right;color:#ffe08a}.hof .tabs{display:flex;gap:6px;margin-bottom:4px}.hof .tabs span{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #6a4f24;color:#c3b38a}.hof .tabs span.on{border-color:#ffd34a;color:#ffe08a}.hof .note{font-size:10px;color:#a8987a;margin-top:4px}
-#achPop{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-140%);display:flex;gap:10px;align-items:center;padding:9px 14px;border-radius:12px;background:linear-gradient(#5a3c0e,#2e1d0e);border:2px solid #ffd34a;box-shadow:0 0 22px rgba(255,211,74,.5),0 4px 12px rgba(0,0,0,.6);z-index:15;transition:transform .45s cubic-bezier(.2,1.4,.4,1);max-width:92vw;pointer-events:none}
-#achPop.show{transform:translate(-50%,0)}#achPop .am{font-size:34px}#achPop .at{font-size:10px;letter-spacing:2px;color:#ffd36a}#achPop .at b{display:block;font-size:16px;letter-spacing:.5px;color:#fff3c0}#achPop .ad{font-size:11px;color:#e8dcc0}
+#achPop{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-140%);display:flex;gap:10px;align-items:center;padding:9px 14px;border-radius:12px;background:linear-gradient(#5a3c0e,#2e1d0e);border:2px solid #ffd34a;box-shadow:0 0 22px rgba(255,211,74,.5),0 4px 12px rgba(0,0,0,.6);z-index:15;transition:transform .45s cubic-bezier(.2,1.4,.4,1),opacity .3s;opacity:0;max-width:92vw;pointer-events:none}
+#achPop.show{transform:translate(-50%,0);opacity:1}#achPop .am{font-size:34px}#achPop .at{font-size:10px;letter-spacing:2px;color:#ffd36a}#achPop .at b{display:block;font-size:16px;letter-spacing:.5px;color:#fff3c0}#achPop .ad{font-size:11px;color:#e8dcc0}
 #achOv{position:fixed;inset:0;z-index:18;background:rgba(14,9,4,.95);overflow-y:auto;touch-action:pan-y}#achBox{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 12px 0}
 #achGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ach{background:#22160a;border:1px solid #6a4f24;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:flex-start}.ach .m{font-size:28px;line-height:1}.ach b{display:block;font-size:12px;color:#ffe08a}.ach span{font-size:10.5px;color:#d8cba8;line-height:1.3;display:block}.ach small{font-size:9.5px;color:#9fd88a}
 .ach.lock{opacity:.5;filter:grayscale(.9)}.ach.lock b{color:#c3b38a}.ach.new{border-color:#ffd34a;box-shadow:0 0 12px rgba(255,211,74,.4)}
@@ -128,10 +128,11 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   <div class="diffs" id="diffStart"></div><div id="diffDesc" style="font-size:11px;opacity:.8;min-height:28px;margin:2px 0 6px"></div>
   <button class="go wood" id="bStart">Begin</button>
   <div style="margin-top:8px"><button class="wood" id="bAchS" style="font-family:inherit;color:#ffe08a;padding:6px 12px;font-size:13px">🏅 Achievements</button></div>
+  <div class="diffs lang" id="langStart" style="margin-top:8px"><button data-l="en">🇬🇧 English</button><button data-l="tr">🇹🇷 Türkçe</button></div>
   <div id="hofStart" class="hof"></div>
 </div></div>
 <div id="pauseOv" class="ov hidden"><div class="box wood"><h1 style="font-size:30px">PAUSED</h1><p id="pauseTxt"></p>
-  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button><button class="go wood" id="bAchP">🏅 Achievements</button></div></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button><button class="go wood" id="bAchP">🏅 Achievements</button><div class="diffs lang" id="langPause"><button data-l="en">🇬🇧 English</button><button data-l="tr">🇹🇷 Türkçe</button></div></div></div></div>
 <div id="statsOv" class="hidden"><div id="statsBox">
   <div id="stHead"></div>
   <div class="stTiles" id="stTiles"></div>
@@ -152,6 +153,142 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 
 <script type="module">
 import * as THREE from 'three';
+// =============== LANGUAGE (English / Türkçe) ===============
+let LANG='en';try{LANG=localStorage.getItem('bastion_lang')||'en'}catch(e){}
+const TRD={
+// --- whole sentences / UI ---
+'Bastion 3D — Tower Defense':'Bastion 3D — Kule Savunması','RAISING THE REALM…':'KRALLIK KURULUYOR…',
+'Blue holds the high ground. Red comes from the southwest — and later, the west.':'Mavi tepeleri tutuyor. Kırmızı güneybatıdan gelir — sonra batıdan da.',
+'Grow grain, wool and gold. Raise towers. Survive the boss waves.':'Tahıl, yün ve altın üret. Kuleler dik. Patron dalgalarından sağ çık.',
+'Drag to pan · pinch to zoom · ⟲ ⟳ rotate · tap buildings to upgrade':'Kaydırmak için sürükle · yakınlaştırmak için sıkıştır · ⟲ ⟳ döndür · yükseltmek için binaya dokun',
+'(iPhone: turn the silent switch off for music)':'(iPhone: müzik için sessiz düğmesini kapat)',
+'Your name':'Adın','Begin':'Başla','New Game':'Yeni Oyun','▶ Continue':'▶ Devam Et','Tap again to overwrite save':'Kaydın üzerine yazmak için tekrar dokun',
+'PAUSED':'DURAKLATILDI','▶ Resume':'▶ Devam','📊 Battle Stats':'📊 Savaş İstatistikleri','🏅 Achievements':'🏅 Başarımlar','ACHIEVEMENTS':'BAŞARIMLAR','◀ Back':'◀ Geri',
+'▶ Back to battle':'▶ Savaşa dön','⟲ Rebuild':'⟲ Yeniden Kur','Progress auto-saves':'İlerleme otomatik kaydedilir',
+'Tower leaderboard':'Kule sıralaması','Damage dealt over time':'Zamana göre verilen hasar','per second':'saniye başına','per minute':'dakika başına',
+'Economy — income over time':'Ekonomi — zamana göre gelir','Enemies on the field':'Sahadaki düşmanlar','⚔ = boss waves':'⚔ = patron dalgaları',
+'Damage taken by your buildings':'Binalarının aldığı hasar','Enemies defeated by type':'Türe göre yenilen düşmanlar','Kills by defense type':'Savunma türüne göre öldürmeler',
+'🏆 Hall of Fame':'🏆 Şöhret Salonu','Chronicle':'Vakayiname','Nothing yet':'Henüz bir şey yok','Not enough battle yet':'Henüz yeterince savaş yok',
+'No kills yet — build some defenses!':'Henüz öldürme yok — savunma kur!','No plays yet — be the first.':'Henüz oyun yok — ilk sen ol.',
+'Global leaderboard not connected yet.':'Küresel sıralama henüz bağlı değil.','This device':'Bu cihaz','All devices':'Tüm cihazlar','Latest plays':'Son oyunlar',
+'Score':'Puan','Time survived':'Hayatta kalma süresi','Waves reached':'Ulaşılan dalga','Enemies defeated':'Yenilen düşman','Damage dealt':'Verilen hasar','Resources earned':'Kazanılan kaynak',
+'FALLEN':'DÜŞTÜ','BATTLE STATS':'SAVAŞ İSTATİSTİKLERİ','ACHIEVEMENT UNLOCKED':'BAŞARIM AÇILDI',
+'Drag to box-select':'Alan seçmek için sürükle','Release to build':'Kurmak için bırak','🔨 Double-tap':'🔨 Çift dokun','★ MAX TIER':'★ EN ÜST SEVİYE','★ Max tier':'★ En üst seviye',
+'Tap to confirm':'Onaylamak için dokun','Already at full health':'Zaten tam can','Can\'t sell your last building':'Son binanı satamazsın',
+'Hold: upgrade · Double-tap: repair · Swipe: select many':'Basılı tut: yükselt · Çift dokun: tamir · Kaydır: çoklu seç',
+'Drag on the map to draw a wall line · tap for one piece':'Duvar çizmek için haritada sürükle · tek parça için dokun',
+'No free gold deposits — look for ✦ gold rocks on the map':'Boş altın yatağı yok — haritada ✦ altın kayalarını ara',
+'No open ground nearby':'Yakında boş arazi yok','Blocked here — drag it onto open grass':'Burası kapalı — açık çimene sürükle',
+'Blocked — draw on open grass':'Kapalı — açık çimene çiz','⚠ Fully sealed — enemies will smash through':'⚠ Tamamen kapalı — düşman kırıp geçecek',
+'First Cannon Tower — rams beware!':'İlk Top Kulesi — koçbaşları dikkat!','Keep holding to chain the next tier':'Sonraki seviye için basılı tutmaya devam et',
+'Calling the next wave early!':'Sonraki dalga erken çağrılıyor!','⏸ Time stopped — build, upgrade & sell freely':'⏸ Zaman durdu — rahatça kur, yükselt ve sat',
+'⚠ Enemies approaching from the WEST':'⚠ Düşman BATIDAN yaklaşıyor','⚠ Attack on BOTH fronts':'⚠ İKİ cepheden saldırı','⚠ A boss wave follows this one. Prepare.':'⚠ Bunun ardından patron dalgası geliyor. Hazırlan.',
+'⚔ The enemy charges!':'⚔ Düşman hücum ediyor!','Your realm stands in its final age':'Krallığın son çağında',
+'⏸ Next wave waits — clear the field':'⏸ Sonraki dalga bekliyor — sahayı temizle','⏸ TIME STOPPED':'⏸ ZAMAN DURDU','build freely':'rahatça kur',
+'LEGENDARY':'EFSANEVİ','STEADY GOLD':'İSTİKRARLI ALTIN','Your first gold mine. Gold now flows.':'İlk altın madenin. Artık altın akıyor.',
+'KNIGHTS OF BLUE':'MAVİNİN ŞÖVALYELERİ','Mounted knights now guard a wide zone.':'Atlı şövalyeler artık geniş bir bölgeyi koruyor.',
+'WELCOME BACK':'TEKRAR HOŞ GELDİN','Build your economy. The first enemies come in 40 seconds.':'Ekonomini kur. İlk düşmanlar 40 saniyede geliyor.',
+'AGE II · THE AGE OF STONE':'II. ÇAĞ · TAŞ ÇAĞI','AGE III · THE JEWELED AGE':'III. ÇAĞ · MÜCEVHER ÇAĞI',
+'Cannons, Knights and Stone-tier upgrades unlocked.':'Toplar, Şövalyeler ve Taş seviyesi yükseltmeleri açıldı.','Jeweled-tier upgrades unlocked. Gleam.':'Mücevher seviyesi yükseltmeleri açıldı. Parılda.',
+'The Red Host gathers on both fronts.':'Kızıl Ordu iki cephede toplanıyor.','WAVE 1':'DALGA 1','BOSS WAVE':'PATRON DALGASI',
+'Spearmen approach from the southwest.':'Mızrakçılar güneybatıdan yaklaşıyor.',
+'Battering Rams! Arrows barely scratch them — build Cannons (Age II).':'Koçbaşları! Oklar onları zor çizer — Top kur (II. Çağ).',
+'ERA II · BOWMEN':'DEVİR II · YAYCILAR','Enemy archers shoot your towers and knights from range.':'Düşman okçuları kulelerini ve şövalyelerini uzaktan vurur.',
+'Cavalry charge! Fast riders — knights hold the line.':'Süvari hücumu! Hızlı atlılar — şövalyeler hattı tutar.',
+'ERA III · A SECOND FRONT':'DEVİR III · İKİNCİ CEPHE','Shieldbearers shrug off arrows — and the enemy now marches from the WEST too.':'Kalkancılar oklara aldırmaz — ve düşman artık BATIDAN da geliyor.',
+'The Warlord marches with his host.':'Savaş Lordu ordusuyla yürüyor.','ERA IV · SAPPERS':'DEVİR IV · LAĞIMCILAR',
+'Powder-keg sappers sprint at your walls. Mazes alone will not hold.':'Barut fıçılı lağımcılar duvarlarına koşar. Sadece labirent yetmez.',
+'A siege train: rams and sappers on both fronts.':'Kuşatma kafilesi: iki cephede koçbaşları ve lağımcılar.','ERA V · VETERANS':'DEVİR V · KIDEMLİLER',
+'Hardened veterans on every front. Every tower counts.':'Her cephede pişmiş kıdemliler. Her kule önemli.',
+'Relaxed. Enemies take the shortest road and arrive slowly.':'Rahat. Düşman en kısa yolu seçer ve yavaş gelir.','The standard campaign.':'Standart sefer.',
+'Clever foes: dodge kill zones, mass before charging, raid farms, kite knights.':'Zeki düşman: ölüm bölgelerinden kaçar, hücumdan önce toplanır, çiftliklere baskın yapar, şövalyeleri oyalar.',
+'Ruthless: reads your defenses and counters them, pincers both fronts, lures your knights.':'Acımasız: savunmanı okur ve karşılık verir, iki cepheden kıskaca alır, şövalyelerini tuzağa çeker.',
+'Medals earned':'Kazanılan madalyalar','Knights fallen in battle':'Savaşta düşen şövalyeler','Biggest horde':'En büyük sürü','Toughest building:':'En dayanıklı bina:','Oldest standing defense:':'Ayakta kalan en eski savunma:',
+'Buildings raised':'Kurulan bina','Earned':'Kazanılan','Spent':'Harcanan','just now':'az önce',
+// achievements
+'Medici Ledger':'Medici Defteri','Raise a Gold Mine to the Jeweled tier.':'Bir Altın Madenini Mücevher seviyesine çıkar.',
+'Ottoman Banker':'Osmanlı Bankeri','Mine every gold deposit on the map — all at the Jeweled tier.':'Haritadaki her altın yatağını işlet — hepsi Mücevher seviyesinde.',
+"Fugger's Fortune":"Fugger'in Serveti",'Hold 5,000 gold at once.':'Aynı anda 5.000 altın biriktir.',
+'Treasury of Mansa Musa':"Mansa Musa'nın Hazinesi",'Earn 25,000 resources in a single battle.':'Tek savaşta 25.000 kaynak kazan.',
+'Breadbasket of Byzantium':"Bizans'ın Tahıl Ambarı",'Keep 6 Wheat Fields at Stone tier or better.':'6 Buğday Tarlasını Taş seviyesinde veya üstünde tut.',
+'Weavers of Flanders':'Flandre Dokumacıları','Run 5 Sheep Farms at once.':'Aynı anda 5 Koyun Çiftliği işlet.',
+"Hadrian's Wall":'Hadrianus Duvarı','Have 40 wall sections standing.':'40 duvar parçası ayakta olsun.',
+'Theodosian Walls':'Theodosius Surları','Have 20 Jeweled wall sections standing.':'20 Mücevher duvar parçası ayakta olsun.',
+'Agincourt':'Azincourt','Archer towers defeat 400 enemies in one battle.':'Okçu kuleleri tek savaşta 400 düşman yensin.',
+"Orban's Great Bombard":"Orban'ın Şahi Topu",'A Cannon Tower reaches Veteran V.':'Bir Top Kulesi Kıdemli V olsun.',
+'Knights Templar':'Tapınak Şövalyeleri','A knight squad reaches Veteran V.':'Bir şövalye birliği Kıdemli V olsun.',
+"Saladin's Respect":"Selahaddin'in Saygısı",'Command 3 legendary (purple-flame) defenders at once.':'Aynı anda 3 efsanevi (mor alevli) savunucuya komuta et.',
+'Crown of Charlemagne':"Şarlman'ın Tacı",'Advance to Age III.':'III. Çağa geç.','Hastings':'Hastings','Slay a Warlord.':'Bir Savaş Lordu öldür.',
+'Thermopylae':'Termopylai','Reach wave 10 with no more than 3 defense towers.':'En fazla 3 savunma kulesiyle 10. dalgaya ulaş.',
+'Siege of Belgrade':'Belgrad Kuşatması','Survive a boss wave without losing a single building.':'Tek bina kaybetmeden bir patron dalgası atlat.',
+'Gates of Vienna':'Viyana Kapıları','Reach wave 20 on Lord or Emperor.':'Bey veya İmparator zorluğunda 20. dalgaya ulaş.',
+'Constantinople Holds':'Konstantinopolis Dayanıyor','Reach wave 25 on Emperor.':'İmparator zorluğunda 25. dalgaya ulaş.',
+'Kingmaker':'Kral Yapıcı','Defeat 1,000 enemies in one battle.':'Tek savaşta 1.000 düşman yen.',
+// --- phrases / words (used inside composite strings) ---
+'Archer Tower':'Okçu Kulesi','Cannon Tower':'Top Kulesi','Soldier Tower':'Asker Kulesi','Wheat Field':'Buğday Tarlası','Sheep Farm':'Koyun Çiftliği','Gold Mine':'Altın Madeni',
+'Archer towers':'Okçu kuleleri','Cannon towers':'Top kuleleri','Wall':'Duvar','Archer':'Okçu','Cannon':'Top','Wheat':'Buğday','Sheep':'Koyun',
+'Archers':'Okçular','Cannons':'Toplar','Knights':'Şövalyeler','Grain':'Tahıl','Wool':'Yün','Gold':'Altın','Enemies':'Düşmanlar','Damage taken':'Alınan hasar',
+'Spearman':'Mızrakçı','Spearmen':'Mızrakçılar','Battering Ram':'Koçbaşı','Battering rams':'Koçbaşları','Cavalry':'Süvari','Warlord':'Savaş Lordu','Warlords':'Savaş Lordları',
+'Bowman':'Yaycı','Bowmen':'Yaycılar','Shieldbearer':'Kalkancı','Shieldbearers':'Kalkancılar','Sapper':'Lağımcı','Sappers':'Lağımcılar',
+'Squire':'Çırak','Knight':'Şövalye','Lord':'Bey','Emperor':'İmparator',
+'Defense':'Savunma','Economy':'Ekonomi','Close':'Kapat','Cancel':'İptal','BUILD':'KUR','Done':'Tamam','Sell':'Sat','sell':'sat',
+'WOOD':'AHŞAP','STONE':'TAŞ','JEWELED':'MÜCEVHERLİ','Wood':'Ahşap','Stone':'Taş','Jeweled':'Mücevherli','STONE!':'TAŞ!','✦ JEWELED ✦':'✦ MÜCEVHERLİ ✦',
+'Age I':'I. Çağ','Age II':'II. Çağ','Age III':'III. Çağ','Final Age':'Son Çağ','Final age':'Son çağ',
+'VETERAN':'KIDEMLİ','Veteran':'Kıdemli','Recruit':'Acemi','LEGEND':'EFSANE','⬆ Hold':'⬆ Basılı tut',
+'Score ·':'Puan ·','Era':'Devir','Wave':'Dalga','BOSS':'PATRON','Next':'Sonraki','selected':'seçili','kills':'öldürme','damage':'hasar','dmg':'hasar',
+'enemies defeated':'düşman yenildi','score':'puan','wave':'dalga','enemies':'düşman','lost':'kayıp','sold':'satıldı','fallen':'düştü','Player':'Oyuncu','MVP':'MVP',
+};
+// templates (word order matters) — f receives match groups
+const TRR=[
+ [/^Need (.+) more$/,(m,a)=>a+' daha lazım'],
+ [/^(.+) destroyed!$/,(m,a)=>trc(a)+' yıkıldı!'],
+ [/^Researching (.+) — (\d+)s left$/,(m,a,b)=>trc(a)+' araştırılıyor — '+b+'sn kaldı'],
+ [/^Researching (.+)… keep the realm alive!$/,(m,a)=>trc(a)+' araştırılıyor… krallığı ayakta tut!'],
+ [/^(\d+) selected · hold one to upgrade all$/,(m,a)=>a+' seçili · hepsini yükseltmek için birine basılı tut'],
+ [/^Sold (\d+) for (.*)$/,(m,a,b)=>a+' satıldı: '+b],
+ [/^(.+) tier needs (.+) — advance from the Economy menu$/,(m,a,b)=>trc(a)+' seviyesi için '+trc(b)+' gerekli — Ekonomi menüsünden ilerle'],
+ [/^(.+) unlocks in (.+?) — advance from the Economy menu$/,(m,a,b)=>trc(a)+', '+trc(b)+' ile açılır — Ekonomi menüsünden ilerle'],
+ [/^(.+) unlocks in (.+)$/,(m,a,b)=>trc(a)+', '+trc(b)+' ile açılır'],
+ [/^🔒 (.+) needs (.+)$/,(m,a,b)=>'🔒 '+trc(a)+' için '+trc(b)+' gerekli'],
+ [/^Your realm held for (.+) and fell on wave (\d+)\.$/,(m,a,b)=>'Krallığın '+a+' dayandı ve '+b+'. dalgada düştü.'],
+ [/^Wave (\d+) · (.+) into the battle$/,(m,a,b)=>'Dalga '+a+' · savaşta '+b],
+ [/^(.+) Difficulty: (.+) — score ×([\d.]+) from now on$/,(m,a,b,c)=>a+' Zorluk: '+trc(b)+' — bundan sonra puan ×'+c],
+ [/^(\d+) of (\d+) earned · saved on this device$/,(m,a,b)=>a+' / '+b+' kazanıldı · bu cihazda kayıtlı'],
+ [/^BOSS WAVE (\d+)$/,(m,a)=>'PATRON DALGASI '+a],
+ [/^Wave (\d+) · (.+)\. Your realm awaits\.$/,(m,a,b)=>'Dalga '+a+' · '+trc(b)+'. Krallığın seni bekliyor.'],
+ [/^(.+) #(\d+) burns with the purple flame\.$/,(m,a,b)=>trc(a)+' #'+b+' mor alevle yanıyor.'],
+ [/^(\d+)m ago$/,(m,a)=>a+'dk önce'],[/^(\d+)h ago$/,(m,a)=>a+'sa önce'],
+ [/^🧱 (\d+) walls?$/,(m,a)=>'🧱 '+a+' duvar'],[/^(\d+) blocked\/unaffordable$/,(m,a)=>a+' kapalı/yetersiz'],
+ [/^(\d+) kills · (.+) damage · (\d+)% of all damage$/,(m,a,b,c)=>a+' öldürme · '+b+' hasar · tüm hasarın %'+c+"'i"],
+ [/^Stood for (.+)$/,(m,a)=>a+' ayakta kaldı'],[/^absorbed (.+) damage$/,(m,a)=>a+' hasar emdi'],[/^since (.+)$/,(m,a)=>a+' süresinden beri'],
+ [/^enemies at (.+)$/,(m,a)=>'düşman, '+a+' anında'],
+ [/^(\d+) · (\d+)% dmg$/,(m,a,b)=>a+' · %'+b+' hasar'],
+ [/^Enemies arrive in$/,()=>'Düşmanların gelmesine:'],
+ [/(⚠ BOSS|Next) in (\d+)s ⏩$/,(m,a,b)=>(a==='Next'?'Sonraki':'⚠ PATRON')+': '+b+'sn ⏩'],
+ [/^(\d+)s$/,(m,a)=>a+'sn'],[/^\+([\d.]+)\/s$/,(m,a)=>'+'+a+'/sn'],
+ [/^sell (\d+)$/,(m,a)=>a+' sat'],[/^Sell (\d+)$/,(m,a)=>a+' Sat'],
+ [/kills · next at (\d+)/,(m,a)=>'öldürme · sonraki '+a],
+ [/^(.+) selected$/,(m,a)=>a+' seçili'],
+ [/(\d+) enemies defeated/,(m,a)=>a+' düşman yenildi'],
+];
+const _keys=Object.keys(TRD).sort((a,b)=>b.length-a.length);
+const _esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const _phr=new RegExp('(^|[^A-Za-z])('+_keys.map(_esc).join('|')+')(?![A-Za-z])','g');
+const _trc=new Map();
+function trc(core){if(TRD[core]!==undefined)return TRD[core];let o=core;for(const [re,f] of TRR){if(re.test(o)){o=o.replace(re,f);break}}
+  if(TRD[o]!==undefined)return TRD[o];return o.replace(_phr,(m,p,w)=>p+TRD[w])}
+function tr(s){if(LANG!=='tr'||typeof s!=='string'||!/[A-Za-z]/.test(s))return s;let c=_trc.get(s);if(c!==undefined)return c;
+  const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/);c=m[1]+trc(m[2])+m[3];if(_trc.size>4000)_trc.clear();_trc.set(s,c);return c}
+// canvas text
+{const P=CanvasRenderingContext2D.prototype;for(const fn of['fillText','strokeText','measureText']){const o=P[fn];P[fn]=function(t,...a){return o.call(this,tr(t),...a)}}}
+// DOM text: translate every text node; remember the English original so we can switch back
+function trNode(n){const cur=n.nodeValue;if(n.__tr===cur&&n.__lang===LANG)return;if(n.__tr!==cur)n.__en=cur;const t=LANG==='tr'?tr(n.__en):n.__en;n.__tr=t;n.__lang=LANG;if(t!==cur)n.nodeValue=t}
+function trTree(root){if(root.nodeType===3){trNode(root);return}if(root.nodeType!==1||root.tagName==='SCRIPT'||root.tagName==='STYLE')return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){const p=n.parentNode;if(p&&(p.tagName==='SCRIPT'||p.tagName==='STYLE'))continue;trNode(n)}}
+new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')trNode(m.target);else for(const n of m.addedNodes)trTree(n)}}).observe(document.body,{subtree:true,childList:true,characterData:true});
+function setLang(l){LANG=l;try{localStorage.setItem('bastion_lang',l)}catch(e){}_trc.clear();document.documentElement.lang=l;document.title=tr('Bastion 3D — Tower Defense');trTree(document.body);
+  for(const id of['langPause','langStart']){const el=document.getElementById(id);if(el)for(const b of el.querySelectorAll('button'))b.classList.toggle('on',b.dataset.l===l)}}
+setLang(LANG);
+
 const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, dst=(a,b,c,d)=>Math.hypot(a-c,b-d);
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
@@ -1011,7 +1148,7 @@ addEventListener('keydown',e=>{if(!started||gameOver||!$('statsOv').classList.co
 onPress($('wave'),()=>{if(started&&!gameOver&&waveT>3){waveT=0.01;toast('Calling the next wave early!')}});
 onPress($('bSpeed'),()=>{speed=speed===1?2:speed===2?3:speed===3?0:1;$('bSpeed').textContent=speed+'×';$('bSpeed').style.color=speed===0?'#9fe8ff':'';if(speed===0)toast('⏸ Time stopped — build, upgrade & sell freely');hudT=0})
 function setPaused(v){paused=v;renderDiffs();$('bPause').textContent=paused?'▶':'❚❚';if(paused){$('pauseTxt').innerHTML=`Wave ${wave} · ${AGEN[age]} · ${kills} enemies defeated · ${fmtT(time)}<br><small style="opacity:.7">Progress auto-saves</small>`;saveGame();$('pauseOv').classList.remove('hidden')}else{$('pauseOv').classList.add('hidden');$('statsOv').classList.add('hidden')}}
-onPress($('bPause'),()=>setPaused(!paused));onPress($('bResume'),()=>setPaused(false));onPress($('bStatsP'),()=>showStats('pause'));onPress($('bAchP'),()=>showAch('pause'));onPress($('bAchBack'),()=>{$('achOv').classList.add('hidden');if(achFrom==='pause'&&paused)$('pauseOv').classList.remove('hidden')});$('bAchS').onclick=()=>showAch('start');
+onPress($('bPause'),()=>setPaused(!paused));onPress($('bResume'),()=>setPaused(false));onPress($('bStatsP'),()=>showStats('pause'));onPress($('bAchP'),()=>showAch('pause'));for(const id of['langPause','langStart'])for(const b of $(id).querySelectorAll('button'))onPress(b,()=>{setLang(b.dataset.l);AU.tick&&AU.tick();renderThumb();renderAge&&renderAge()});setLang(LANG);onPress($('bAchBack'),()=>{$('achOv').classList.add('hidden');if(achFrom==='pause'&&paused)$('pauseOv').classList.remove('hidden')});$('bAchS').onclick=()=>showAch('start');
 onPress($('bMute'),()=>{AU.toggle();$('bMute').textContent=AU.on?'♪':'✕'});
 onPress($('bRotL'),()=>{cam.yawT-=Math.PI/2});onPress($('bRotR'),()=>{cam.yawT+=Math.PI/2});
 onPress($('bHome'),()=>{const b=buildings[0];if(b)camGoal={x:b.X,z:b.Z}});
