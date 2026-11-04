@@ -1164,12 +1164,12 @@ function setDiff(i){if(i===diff)return;diff=i;try{localStorage.setItem('bastion_
 let pname='';try{pname=localStorage.getItem('bastion_name')||''}catch(e){}
 const devId=(()=>{try{let d=localStorage.getItem('bastion_dev');if(!d){d=Math.random().toString(36).slice(2,10);localStorage.setItem('bastion_dev',d)}return d}catch(e){return 'anon'}})();
 // --- global leaderboard (Supabase). Fill these two values to connect all devices. ---
-const BOARD={url:'',key:''};const boardOn=()=>!!(BOARD.url&&BOARD.key);let globalTop=null,globalRecent=null,hofTab='local';
+const BOARD={url:'https://ahqaeilgebjvbkghbtfq.supabase.co',key:'sb_publishable_JRLnoAPO_EKHH_9C041y-w_VkMiPMwz'};const bHdr=()=>BOARD.key.startsWith('sb_')?{apikey:BOARD.key}:{apikey:BOARD.key,Authorization:'Bearer '+BOARD.key};const boardOn=()=>!!(BOARD.url&&BOARD.key);let globalTop=null,globalRecent=null,hofTab='local';
 function localScores(){try{return JSON.parse(localStorage.getItem('bastion_scores')||'[]')}catch(e){return[]}}
 function recordPlay(){const rec={name:(pname||'Player').slice(0,16),score:Math.round(score),wave,diff:DIFF[diff].n,secs:Math.round(time),kills,age,mvp:(()=>{const r=ST.all.slice().sort((a,b)=>b.kills-a.kills)[0];return r?`${BT[r.b.type].name} #${r.n}`:''})(),device:devId,at:new Date().toISOString()};
   try{const L=localScores();L.push(rec);L.sort((a,b)=>b.score-a.score);localStorage.setItem('bastion_scores',JSON.stringify(L.slice(0,50)))}catch(e){}
-  if(boardOn())fetch(BOARD.url+'/rest/v1/plays',{method:'POST',headers:{apikey:BOARD.key,Authorization:'Bearer '+BOARD.key,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(rec)}).then(()=>loadBoard()).catch(()=>{});return rec}
-function loadBoard(cb){if(!boardOn())return;const h={apikey:BOARD.key,Authorization:'Bearer '+BOARD.key};
+  if(boardOn())fetch(BOARD.url+'/rest/v1/plays',{method:'POST',headers:{...bHdr(),'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(rec)}).then(()=>loadBoard()).catch(()=>{});return rec}
+function loadBoard(cb){if(!boardOn())return;const h=bHdr();
   Promise.all([fetch(BOARD.url+'/rest/v1/plays?select=*&order=score.desc&limit=15',{headers:h}).then(r=>r.json()),fetch(BOARD.url+'/rest/v1/plays?select=*&order=at.desc&limit=15',{headers:h}).then(r=>r.json())]).then(([t,r])=>{globalTop=Array.isArray(t)?t:null;globalRecent=Array.isArray(r)?r:null;renderHof();cb&&cb()}).catch(()=>{})}
 function hofTable(rows,hl){if(!rows||!rows.length)return'<div class="note">No plays yet — be the first.</div>';return'<table>'+rows.slice(0,10).map((r,i)=>`<tr${hl&&r===hl?' style="background:rgba(255,211,74,.12)"':''}><td>${i+1}.</td><td>${(r.name||'Player').replace(/[<>&]/g,'')}</td><td>${r.diff||''}</td><td>W${r.wave}</td><td class="r">${fmtN(r.score)}</td></tr>`).join('')+'</table>'}
 let lastRec=null;
