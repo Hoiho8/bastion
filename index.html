@@ -158,7 +158,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   <div id="hofStart" class="hof"></div>
 </div></div>
 <div id="pauseOv" class="ov hidden"><div class="box wood"><h1 style="font-size:30px">PAUSED</h1><p id="pauseTxt"></p>
-  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button><button class="go wood" id="bAchP">🏅 Achievements</button><button class="go wood" id="bHelpP">📖 Instructions</button><div class="diffs lang" id="langPause"><button data-l="en">🇬🇧 English</button><button data-l="tr">🇹🇷 Türkçe</button></div></div></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><div class="diffs" id="diffPause"></div><div id="diffDescP" style="font-size:11px;opacity:.8;min-height:16px"></div><button class="go wood" id="bResume">▶ Resume</button><button class="go wood" id="bStatsP">📊 Battle Stats</button><button class="go wood" id="bAchP">🏅 Achievements</button><button class="go wood" id="bHelpP">📖 Instructions</button><button class="go wood" id="bNewP" style="color:#ffb59a">⟲ New Game</button><div class="diffs lang" id="langPause"><button data-l="en">🇬🇧 English</button><button data-l="tr">🇹🇷 Türkçe</button></div></div></div></div>
 <div id="statsOv" class="hidden"><div id="statsBox">
   <div id="stHead"></div>
   <div class="stTiles" id="stTiles"></div>
@@ -188,7 +188,7 @@ const TRD={
 '. Grain pays for everything.':'— her şey tahılla ödenir.','Raise a defense':'Savunma kur','and pick a tower. Drag it toward the bottom-left, where the enemy comes from.':'ve bir kule seç. Düşmanın geldiği sol alta doğru sürükle.',
 'Upgrade and repair':'Yükselt ve tamir et','Press and hold a building to upgrade it. Double-tap to repair.':'Yükseltmek için binaya basılı tut. Tamir için çift dokun.',
 'Advance the ages':'Çağları ilerlet','The gold button, bottom left, unlocks cannons, knights and stronger tiers.':'Sol alttaki altın buton topları, şövalyeleri ve güçlü seviyeleri açar.',
-'⚔ To Battle!':'⚔ Savaşa!','📖 All controls':'📖 Tüm kontroller','📖 Instructions':'📖 Talimatlar','INSTRUCTIONS':'TALİMATLAR',
+'⚔ To Battle!':'⚔ Savaşa!','⟲ New Game':'⟲ Yeni Oyun','Tap again — this battle goes to the Hall of Fame':'Tekrar dokun — bu savaş Şöhret Salonuna kaydedilir','Tap again to start over':'Baştan başlamak için tekrar dokun','Previous battle saved to the Hall of Fame':'Önceki savaş Şöhret Salonuna kaydedildi','📖 All controls':'📖 Tüm kontroller','📖 Instructions':'📖 Talimatlar','INSTRUCTIONS':'TALİMATLAR',
 'Hold the high ground. Build an economy, raise towers, survive the boss waves.':'Tepeleri tut. Ekonomi kur, kuleler dik, patron dalgalarından sağ çık.',
 'GESTURES':'HAREKETLER','BUTTONS':'BUTONLAR','ON THE MAP':'HARİTADA',
 'Select a building or a knight squad.':'Bir bina veya şövalye birliği seç.','Double-tap':'Çift dokun','Repair a building.':'Binayı tamir et.',
@@ -1450,7 +1450,11 @@ function showHelp(from){renderHelp();helpFrom=from;$('helpOv').classList.remove(
 function closeHelp(){$('helpOv').classList.add('hidden');if(helpFrom==='pause'&&paused)$('pauseOv').classList.remove('hidden')}
 function showIntro(){introOpen=true;$('introOv').classList.remove('hidden');$('introOv').scrollTop=0}
 function closeIntro(){introOpen=false;$('introOv').classList.add('hidden');AU.tick&&AU.tick()}
-onPress($('bHelpP'),()=>showHelp('pause'));$('bHelpS').onclick=()=>showHelp('start');onPress($('bHelpBack'),closeHelp);
+onPress($('bHelpP'),()=>showHelp('pause'));
+let newArmT=0;onPress($('bNewP'),()=>{const el=$('bNewP'),n=performance.now();
+  if(n-newArmT>3000){newArmT=n;el.textContent=(wave>0||score>0)?'Tap again — this battle goes to the Hall of Fame':'Tap again to start over';setTimeout(()=>{if(performance.now()-newArmT>=2900)el.textContent='⟲ New Game'},3000);return}
+  newArmT=0;el.textContent='⟲ New Game';const had=wave>0||score>0;if(had){lastRec=recordPlay()}clearSave();setPaused(false);newGame();renderThumb();renderAge&&renderAge();renderHof();started=true;showIntro();
+  if(had)setTimeout(()=>toast('Previous battle saved to the Hall of Fame'),400)});$('bHelpS').onclick=()=>showHelp('start');onPress($('bHelpBack'),closeHelp);
 onPress($('bIntroGo'),closeIntro);onPress($('bIntroHelp'),()=>showHelp('intro'));
 
 // =============== BATTLE STATS SCREEN ===============
