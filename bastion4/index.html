@@ -150,7 +150,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   </div>
   <div id="ctrls">
     <button class="sbtn wood" id="bPause">❚❚</button><button class="sbtn wood" id="bMute">♪</button>
-    <button class="sbtn wood" id="bFpv">🎥</button><button class="sbtn wood" id="bRotL">⟲</button><button class="sbtn wood" id="bHome">⌂</button><button class="sbtn wood" id="bRotR">⟳</button>
+    <button class="sbtn wood" id="bFpv">🎥</button><button class="sbtn wood" id="bRotL" style="display:none">⟲</button><button class="sbtn wood" id="bHome">⌂</button><button class="sbtn wood" id="bRotR" style="display:none">⟳</button>
   </div>
 </div>
 <div id="wave" class="wood"></div>
@@ -291,7 +291,7 @@ const TRD={
 'Bastion 3D — Tower Defense':'Bastion 3D — Kule Savunması','RAISING THE REALM…':'KRALLIK KURULUYOR…',
 'Blue holds the high ground. Red comes from the southwest — and later, the west.':'Mavi tepeleri tutuyor. Kırmızı güneybatıdan gelir — sonra batıdan da.',
 'Grow grain, wool and gold. Raise towers. Survive the boss waves.':'Tahıl, yün ve altın üret. Kuleler dik. Patron dalgalarından sağ çık.',
-'Drag to pan · pinch to zoom · ⟲ ⟳ rotate · tap buildings to upgrade':'Kaydırmak için sürükle · yakınlaştırmak için sıkıştır · ⟲ ⟳ döndür · yükseltmek için binaya dokun',
+'Drag to pan · pinch to zoom · twist to rotate · two-finger slide to tilt':'Kaydırmak için sürükle · yakınlaştırmak için sıkıştır · ⟲ ⟳ döndür · yükseltmek için binaya dokun',
 '(iPhone: turn the silent switch off for music)':'(iPhone: müzik için sessiz düğmesini kapat)',
 'Your name':'Adın','Begin':'Başla','New Game':'Yeni Oyun','▶ Continue':'▶ Devam Et','Tap again to overwrite save':'Kaydın üzerine yazmak için tekrar dokun',
 'PAUSED':'DURAKLATILDI','▶ Resume':'▶ Devam','📊 Battle Stats':'📊 Savaş İstatistikleri','🏅 Achievements':'🏅 Başarımlar','ACHIEVEMENTS':'BAŞARIMLAR','◀ Back':'◀ Geri',
@@ -1362,30 +1362,36 @@ const missOf=(drone)=>WX.fog*(drone?0.45:0.25)+WX.night*0.08;
 const spdW=u=>u.fly||u.eagle?1:1-0.22*WX.rain;
 // lights: hemisphere + sun live at module scope
 const HEMI=scene.children.find(o=>o.isHemisphereLight),DAYSKY=new THREE.Color('#a9cde0'),NIGHTSKY=new THREE.Color('#1e2a3e'),RAINSKY=new THREE.Color('#8592a0'),FOGSKY=new THREE.Color('#c4ccd0'),_sky=new THREE.Color();
-const FLASHL=[0,1,2,3,4,5].map(()=>{const l=new THREE.PointLight('#ffb050',0,9,2);l.visible=true;l.position.set(-50,-50,-50);scene.add(l);return l});let flI=0;
+const FLASHL=[0,1,2,3,4,5,6,7].map(()=>{const l=new THREE.PointLight('#ffb050',0,14,1.6);l.visible=true;l.position.set(-50,-50,-50);scene.add(l);return l});let flI=0;
 const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.25,'rgba(255,255,255,0.55)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
 const glowMesh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:glowTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,vertexColors:false}),256);glowMesh.frustumCulled=false;glowMesh.count=0;glowMesh.renderOrder=7;for(let i=0;i<256;i++)glowMesh.setColorAt(i,WHITE);scene.add(glowMesh);
 let glows=[];const _gc=new THREE.Color();function glow(X,Y,Z,sz,col,life){if(glows.length>=256)glows.shift();glows.push({X,Y,Z,sz,c:_gc.set(col).clone(),life,max:life})}
 function renderGlows(rdt){let n=0;const nb=0.6+WX.night*0.8;for(const g of glows){g.life-=rdt;if(g.life<=0)continue;const k=g.life/g.max,sc=g.sz*(0.6+0.4*k)*(g.sz>1?1.25-0.25*k:1);_q.copy(camera.quaternion);_M.compose(_av.set(g.X,g.Y,g.Z),_q,_s.set(sc,sc,sc));glowMesh.setMatrixAt(n,_M);_c.copy(g.c).multiplyScalar(k*nb);glowMesh.setColorAt(n,_c);n++}glows=glows.filter(g=>g.life>0);glowMesh.count=n;glowMesh.instanceMatrix.needsUpdate=true;if(glowMesh.instanceColor)glowMesh.instanceColor.needsUpdate=true}
 const FS={X:0,Y:0,Z:0,i:0,col:new THREE.Color('#ffb050')};
-function lightFlash(X,Y,Z,pow,col){glow(X,Y+0.35,Z,1.2+pow*1.1,col||'#ffb050',0.22+pow*0.08);if(pow>=1&&WX.night>0.25&&pow>=FS.i*0.8){FS.X=X;FS.Y=Y;FS.Z=Z;FS.i=pow;FS.col.set(col||'#ffb050')}if(WX.night<0.15)return;const l=FLASHL[flI++%FLASHL.length];l.position.set(X,Y+0.8,Z);l.color.set(col||'#ffb050');l.intensity=pow*WX.night*6;l.userData.d=pow*WX.night*6}
+function lightFlash(X,Y,Z,pow,col,noGlow){if(!noGlow)glow(X,Y+0.35,Z,2+pow*2.6,col||'#ffb050',0.25+pow*0.1);if(pow>=0.3&&WX.night>0.25&&pow>=FS.i*0.8){FS.X=X;FS.Y=Y;FS.Z=Z;FS.i=pow;FS.col.set(col||'#ffb050')}if(WX.night<0.15)return;
+  // reuse the weakest light so big blasts aren't stolen by small muzzle flashes
+  let l=FLASHL[0];for(const o of FLASHL)if(o.intensity<l.intensity)l=o;const I=pow*WX.night*16;if(I<l.intensity)return;l.position.set(X,Y+0.9,Z);l.color.set(col||'#ffb050');l.distance=4+pow*6;l.intensity=I}
 const rainMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(0.01,0.42,0.01),new THREE.MeshBasicMaterial({color:'#c8d8e8',transparent:true,opacity:0.45,depthWrite:false}),500);rainMesh.frustumCulled=false;rainMesh.count=0;scene.add(rainMesh);
 const RAIN=Array.from({length:500},()=>({x:Math.random()*40-20,y:Math.random()*12,z:Math.random()*40-20}));
-const fogTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(235,238,240,0.8)');gr.addColorStop(1,'rgba(235,238,240,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
-const FOGP=Array.from({length:14},(_,i)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(9,9).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({map:fogTex,transparent:true,opacity:0,depthWrite:false}));m.renderOrder=6;scene.add(m);m.userData={ox:(Math.random()-.5)*36,oz:(Math.random()-.5)*36,s:0.2+Math.random()*0.3};return m});
+// fog: soft, patchy cloud banks anchored to the world that roll slowly across the map
+const fogTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');srand(909);for(let i=0;i<46;i++){const x=40+rnd()*176,y=40+rnd()*176,r=22+rnd()*58,a=0.05+rnd()*0.09;const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,`rgba(236,240,242,${a*2.2})`);gr.addColorStop(1,'rgba(236,240,242,0)');g.fillStyle=gr;g.fillRect(0,0,256,256)}
+  const id=g.getImageData(0,0,256,256),d=id.data;for(let y=0;y<256;y++)for(let x=0;x<256;x++){const dx=(x-128)/128,dy=(y-128)/128,e=Math.max(0,1-Math.pow(Math.hypot(dx,dy),2.2));d[(x+y*256)*4+3]*=e}g.putImageData(id,0,0);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t})();
+const FOGW={x:1,z:0.35};
+const FOGP=Array.from({length:46},(_,i)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({map:fogTex,transparent:true,opacity:0,depthWrite:false,fog:false,color:'#e4e8ea'}));m.renderOrder=6;m.visible=false;scene.add(m);
+  const sz=7+Math.random()*9;m.scale.set(sz,1,sz*(0.6+Math.random()*0.5));m.rotation.y=Math.random()*6.28;m.userData={x:Math.random()*(GW+20)-10,z:Math.random()*(GH+20)-10,h:0.35+Math.random()*1.4,s:0.6+Math.random()*0.8,o:0.55+Math.random()*0.45,ph:Math.random()*6.28,rs:(Math.random()-.5)*0.03};return m});
 const DUSKSKY=new THREE.Color('#f2a05a'),DAWNSKY=new THREE.Color('#e8b0a0'),SUND=new THREE.Color('#fff0d2'),SUNG=new THREE.Color('#ff9a48'),SUNN=new THREE.Color('#9db4e8'),HEMD=new THREE.Color('#dcefff'),HEMG=new THREE.Color('#ffc890'),HEMN=new THREE.Color('#8aa0d0'),GRD=new THREE.Color('#6b5634'),GRG=new THREE.Color('#8a4a2a'),_c1=new THREE.Color(),_c2=new THREE.Color();
 const SUN_DAY=new THREE.Vector3(-14,30,-6),SUN_DUSK=new THREE.Vector3(-7,9,32),SUN_DAWN=new THREE.Vector3(26,6,16);
 function dayPhase(){const p=time%(DAYL+NIGHTL);const g=p<DAYL-95?0:p<DAYL-25?smooth(DAYL-95,DAYL-25,p):p<DAYL?1:0;const dw=p<35?1-smooth(0,35,p):p>DAYL+NIGHTL-15?smooth(DAYL+NIGHTL-15,DAYL+NIGHTL,p):0;return{g,dw}}
 function renderWeather(rdt){const n=WX.night,{g,dw}=dayPhase();WX.golden=g;
-  _sky.copy(DAYSKY).lerp(DUSKSKY,g*0.85).lerp(DAWNSKY,dw*0.6).lerp(RAINSKY,WX.rain*0.7).lerp(FOGSKY,WX.fog*0.6).lerp(NIGHTSKY,n*0.85);scene.background.copy(_sky);scene.fog.color.copy(_sky);
+  _sky.copy(DAYSKY).lerp(DUSKSKY,g*0.85).lerp(DAWNSKY,dw*0.6).lerp(RAINSKY,WX.rain*0.7).lerp(FOGSKY,WX.fog*0.3).lerp(NIGHTSKY,n*0.85);scene.background.copy(_sky);scene.fog.color.copy(_sky);
   const sg=Math.max(g,dw*0.7);SUNOFF.copy(SUN_DAY).lerp(dw>g?SUN_DAWN:SUN_DUSK,sg);
   _c1.copy(SUND).lerp(SUNG,sg).lerp(SUNN,n);sun.color.copy(_c1);sun.intensity=(2.4+1.5*g)*(1-0.66*n)*(1-0.45*WX.rain)*(1-0.3*WX.fog);
   if(HEMI){_c2.copy(HEMD).lerp(HEMG,sg*0.8).lerp(HEMN,n);HEMI.color.copy(_c2);HEMI.groundColor.copy(GRD).lerp(GRG,sg*0.6);HEMI.intensity=1.25*(1-0.08*g)*(1-0.45*n)*(1-0.25*WX.rain)}
-  if(FS.i>0.05&&WX.night>0.25){const dx=cam.tx-FS.X,dz=cam.tz-FS.Z,dl=Math.hypot(dx,dz)||1;sun.position.set(cam.tx-dx/dl*22,FS.Y+7,cam.tz-dz/dl*22);sun.target.position.set(cam.tx,0,cam.tz);sun.target.updateMatrixWorld();sun.color.lerp(FS.col,Math.min(1,FS.i*0.6));sun.intensity+=FS.i*1.6*WX.night}FS.i*=Math.pow(0.004,rdt);
+  if(FS.i>0.05&&WX.night>0.25){const dx=cam.tx-FS.X,dz=cam.tz-FS.Z,dl=Math.hypot(dx,dz)||1;sun.position.set(cam.tx-dx/dl*22,FS.Y+7,cam.tz-dz/dl*22);sun.target.position.set(cam.tx,0,cam.tz);sun.target.updateMatrixWorld();sun.color.lerp(FS.col,Math.min(0.85,FS.i*0.7));sun.intensity+=Math.min(2.4,FS.i*2.2)*WX.night}FS.i*=Math.pow(0.01,rdt>0?rdt:frameDt);
   renderGlows(rdt>0?rdt:(started?frameDt:0));
-  for(const l of FLASHL)if(l.intensity>0){l.intensity*=Math.pow(0.02,rdt);if(l.intensity<0.05)l.intensity=0}
+  for(const l of FLASHL)if(l.intensity>0){l.intensity*=Math.pow(0.008,rdt>0?rdt:frameDt);if(l.intensity<0.05)l.intensity=0}
   let nr=0;if(WX.rain>0.05&&!FPV.on){const k=Math.round(500*WX.rain);for(let i=0;i<k;i++){const d=RAIN[i];d.y-=rdt*16;if(d.y<0){d.y=12;d.x=Math.random()*40-20;d.z=Math.random()*40-20}_M.makeTranslation(cam.tx+d.x,d.y,cam.tz+d.z);rainMesh.setMatrixAt(nr++,_M)}}rainMesh.count=nr;rainMesh.instanceMatrix.needsUpdate=true;
-  for(const m of FOGP){const u=m.userData;u.ox+=rdt*u.s;if(u.ox>18)u.ox=-18;m.position.set(cam.tx+u.ox,0.5,cam.tz+u.oz);m.material.opacity=WX.fog*0.32}}
+  {const on=WX.fog>0.02,fr=rdt>0?rdt:frameDt;for(const m of FOGP){m.visible=on;if(!on)continue;const u=m.userData;u.x+=FOGW.x*u.s*fr*0.35;u.z+=FOGW.z*u.s*fr*0.35;if(u.x>GW+12)u.x=-12;if(u.z>GH+12)u.z=-12;m.rotation.y+=u.rs*fr;m.position.set(u.x,u.h+Math.sin(time*0.2+u.ph)*0.1,u.z);m.material.opacity=WX.fog*0.42*u.o*(0.8+0.2*Math.sin(time*0.13+u.ph))}}}
 // ---------- aim mode (HIMARS, air strikes, howitzer fire missions) ----------
 let aimMode=null;
 function setAim(a){if(a&&a.kind==='how'){const g=[...selSet].filter(o=>o.type==='howitzer'&&buildings.includes(o));a.list=g.length>1&&g.includes(a.b)?g:[a.b]}aimMode=a;updAimBar();if(a)toast(a.kind==='how'?'🎯 Tap the map for a fire mission — or use the bar at the top':a.kind==='himars'?'🚀 Tap the target for the rocket salvo':`✈️ Tap the target for the ${STRK[a.st].name}`)}
@@ -1686,7 +1692,7 @@ function dmgMul(u,ax,ay,cls){if(kindOf(u)!=='inf')return 1;if(cityAt(u.x,u.y))re
 function hurtU(u,d,ax,ay,cls){const m=dmgMul(u,ax,ay,cls);u.hp-=d*m*(u.armor||1);u.flash=0.1;u.supp=Math.min(3,(u.supp||0)+(cls==='mortar'||cls==='tank'?1.2:0.5));if(kindOf(u)==='inf'&&Math.random()<0.35)DEC.blood(u.x/TILE,u.y/TILE,0.12);else if(kindOf(u)==='veh')DEC.mud(u.x/TILE,u.y/TILE,0.3,0.05)}
 // sniper line of sight: trees and buildings block, trenches and water don't
 function shotLos(x0,y0,x1,y1){const d=Math.hypot(x1-x0,y1-y0);if(d<20)return true;const n=Math.ceil(d/10);for(let i=2;i<n-1;i++){const x=x0+(x1-x0)*i/n,y=y0+(y1-y0)*i/n,j=tileAt(x,y);if(j<0)continue;if(terrain[j]===1)return false;const o=occ[j];if(o&&!WG[j]&&!RWG[j]&&!MINEB[j]&&j!==tileAt(x1,y1))return false}return true}
-function muzzle(x,y,a,h,n,big,reach=0.22){const X=x/TILE,Z=y/TILE,Y=heightAt(X,Z)+h;if(!cullXZ(X,Z))glow(X+Math.cos(a)*reach,Y,Z+Math.sin(a)*reach,big?1.1:0.45,'#ffc860',big?0.12:0.06);if(big&&WX.night>0.3)lightFlash(X,Y,Z,0.6);for(let i=0;i<n;i++){const ox=(Math.random()-.5)*0.4,oz=(Math.random()-.5)*0.4;fx(X+Math.cos(a)*reach+ox,Y,Z+Math.sin(a)*reach+oz,1,big?'#ffd070':'#ffe9a0',0.2,big?0.16:0.07,0.06,0,1,0.2)}if(big)fx(X+Math.cos(a)*(reach+0.3),Y,Z+Math.sin(a)*(reach+0.3),4,'#b8b2a8',0.6,0.22,0.9,-0.1,0,0.4)}
+function muzzle(x,y,a,h,n,big,reach=0.22){const X=x/TILE,Z=y/TILE,Y=heightAt(X,Z)+h;if(!cullXZ(X,Z)){glow(X+Math.cos(a)*reach,Y,Z+Math.sin(a)*reach,big?2:0.9,'#ffc860',big?0.14:0.08);if(WX.night>0.25)lightFlash(X+Math.cos(a)*reach,Y,Z+Math.sin(a)*reach,big?0.9:0.4,'#ffb860',true)}for(let i=0;i<n;i++){const ox=(Math.random()-.5)*0.4,oz=(Math.random()-.5)*0.4;fx(X+Math.cos(a)*reach+ox,Y,Z+Math.sin(a)*reach+oz,1,big?'#ffd070':'#ffe9a0',0.2,big?0.16:0.07,0.06,0,1,0.2)}if(big)fx(X+Math.cos(a)*(reach+0.3),Y,Z+Math.sin(a)*(reach+0.3),4,'#b8b2a8',0.6,0.22,0.9,-0.1,0,0.4)}
 function counterMul(at,tg){const mounted=tg.eagle||tg.type==='cav';if(at==='spear'&&mounted)return 1.8;if(at==='cav'&&tg.type&&UT[tg.type]&&(UT[tg.type].ranged||UT[tg.type].siege))return 1.5;return 1}
 function redAttack(e,tg,isB){const U=UT[e.type],dmg=e.udmg||U.dmg;
   if(e.type==='catapult'){const d=dst(e.x,e.y,tg.x,tg.y);projs.push({k:'rball',sx:e.x,sy:e.y,tx:tg.x,ty:tg.y,time:0,dur:0.6+d/600,dmg,splash:U.splash,h0:heightAt(e.x/TILE,e.y/TILE)+0.7,bmul:1.25});muzzle(e.x,e.y,e.ang,0.4,2,1);AU.boom(0.3);return}
@@ -1933,19 +1939,22 @@ cv.addEventListener("pointerdown",e=>{e.preventDefault();if(e.isPrimary&&ptrs.si
     if(place&&isLine(place.type)){const t=tileUnder(e.clientX,e.clientY);if(t){wdraw={id:e.pointerId,a:t,b:t};anchor=null;AU.tick()}}
     else if(place){const g=scr(place.vx,place.vy+0.4,place.vz);const rad=Math.max(58,BT[place.type].size*34*34/cam.D);
       if(g&&Math.hypot(g[0]-e.clientX,g[1]-e.clientY)<rad){gdrag={id:e.pointerId,ox:g[0]-e.clientX,oy:g[1]-e.clientY};anchor=null;place.lift=1}else lp={id:e.pointerId,t0:performance.now()}}
-    else if(started&&!gameOver){const b=bAtScreen(e.clientX,e.clientY)||pickBuilding(e.clientX,e.clientY);if(b){hold={b,id:e.pointerId,t:0,fail:false,ups:0}}else lsel={id:e.pointerId,t0:performance.now()}}}
+    else if(started&&!gameOver){const b=bAtScreen(e.clientX,e.clientY)||pickBuilding(e.clientX,e.clientY);if(b){hold={b,id:e.pointerId,t:0,fail:false,ups:0}}else lsel={id:e.pointerId,t0:performance.now(),ts:e.timeStamp}}}
   if(ptrs.size===2){hold=null;lp=null;paint=null;wdraw=null;lsel=null;boxSel=null;if(gdrag){gdrag=null;if(place)place.lift=0}const[a,b]=[...ptrs.values()];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
-    pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,D:cam.D,anchor:toPlane(mx,my),a0:Math.atan2(b.y-a.y,b.x-a.x),yaw0:cam.yaw,rot:false};moved=true}});
+    pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,D:cam.D,anchor:toPlane(mx,my),a0:Math.atan2(b.y-a.y,b.x-a.x),yaw0:cam.yaw,rot:false,my0:my,ay0:a.y,by0:b.y,p0:cam.pitch,mode:null};moved=true}});
 cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;p.ts=performance.now();const px=p.x,py=p.y;p.x=e.clientX;p.y=e.clientY;lastPt=[p.x,p.y];
   if(rdrag){cam.yaw=cam.yawT=rdrag.yaw+(p.x-rdrag.x)*0.008;applyCam(0);const q=toPlane(W/2,H/2);if(q&&rdrag.anchor){cam.tx+=rdrag.anchor.x-q.x;cam.tz+=rdrag.anchor.z-q.z;clampCam()}return}
   if(wdraw&&wdraw.id===e.pointerId){const t=tileUnder(p.x,p.y);if(t&&(t[0]!==wdraw.b[0]||t[1]!==wdraw.b[1])){wdraw.b=t;AU.tick()}return}
   if(gdrag&&gdrag.id===e.pointerId){applyCam(0);moveGhostTo(p.x+gdrag.ox,p.y+gdrag.oy);return}
+  if(boxSel&&boxSel.id===e.pointerId&&boxSel.fresh){boxSel.fresh=0;if(e.timeStamp-boxSel.ts<360&&Math.hypot(p.x-p.sx,p.y-p.sy)>11){boxSel=null;applyCam(0);anchor=toPlane(p.sx,p.sy);moved=true}}// slow frame: the finger actually moved before the hold timer, so pan
   if(boxSel&&boxSel.id===e.pointerId){boxSel.x1=p.x;boxSel.y1=p.y;return}
   if(paint&&paint.id===e.pointerId){if(!paint.on&&Math.hypot(p.x-p.sx,p.y-p.sy)>12){paint.on=true;moved=true;hold=null;addSel(paint.b0);paintAlong(p.sx,p.sy,p.x,p.y)}else if(paint.on)paintAlong(px,py,p.x,p.y);if(paint.on)return}
   if(ptrs.size===1&&anchor){if(!moved&&Math.hypot(p.x-p.sx,p.y-p.sy)>11){moved=true;hold=null;lp=null;lsel=null}
     if(moved){applyCam(0);const q=toPlane(p.x,p.y);if(q){const ox=cam.tx,oz=cam.tz;cam.tx+=anchor.x-q.x;cam.tz+=anchor.z-q.z;clampCam();const now=performance.now();velS.push([now,cam.tx-ox,cam.tz-oz]);while(velS.length&&now-velS[0][0]>90)velS.shift()}}}
   else if(ptrs.size===2&&pinch){const[a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
     let da=Math.atan2(b.y-a.y,b.x-a.x)-pinch.a0;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;if(!pinch.rot&&Math.abs(da)>0.14){pinch.rot=true;pinch.a0+=Math.sign(da)*0.14;da-=Math.sign(da)*0.14}
+    if(!pinch.mode){const dya=a.y-pinch.ay0,dyb=b.y-pinch.by0;if(Math.abs(dya)>22&&Math.abs(dyb)>22&&Math.sign(dya)===Math.sign(dyb)&&Math.abs(d-pinch.d)<40&&Math.abs(da)<0.12)pinch.mode='tilt';else if(Math.abs(d-pinch.d)>30||Math.abs(da)>0.14)pinch.mode='zoom'}
+    if(pinch.mode==='tilt'){cam.pitch=clamp(pinch.p0+(my-pinch.my0)*0.004,0.42,1.4);applyCam(0);return}
     cam.D=clamp(pinch.D*pinch.d/d,10,80);if(pinch.rot){cam.yaw=cam.yawT=pinch.yaw0+da}applyCam(0);const q=toPlane(mx,my);if(q&&pinch.anchor){cam.tx+=pinch.anchor.x-q.x;cam.tz+=pinch.anchor.z-q.z;clampCam()}}});
 function pend(e){if(!ptrs.has(e.pointerId))return;
   if(rdrag){rdrag=null;ptrs.delete(e.pointerId);return}
@@ -1962,13 +1971,12 @@ cv.addEventListener('pointerup',pend);cv.addEventListener('pointercancel',pend);
 // stuck-finger guard: if the browser ever loses a pointerup (freeze, app switch, overlay), forget the ghost touch so one finger pans again
 function resetPtrs(){ptrs.clear();pinch=null;anchor=null;hold=null;lp=null;paint=null;lsel=null;boxSel=null;wdraw=null;if(gdrag){gdrag=null;if(place)place.lift=0}rdrag=null}
 window.addEventListener('pointerup',e=>{if(e.target!==cv&&ptrs.has(e.pointerId))pend(e)});window.addEventListener('pointercancel',e=>{if(ptrs.has(e.pointerId))pend(e)});
-cv.addEventListener('lostpointercapture',e=>{if(ptrs.has(e.pointerId))setTimeout(()=>{if(ptrs.has(e.pointerId))pend(e)},0)});
 document.addEventListener('touchend',e=>{if(e.touches.length===0)setTimeout(()=>{if(ptrs.size)resetPtrs()},30)},{passive:true});document.addEventListener('touchcancel',e=>{if(e.touches.length===0)setTimeout(resetPtrs,30)},{passive:true});
 window.addEventListener('blur',resetPtrs);document.addEventListener('visibilitychange',resetPtrs);window.addEventListener('pageshow',resetPtrs);
 cv.addEventListener('wheel',e=>{e.preventDefault();applyCam(0);const a=toPlane(e.clientX,e.clientY);cam.D=clamp(cam.D*Math.exp(e.deltaY*0.0012),10,80);applyCam(0);const q=toPlane(e.clientX,e.clientY);if(a&&q){cam.tx+=a.x-q.x;cam.tz+=a.z-q.z}clampCam()},{passive:false});
 function inputTick(dt){
   if(camVel&&!ptrs.size){cam.tx+=camVel[0]*dt;cam.tz+=camVel[1]*dt;clampCam();const k=Math.exp(-dt*4.5);camVel[0]*=k;camVel[1]*=k;if(Math.hypot(camVel[0],camVel[1])<0.3)camVel=null}
-  if(lsel&&!moved){if(performance.now()-lsel.t0>380&&lastPt){boxSel={id:lsel.id,x0:lastPt[0],y0:lastPt[1],x1:lastPt[0],y1:lastPt[1]};lsel=null;anchor=null;moved=true;AU.tick()}}
+  if(lsel&&!moved){if(performance.now()-lsel.t0>380&&lastPt){boxSel={id:lsel.id,x0:lastPt[0],y0:lastPt[1],x1:lastPt[0],y1:lastPt[1],ts:lsel.ts,fresh:1};lsel=null;anchor=null;moved=true;AU.tick()}}
   if(hold&&!moved){hold.t+=dt;if(hold.t>HOLD_D){if(!selSet.has(hold.b)){clearSel();addSel(hold.b)}if(!hold.fail&&hold.t>=HOLD_D+HOLD_F){if(upgradeSel(hold.b)){hold.ups++;hold.t=HOLD_D-0.2}else hold.fail=true}}}
   if(lp&&!moved){if(performance.now()-lp.t0>280&&lastPt){gdrag={id:lp.id,ox:0,oy:-60};lp=null;anchor=null;if(place)place.lift=1;applyCam(0);moveGhostTo(lastPt[0],lastPt[1]-60);AU.tick()}}
   if(gdrag&&lastPt){const m=48,sp=cam.D*0.85*dt;let ex=0,ey=0;if(lastPt[0]<m)ex=-1;else if(lastPt[0]>W-m)ex=1;if(lastPt[1]<m+50)ey=-1;else if(lastPt[1]>H-m)ey=1;
@@ -2414,7 +2422,7 @@ const HELP=[['GESTURES',[
  ['tap','Tap','Select a building. Tap a howitzer, then the map, for a fire mission.'],['dbl','Double-tap','Repair a building.'],['hold','Press and hold','Upgrade a building (keep holding to chain tiers).'],
  ['drag','Drag a new building','Move it before you confirm.'],['pan','Drag the map','Move the camera — even across your buildings.'],['swipe','Drag a 🚩 banner','Drop it on the map to gather troops, on a Red building to attack, or on the minimap.'],
  ['box','Long-press empty ground and drag','Box-select everything inside.'],['line','Drag with Trench or Mines','Dig a whole trench line or lay a minefield.'],
- ['pinch','Pinch','Zoom in and out.'],['twist','Twist two fingers','Rotate the view.']]],
+ ['pinch','Pinch','Zoom in and out.'],['twist','Twist two fingers','Rotate the view.'],['swipe','Slide two fingers up or down','Tilt the camera, like in Maps.']]],
  ['BUTTONS',[
  ['🌾','Economy','Farm, factory, bank.'],['🧱','Defense','MG bunker, mortar, anti-tank, FPV drones, helipad, howitzer, HIMARS, trench, mines, EW, Patriot.'],['✓','BUILD','Confirm the building.'],['✕','Cancel','Drop the building you are placing.'],
  ['⚠️','Escalate','Advance to the next stage of the war (bottom left). Raises the troop limit.'],['🗑️','Sell','Appears when a building is selected. Tap twice.'],['⏯','Speed (bottom left)','− and + step from ¼× to 3×. Tap the number to stop or resume time.'],['❚❚','Pause','Menu, stats, achievements, language.'],
@@ -2562,7 +2570,7 @@ const AU={ctx:null,on:true,int:0,boss:false,last:{},
 
 let confirmT=0;function confirmNew(){const n=performance.now();if(n-confirmT<2500)return true;confirmT=n;$('bStart').textContent='Tap again to overwrite save';return false}
 // =============== BOOT ===============
-genTerrain();carveCity();genHeights();paintGround();buildGround();buildCity();buildForest();buildCamp();buildDeposits();buildRigs();buildMiniBase();resize();newGame();try{rainMesh.count=1;for(const m of FOGP)m.material.opacity=0.01;renderer.compile(scene,camera);rainMesh.count=0;for(const m of FOGP)m.material.opacity=0}catch(e){}
+genTerrain();carveCity();genHeights();paintGround();buildGround();buildCity();buildForest();buildCamp();buildDeposits();buildRigs();buildMiniBase();resize();newGame();try{rainMesh.count=1;for(const m of FOGP){m.visible=true;m.material.opacity=0.01}renderer.compile(scene,camera);rainMesh.count=0;for(const m of FOGP){m.material.opacity=0;m.visible=false}}catch(e){}
 $('loading').classList.add('hidden');$('start').classList.remove('hidden');setupStart();renderDiffs();renderHof();loadBoard();
 let pick={mode:CFG.mode,map:CFG.map};
 function renderPicks(){for(const[id,k]of[['pickMode','mode'],['pickMap','map']])for(const b of $(id).children)b.classList.toggle('on',b.dataset.v===pick[k]);
@@ -2586,7 +2594,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   frameDt=dt;inputTick(dt);applyCam(dt);if(FPV.on)fpvCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();renderProd();if(bans)renderBans();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 window.__G={setDiff:i=>setDiff(i),get score(){return score},get ageRes(){return ageRes},dbg:()=>({lt:lsel&&lsel.t,lp:lastPt,box:!!boxSel,moved,hold:!!hold,paint:!!paint,anchor:!!anchor,ptrs:ptrs.size}),ser:()=>serialize(),load:d=>loadGame(d),get age(){return age},set age(v){age=v},depos:DEPOS,startWave:n=>{wave=n;startWave(n)},get spawnQ(){return spawnQ},cost:t=>costOf(t),spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
-  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies,rSpot,rbCan,rCore,rWant,rCost,destroyRB,rIncome,redStr,blueStrNear,rResignCheck}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt),spawnE(type,x,y){spawnEnemy(type,1);const e=enemies[enemies.length-1];if(x!=null){e.x=x*32+16;e.y=y*32+16}return e},get mines(){return{MINEB,MINEL}},get projs(){return projs},get decal(){return DEC},get popC(){return[bluePop(),POPC[age]]},get rigs(){return rigs},VM,get time(){return time}};
+  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies,rSpot,rbCan,rCore,rWant,rCost,destroyRB,rIncome,redStr,blueStrNear,rResignCheck}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt),spawnE(type,x,y){spawnEnemy(type,1);const e=enemies[enemies.length-1];if(x!=null){e.x=x*32+16;e.y=y*32+16}return e},get mines(){return{MINEB,MINEL}},get projs(){return projs},get decal(){return DEC},get popC(){return[bluePop(),POPC[age]]},get rigs(){return rigs},VM,get time(){return time},get WX(){return WX}};
 </script>
 </body>
 </html>
