@@ -450,7 +450,7 @@ Object.assign(TRD,{
 'Trains rifle squads, snipers and medics.':'Piyade timleri, nişancılar ve sıhhiyeciler yetiştirir.','Builds tanks, APCs and mortar carriers.':'Tank, zırhlı araç ve havan aracı üretir.',
 'Long range, inaccurate, dangerous. Tap it, then the map, to set a fire mission. Avoids your troops unless the target is big.':'Uzun menzilli, isabetsiz, tehlikeli. Önce ona, sonra haritaya dokunarak atış görevi ver. Hedef büyük değilse kendi askerlerinden kaçınır.',
 'Precision rocket salvo anywhere on the map. When 🚀 FIRE shows above it, tap it, then the target.':'Haritanın her yerine hassas roket salvosu. Üstünde 🚀 ATEŞ çıkınca ona, sonra hedefe dokun.','Jams drones, missiles and air strikes — the closer they get, the harder it hits.':'Dronları, füzeleri ve hava saldırılarını karıştırır — yaklaştıkça daha sert vurur.',
-'Shoots down air strikes, rockets and helicopters. 4 rounds, long reload.':'Hava saldırılarını, roketleri ve helikopterleri düşürür. 4 atış, uzun dolum.','Two attack helicopters guard a wide zone. They move and fire. Slow to replace.':'İki taarruz helikopteri geniş bir bölgeyi korur. Hareket ederken ateş ederler. Yenilenmeleri yavaştır.',
+'Shoots down air strikes, rockets and helicopters. 4 rounds, long reload.':'Hava saldırılarını, roketleri ve helikopterleri düşürür. 4 atış, uzun dolum.','Two attack helicopters guard a wide zone. They land here for repairs. Losing one takes a long time to replace.':'İki taarruz helikopteri geniş bir bölgeyi korur. Tamir için buraya iner. Kaybedilen birinin yerine yenisi çok geç gelir.',
 'DRONES UP':'DRONLAR HAVADA','Five FPV kamikaze drones hunt armor in a wide zone. Each one strikes once, then the station builds another.':'Beş FPV kamikaze dron geniş bir bölgede zırh avlar. Her biri bir kez vurur, istasyon yenisini yapar.','FINANCE ONLINE':'FİNANS DEVREDE','Your first bank. Money now flows — it never comes clean once the shells start.':'İlk bankan. Para akıyor — mermiler düşmeye başlayınca bir daha temizlenmez.',
 'MOBILIZE':'SEFERBERLİK','Tap the building to train. Drag the 🚩 banner to send them.':'Eğitmek için binaya dokun. Göndermek için 🚩 sancağı sürükle.','Mortar team dug in — crowds beware!':'Havan ekibi mevzilendi — kalabalıklar dikkat!',
 'WAVE 1':'DALGA 1','ARMOR WAVE':'ZIRH DALGASI','Rifle squads probe from the southwest.':'Piyade timleri güneybatıdan yokluyor.','Tanks! Bullets bounce off — build Anti-Tank Nests and FPV drones.':'Tanklar! Mermiler seker — tanksavar mevzileri ve FPV dronlar kur.',
@@ -634,7 +634,7 @@ const BT={
   himars:{name:'HIMARS',ic:'🚀',kind:'def',size:2,cost:{grain:420,wool:320,gold:300},hp:460,range:1400,dmg:150,rate:30,splash:46,desc:'Precision rocket salvo anywhere on the map. When 🚀 FIRE shows above it, tap it, then the target.'},
   ew:{name:'EW Station',ic:'📡',kind:'def',size:2,cost:{grain:180,wool:160,gold:90},hp:400,range:300,desc:'Jams drones, missiles and air strikes — the closer they get, the harder it hits.'},
   patriot:{name:'Patriot Battery',ic:'🛰️',kind:'def',size:2,cost:{grain:380,wool:300,gold:240},hp:480,range:720,ammo:4,reload:26,desc:'Shoots down air strikes, rockets and helicopters. 4 rounds, long reload.'},
-  helipad:{name:'Helipad',ic:'🚁',kind:'def',size:3,cost:{grain:420,wool:320,gold:220},hp:620,squad:2,respawn:40,guard:700,desc:'Two attack helicopters guard a wide zone. They move and fire. Slow to replace.'},
+  helipad:{name:'Helipad',ic:'🚁',kind:'def',size:3,cost:{grain:420,wool:320,gold:220},hp:620,squad:2,respawn:150,guard:700,desc:'Two attack helicopters guard a wide zone. They land here for repairs. Losing one takes a long time to replace.'},
   minef:{name:'Minefield',ic:'💣',kind:'def',size:1,cost:{grain:15,wool:15,gold:0},hp:1,desc:'Drag to lay 3 hidden mines per square. Drag again to refill or upgrade.'},
   wheat:{name:'Farm',ic:'🌾',kind:'eco',size:3,cost:{grain:50,wool:0,gold:0},hp:160,prod:{grain:1.2},desc:'+1.2 food / sec · neighbors merge for a bonus'},
   sheep:{name:'Factory',ic:'🏭',kind:'eco',size:3,cost:{grain:120,wool:0,gold:0},hp:200,prod:{wool:1.0},desc:'+1.0 industry / sec · neighbors merge for a bonus'},
@@ -926,7 +926,7 @@ function heliRig(){const c='#4a5141',c2='#3c4235',d='#2e3229',gl='#6f93ab',blk='
   for(const z of[0.21,-0.21])p.push(P(box(0.05,0.06,0.02),d,0.03,-0.07,z),P(cyl(0.035,0.035,0.24,8),'#5a5e50',0.05,-0.12,z,0,0,Math.PI/2),P(cone(0.035,0.05,8),'#5a5e50',0.19,-0.12,z,0,0,-Math.PI/2));
   for(const z of[0.31,-0.31])for(const k of[-1,1])p.push(P(box(0.26,0.022,0.022),'#3a3e32',0.06,-0.07+k*0.015,z+k*0.012));
   p.push(P(cyl(0.025,0.025,0.02,8),blk,0.36,-0.115,0.07,Math.PI/2),P(cyl(0.025,0.025,0.02,8),blk,0.36,-0.115,-0.07,Math.PI/2),P(cyl(0.02,0.02,0.02,8),blk,-0.62,-0.02,0,Math.PI/2));
-  const rotor=(y)=>{const g=[P(cyl(0.05,0.05,0.04,10),d,0,0,0)];for(let i=0;i<3;i++){const a=i/3*Math.PI*2;g.push(P(box(0.74,0.008,0.055),blk,Math.cos(a)*0.38,0,Math.sin(a)*0.38,0,-a,0))}return merge(g)};
+  const rotor=(y)=>{const g=[P(cyl(0.05,0.05,0.04,10),d,0,0,0)];for(let i=0;i<3;i++){const a=i/3*Math.PI*2;g.push(P(box(0.92,0.008,0.055),blk,Math.cos(a)*0.47,0,Math.sin(a)*0.47,0,-a,0))}return merge(g)};
   return[{geo:merge(p),pivot:[0,0,0]},{geo:rotor(),pivot:[0.05,0.43,0]},{geo:rotor(),pivot:[0.05,0.33,0]}]}
 function buildRigs(){makeRig('b_heli',heliRig(),12,1.25);for(const tm of['blue','red']){const T=tm[0];for(const L of[1,2,3]){const rb=tm==='blue';makeRig(T+'_rifle'+L,soldier(tm,'rifle',L),rb?700:[0,1800,1200,700][L],0.74);makeRig(T+'_sniper'+L,soldier(tm,'sniper',L),rb?160:[0,400,260,160][L],0.74);makeRig(T+'_medic'+L,soldier(tm,'medic',L),160,0.74);makeRig(T+'_tank'+L,tankRig(tm,L),rb?90:[0,140,90,60][L],0.98+L*0.03)}
     makeRig(T+'_apc',apcRig(tm),tm==='blue'?80:160,0.95);makeRig(T+'_drone',droneRig(tm),120,1.25)}}
@@ -962,7 +962,7 @@ function poseOf(kind,u,t){const o=POSE;for(const p of o)p.fill(0);const role=kin
     if(duck>0.4){const k=(duck-0.4)/0.6;o[4][5]=lerp(o[4][5],-2.7,k);o[5][5]=lerp(o[5][5],-2.7,k);o[4][3]=lerp(o[4][3],0.5,k);o[5][3]=lerp(o[5][3],-0.5,k);o[3][5]=0.45*k}
     if(u.heal){o[4][5]=0.9+Math.sin(t*6+ph)*0.3;o[5][5]=1.0+Math.sin(t*6+ph+1)*0.3}}
   else if(role==='tank'||role==='apc'){const rel=-(angDiff(u.tAng??u.rAng,u.rAng)),rec=u.recoil||0;o[1][4]=rel;o[2][4]=rel;o[2][0]=-rec*0.1*Math.cos(rel);o[2][2]=rec*0.1*Math.sin(rel);o[0][5]=-rec*0.04+Math.sin(u.walk*3)*0.008*m;o[1][5]=o[0][5];o[2][5]=o[0][5]}
-  else if(role==='heli'){o[1][4]=t*26;o[2][4]=-t*26;o[0][5]=-0.18*m+Math.sin(t*1.3)*0.02;o[1][5]=o[0][5];o[2][5]=o[0][5]}
+  else if(role==='heli'){const rr=u.rot??t*26;o[1][4]=rr;o[2][4]=-rr;o[0][5]=-0.18*m+Math.sin(t*1.3)*0.02;o[1][5]=o[0][5];o[2][5]=o[0][5]}
   else if(role==='drone'){const r=t*55;for(let i=1;i<5;i++)o[i][4]=r+i;o[0][5]=-0.35*m;for(let i=1;i<5;i++)o[i][5]=-0.35*m;const bob=Math.sin(t*3+(u.x||0)*0.1)*0.02;for(let i=0;i<5;i++)o[i][1]=bob}
   return o}
 const angDiff=(a,b)=>{let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return d};
@@ -1196,9 +1196,18 @@ function updBarracks(b,dt){b.navAge=(b.navAge||0)+dt;const mine=knights.filter(k
   else if(sq.state==='return'){if(mine.every(k=>{const p=slotPos(b,k.slot);return dst(p[0],p[1],k.x,k.y)<10}))sq.state='home'}}
 function pickTarget(k,sq){let t=null,bs=1e9;for(const e of sq.inZ){if(e.hp<=0||(e.fly&&!k.heli))continue;const d=dst(e.x,e.y,k.x,k.y);let sc=d+(e.tgtBy||0)*34;if(k.heli){const veh=kindOf(e)==='veh';sc+=(k.slot%2===0?(veh?-160:60):(veh?60:-120));for(const o of knights)if(o!==k&&o.heli&&o.tgt===e)sc+=320;if(e.fly)sc+=40}
     if(e.type==='ram')sc-=70;if(e.type==='boss')sc-=90;const fi=tileAt(e.x,e.y);if(fi>=0&&flow[fi]<=2)sc-=55;if(!k.eagle&&!los(k.x,k.y,e.x,e.y,k.r*0.7))sc+=40;if(e===k.tgt)sc-=45;if(e===k.badTgt)sc+=400;if(sc<bs){bs=sc;t=e}}return t}
+// helicopters land on their pad for repairs; badly hurt ones break off combat and run home
+function heliPadPos(k){const b=k.b,o=[[-0.95,-0.25],[0.95,0.25],[0,1.15]][k.slot%3];return[b.x+o[0]*TILE,b.y+o[1]*TILE]}
+function heliRepair(k,dt,sq){const crit=k.hp<k.maxhp*0.25,hurt=k.hp<k.maxhp-1,fight=sq.state==='engage';
+  if(crit&&!k.flee){k.flee=1;k.tgt=null}if(k.flee&&k.hp>k.maxhp*0.75)k.flee=0;
+  const need=k.flee||(hurt&&!fight)||(k.landed&&hurt&&!(fight&&k.hp>k.maxhp*0.6));if(!need){k.landed=0;return false}
+  const[px,py]=heliPadPos(k),d=dst(px,py,k.x,k.y);if(d>5){k.landed=0;k.landT=0;k.wantMove=true;knightMove(k,px,py,k.flee?100:62,dt);return true}
+  k.vx=k.vy=0;k.x=px;k.y=py;k.ang=k.b.formAng||0;k.landed=1;k.landT=(k.landT||0)+dt;if(k.landT<1.5)return true;
+  k.hp=Math.min(k.maxhp,k.hp+k.maxhp*0.03*(0.8+0.2*k.b.lvl)*dt);if(k.hp>=k.maxhp){k.landed=0;k.flee=0;return false}return true}
 function updKnight(k,dt){const b=k.b,sq=b.sq;if(k.cd>0)k.cd-=dt;if(k.swing>0)k.swing-=dt;if(k.flash>0)k.flash-=dt;if(k.mvT>0)k.mvT-=dt;if(!sq)return;
   // stuck watchdog
   k.prT=(k.prT||0)+dt;if(k.prT>0.7){const mv=dst(k.x,k.y,k.px??k.x,k.py??k.y);if(k.wantMove&&mv<4){k.nudge=0.45;k.nudgeA=Math.random()*6.28;k.badTgt=k.tgt;k.tgt=null}k.prT=0;k.px=k.x;k.py=k.y}k.wantMove=false;
+  if(k.heli&&heliRepair(k,dt,sq))return;
   if(sq.state==='engage'){k.tgtT=(k.tgtT||0)-dt;if(!k.tgt||k.tgt.hp<=0||k.tgtT<=0||!sq.inZ.includes(k.tgt)){k.tgt=pickTarget(k,sq);k.tgtT=0.7}const t=k.tgt;
     if(t&&k.heli){const d=dst(t.x,t.y,k.x,k.y);if(d<=170*RNGN()){k.ang=Math.atan2(t.y-k.y,t.x-k.x);if(k.cd<=0)heliFire(k,t);if(d>120){k.wantMove=true;knightMove(k,t.x,t.y,28,dt,110)}}else{k.wantMove=true;knightMove(k,t.x,t.y,72,dt,140)}return}
     if(t){t.tgtBy=(t.tgtBy||0)+1;const d=dst(t.x,t.y,k.x,k.y),reach=k.r+t.r+2;
@@ -2035,7 +2044,8 @@ function renderWorld(rdt){const t=time;
   // units
   for(const k in rigs)rigs[k].n=0;const sm=Math.min(1,rdt*10);
   for(const L of[enemies,troops])for(const e of L){e.mvb+=((e.mvT>0?1:0)-e.mvb)*Math.min(1,rdt*7);e.rAng=smoothAng(e.rAng,e.ang,sm);if(e.swing>0.2)e.aimT=2.2;if(e.aimT>0)e.aimT-=rdt;e.recoil=Math.max(0,(e.recoil||0)-rdt*2.5);e.tAng=smoothAng(e.tAng??e.rAng,e.aimT>0?(e.aimA??e.ang):e.rAng,Math.min(1,rdt*4));drawSquad(e,t)}
-  for(const k of knights){k.mvb+=((k.mvT>0?1:0)-k.mvb)*Math.min(1,rdt*7);k.rAng=smoothAng(k.rAng,k.ang,sm);const fl=k.heli?2.3+Math.sin(t*1.1+k.slot)*0.12:(k.swing>0||(k.tgt&&k.tgt.hp>0&&dst(k.tgt.x,k.tgt.y,k.x,k.y)<44))?0.5:1.55+Math.sin(t*1.7+k.slot)*0.15;k.fly=(k.fly||1.5)+(fl-(k.fly||1.5))*Math.min(1,rdt*3.5);drawUnitInst(unitLook(k).rig,k,t,false)}
+  for(const k of knights){k.mvb+=((k.mvT>0?1:0)-k.mvb)*Math.min(1,rdt*7);k.rAng=smoothAng(k.rAng,k.ang,sm);k.rot=(k.rot||0)+rdt*(k.landed&&k.fly<0.6?7:26);if(k.landed&&k.fly<0.6&&k.hp<k.maxhp){if(Math.random()<rdt*7){const[X,Y,Z]=W3(k.x+(Math.random()-.5)*24,k.y+(Math.random()-.5)*24);fx(X,Y+0.3+Math.random()*0.2,Z,2,Math.random()<0.5?'#ffd070':'#9fe8ff',0.9,0.04,0.35,3,1,0.7)}if(k.hp<k.maxhp*0.5&&Math.random()<rdt*3){const[X,Y,Z]=W3(k.x,k.y);fx(X-0.2,Y+0.5,Z,1,'#4a4644',0.3,0.25,1.6,-0.15,0,0.4)}const a=k.ang||0;for(let j=0;j<2;j++){const m=MEMB,s2=j?1:-1;m.x=k.x+(Math.cos(a+1.57)*s2*0.42+Math.cos(a)*0.15)*TILE*1.25;m.y=k.y+(Math.sin(a+1.57)*s2*0.42+Math.sin(a)*0.15)*TILE*1.25;m.rAng=a-1.57*s2;m.walk=0;m.mvb=0;m.swing=0;m.flash=0;m.supp=0;m.ph=j*2+t;m.combat=false;m.heal=1;m.cover=0;m.die=0;m.fly=0;drawUnitInst('b_medic1',m,t,false)}}
+    const fl=k.heli?(k.landed&&dst(k.x,k.y,...heliPadPos(k))<6?0.12:2.3+Math.sin(t*1.1+k.slot)*0.12):(k.swing>0||(k.tgt&&k.tgt.hp>0&&dst(k.tgt.x,k.tgt.y,k.x,k.y)<44))?0.5:1.55+Math.sin(t*1.7+k.slot)*0.15;k.fly=(k.fly||1.5)+(fl-(k.fly||1.5))*Math.min(1,rdt*3.5);drawUnitInst(unitLook(k).rig,k,t,false)}
   for(const c of corpses)drawUnitInst(c.kind,c,t,true);drawMines();
   for(const k in rigs){const R=rigs[k];for(const m of R.meshes){m.count=R.n;m.visible=R.n>0;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}
   // projectiles
@@ -2103,7 +2113,7 @@ function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H
   const bar=(X,Y,Z,w,f,col)=>{const s=scr(X,Y,Z);if(!s||s[0]<-20||s[0]>W+20||s[1]<-20||s[1]>H+20)return;octx.fillStyle='rgba(0,0,0,.6)';octx.fillRect(s[0]-w/2-1,s[1]-1,w+2,5);octx.fillStyle=col;octx.fillRect(s[0]-w/2,s[1],w*clamp(f,0,1),3)};
   const zf=clamp(34/cam.D,0.6,1.6);
   for(const e of enemies)if(e.hp<e.maxhp){const X=e.x/TILE,Z=e.y/TILE;const ht=e.type==='boss'?1.5:e.type==='cav'?1.25:e.type==='ram'?0.95:0.85;bar(X,heightAt(X,Z)+ht,Z,(e.type==='boss'?36:e.type==='ram'?26:16)*zf,e.hp/e.maxhp,'#ff5a40')}
-  for(const k of knights)if(k.heli||k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z)+(k.fly||1.5)+0.45;bar(X,Y,Z,(k.heli?26:16)*zf,k.hp/k.maxhp,'#6fa0ff');if(k.heli){const sp=scr(X,Y+0.18,Z);if(sp){octx.font='bold 10px Helvetica, Arial';octx.textAlign='center';octx.fillStyle='#cfe4ff';octx.fillText('🚁'+(k.slot+1)+(k.tgt&&k.tgt.hp>0?(kindOf(k.tgt)==='veh'?' ▸ armor':' ▸ troops'):''),sp[0],sp[1])}}}
+  for(const k of knights)if(k.heli||k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z)+(k.fly||1.5)+0.45;bar(X,Y,Z,(k.heli?26:16)*zf,k.hp/k.maxhp,'#6fa0ff');if(k.heli){const sp=scr(X,Y+0.18,Z);if(sp){octx.font='bold 10px Helvetica, Arial';octx.textAlign='center';octx.fillStyle='#cfe4ff';octx.fillText('🚁'+(k.slot+1)+(k.landed&&k.fly<0.6?' 🔧 repairing':k.flee?' ⚠ returning':k.tgt&&k.tgt.hp>0?(kindOf(k.tgt)==='veh'?' ▸ armor':' ▸ troops'):''),sp[0],sp[1])}}}
   for(const b of buildings){if(b.hp<b.maxhp)bar(b.X,b.Y+b.barH,b.Z,44*zf,b.hp/b.maxhp,b.hp/b.maxhp>0.4?'#5fd04a':'#e05a3a');
     if(isAirB(b.type)){const n=knights.reduce((a,k)=>a+(k.b===b),0);if(n<squadSize(b))bar(b.X,b.Y+b.barH+0.35,b.Z,34*zf,1-b.respawnT/respawnTime(b),'#8fb8ff')}}
   drawArmyOverlay(zf,bar);drawBadges(zf);
