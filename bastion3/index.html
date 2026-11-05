@@ -275,6 +275,7 @@ const TRD={
 'Eagles fallen in battle':'Savaşta düşen kartallar','Red retreats to regroup':'Kırmızı toparlanmak için geri çekiliyor','Red pulls its army back to defend':'Kırmızı savunmak için ordusunu geri çekiyor','⚠ Red cavalry raids your farms!':'⚠ Kırmızı süvari çiftliklerine baskın yapıyor!',
 'Clever foes: dodge kill zones, mass before charging, raid farms, kite eagles.':'Zeki düşman: ölüm bölgelerinden kaçar, hücumdan önce toplanır, çiftliklere baskın yapar, kartalları oyalar.',
 'Ruthless: reads your defenses and counters them, pincers both fronts, lures your eagles.':'Acımasız: savunmanı okur ve karşılık verir, iki cepheden kıskaca alır, kartallarını tuzağa çeker.',
+'RED RESIGNS':'KIRMIZI TESLİM OLDU','Red lays down its arms. The realm is yours.':'Kırmızı silahlarını bıraktı. Krallık senin.','Red is losing heart…':'Kırmızı umudunu yitiriyor…',
 // --- whole sentences / UI ---
 'Bastion 3D — Tower Defense':'Bastion 3D — Kule Savunması','RAISING THE REALM…':'KRALLIK KURULUYOR…',
 'Blue holds the high ground. Red comes from the southwest — and later, the west.':'Mavi tepeleri tutuyor. Kırmızı güneybatıdan gelir — sonra batıdan da.',
@@ -359,6 +360,7 @@ const TRD={
 };
 // templates (word order matters) — f receives match groups
 const TRR=[
+ [/^Red resigned after (.+)\.$/,(m,a)=>'Kırmızı '+a+' sonra teslim oldu.'],
  [/^New troops from this (.+) join banner (.+)$/,(m,a,b)=>'Bu '+trc(a)+'’dan çıkan yeni askerler '+b+'. sancağa katılır'],
  [/^🚩 (\S+) → attack Red (.+)$/,(m,a,b)=>'🚩 '+a+' → Kırmızı '+trc(b)+' binasına saldır'],[/^🚩 (\S+) holds here$/,(m,a)=>'🚩 '+a+' burada bekliyor'],[/^🚩 (\S+) returns home$/,(m,a)=>'🚩 '+a+' üsse dönüyor'],
  [/^🔥 (\S+) charges — they pick their own targets$/,(m,a)=>'🔥 '+a+' hücumda — hedeflerini kendileri seçiyor'],[/^🚩 (\S+) holds the banner$/,(m,a)=>'🚩 '+a+' sancağı tutuyor'],
@@ -1379,9 +1381,20 @@ function redAI(dt){const R=RAI;RFc=RF();const F=RFc;R.t+=dt;
     if(b.type==='archer'||b.type==='cannon')updRTower(b,dt)}
   if(R.ageT){R.ageT.t+=dt;if(R.ageT.t>=R.ageT.dur){R.age=R.ageT.to;R.ageT=null;(R.ages||(R.ages=[])).push([Math.round(R.t),R.age]);toast(`⚠ Red has reached ${AGEN[R.age]}`)}}
   R.tick-=dt;if(R.tick>0)return;R.tick=F.tick;R.peakB=Math.max(R.peakB||0,rbuildings.length);
-  const tl=rThreat(),threat=R.threat>0;rMix();rEconomy(threat);rTrain(threat);rArmy(tl);rRaid()}
+  const tl=rThreat(),threat=R.threat>0;rMix();rEconomy(threat);rTrain(threat);rArmy(tl);rRaid();rResignCheck()}
 function spawnRedUnit(b,type){(RAI.trained||(RAI.trained={}))[type]=(RAI.trained[type]||0)+1;const U=UT[type],L=b.lvl-1;const a=Math.atan2(BASE.ty+1-b.Z,BASE.tx+1-b.X),r=b.s*TILE*0.5+18;const[x,y]=snapWalk(b.x+Math.cos(a)*r,b.y+Math.sin(a)*r);const hp=U.hp*TROOP_HP[L];
   enemies.push({type,red1:1,role:'home',side:0,sm:1,g:-1,hslot:Math.random(),tier:b.lvl,x,y,hp,maxhp:hp,udmg:U.dmg*TROOP_DM[L],uspd:U.speed*TROOP_SP[L],dm:TROOP_DM[L],cd:Math.random(),ang:a,rAng:a,r:U.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0,vx:0,vy:0})}
+// resignation: Red gives up when it judges the game unrecoverable
+function rIncome(L,red){let v=0;for(const b of L){const P2=BT[b.type].prod;if(P2)for(const k in P2)v+=P2[k]*MUL[b.lvl-1]*(k==='gold'?3:k==='wool'?1.5:1)}return v}
+function rResignCheck(){const R=RAI;if(gameOver||R.t<240)return;const core=rbuildings.filter(b=>b.type!=='wall');
+  const redInc=rIncome(rbuildings)*RFc.eco,blueInc=rIncome(buildings),redArmy=redStr(enemies),blueArmy=blueStrNear(0,0,1e9,false);
+  const canRebuild=rbuildings.some(b=>isArmy(b.type))||rAfford(rCost('hall'));
+  const lostBase=core.length<=Math.max(2,(R.peakB||0)*0.4),outEco=blueInc>redInc*1.4+2,outArmy=blueArmy>redArmy*3.5+1;
+  const hopeless=(lostBase&&outEco&&outArmy)||(!canRebuild&&outArmy&&enemies.length<3)||(outEco&&blueInc>redInc*5&&outArmy&&R.threat>0);
+  R.doom=hopeless?(R.doom||0)+RFc.tick:Math.max(0,(R.doom||0)-RFc.tick*2);const lim=[10,14,18,24][diff];
+  if(R.doom>lim*0.6&&!R.warned){R.warned=1;toast('Red is losing heart…')}
+  if(R.doom>=lim){gameOver=true;ST.won=true;ST.resigned=true;addScore(2500*[0.6,1,1.5,2.2][diff]);checkAch(5);clearSave();lastRec=recordPlay('win');AU.levelUp(3);
+    for(const e of enemies){e.role='retreat'}showBanner('RED RESIGNS','Red lays down its arms. The realm is yours.');setTimeout(()=>{showStats('win');renderHof()},2600)}}
 function checkEnd1v1(){if(gameOver)return;const redLeft=rbuildings.some(b=>b.type!=='wall')||enemies.length,blueLeft=buildings.some(b=>b.type!=='wall')||troops.length;
   if(!redLeft){gameOver=true;ST.won=true;addScore(2500*[0.6,1,1.5,2.2][diff]);checkAch(5);clearSave();lastRec=recordPlay('win');AU.levelUp(3);showBanner('VICTORY','The Red realm has fallen.');setTimeout(()=>{showStats('win');renderHof()},2200)}
   else if(!blueLeft){gameOver=true;clearSave();lastRec=recordPlay('loss');setTimeout(()=>{showStats('over');renderHof()},1600)}}
@@ -1865,8 +1878,8 @@ function gameStats(result){const S=ST,r2=v=>Math.round(v||0),o2=o=>{const r={};f
   return{v:3,result,mode:V1?'1v1':'wave',map:CFG.map,tpl:CFG.tpl,seed:CFG.seed||0,diff,lang:LANG,dev:{w:innerWidth,h:innerHeight,touch:'ontouchstart' in window},
     secs:r2(time),score:r2(score),wave,bestWave:S.bestWave,age,ages:(S.ages||[]).map(a=>[r2(a.t),a.age]),earned:o2(S.earned),spent:o2(S.spent),built:S.built,lost:S.lost,sold:S.sold,upgrades:S.upgrades,
     final:cnt,maxLvl:lv,vet,killsE:S.killsE,killsBy:S.killsBy,dmgBy:o2(S.dmgBy),taken:r2(S.taken),peakE:S.peakE,eaglesLost:S.kLost,trained:S.trained||{},troopsLost:S.tLost||0,maxArmy:S.maxArmy||0,charges:S.charges||0,
-    red:V1&&RAI?{razed:S.rKilled||0,age:RAI.age,ages:RAI.ages||[],trained:RAI.trained||{},attacks:RAI.attacks||0,raids:RAI.raids||0,peakB:RAI.peakB||0,final:rbuildings.length}:null,achs:S.achs||[],curve}}
-function recordPlay(result){const rec={name:(pname||'Player').slice(0,16),score:Math.round(score),wave,diff:DIFF[diff].n+(V1?' · 1v1'+(ST.won?' ✓':''):''),secs:Math.round(time),kills,age,mvp:(()=>{const r=ST.all.slice().sort((a,b)=>b.kills-a.kills)[0];return r?`${BT[r.b.type].name} #${r.n}`:''})(),device:devId,at:new Date().toISOString()};
+    red:V1&&RAI?{resigned:!!S.resigned,razed:S.rKilled||0,age:RAI.age,ages:RAI.ages||[],trained:RAI.trained||{},attacks:RAI.attacks||0,raids:RAI.raids||0,peakB:RAI.peakB||0,final:rbuildings.length}:null,achs:S.achs||[],curve}}
+function recordPlay(result){const rec={name:(pname||'Player').slice(0,16),score:Math.round(score),wave,diff:DIFF[diff].n+(V1?' · 1v1'+(ST.won?(ST.resigned?' ✓ (resigned)':' ✓'):''):''),secs:Math.round(time),kills,age,mvp:(()=>{const r=ST.all.slice().sort((a,b)=>b.kills-a.kills)[0];return r?`${BT[r.b.type].name} #${r.n}`:''})(),device:devId,at:new Date().toISOString()};
   try{const L=localScores();L.push(rec);L.sort((a,b)=>b.score-a.score);localStorage.setItem('b3_scores',JSON.stringify(L.slice(0,50)))}catch(e){}
   let full=rec;try{full={...rec,mode:V1?'1v1':'wave',map:CFG.map,result:result||'loss',stats:gameStats(result||'loss')}}catch(e){}
   if(boardOn()){const post=b=>fetch(BOARD.url+'/rest/v1/plays',{method:'POST',headers:{...bHdr(),'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(b)});
@@ -1991,7 +2004,7 @@ function barRows(el,rows,max){el.innerHTML=rows.map(r=>`<div class="brow"><span>
 let statsFrom=null;
 function showStats(mode){statsFrom=mode;setTimeout(renderHof,0);if(mode==='pause')$('pauseOv').classList.add('hidden');stSample();
   const S=ST,sm=S.samples.filter(x=>x.t>0),xs=sm.map(x=>x.t);const tot=S.dmgBy.archer+S.dmgBy.cannon+S.dmgBy.barracks+(S.dmgBy.hall||0)+(S.dmgBy.workshop||0);
-  $('stHead').innerHTML=mode==='win'?`<h1>VICTORY</h1><p>The Red realm fell after ${fmtT(time)}.</p>`:mode==='over'&&V1?`<h1>FALLEN</h1><p>Red conquered your realm after ${fmtT(time)}.</p>`:mode==='over'?`<h1>FALLEN</h1><p>Your realm held for ${fmtT(time)} and fell on wave ${wave}.</p>`:V1?`<h1>BATTLE STATS</h1><p>1v1 · ${fmtT(time)} into the battle</p>`:`<h1>BATTLE STATS</h1><p>Wave ${wave} · ${fmtT(time)} into the battle</p>`;
+  $('stHead').innerHTML=mode==='win'?(ST.resigned?`<h1>VICTORY</h1><p>Red resigned after ${fmtT(time)}.</p>`:`<h1>VICTORY</h1><p>The Red realm fell after ${fmtT(time)}.</p>`):mode==='over'&&V1?`<h1>FALLEN</h1><p>Red conquered your realm after ${fmtT(time)}.</p>`:mode==='over'?`<h1>FALLEN</h1><p>Your realm held for ${fmtT(time)} and fell on wave ${wave}.</p>`:V1?`<h1>BATTLE STATS</h1><p>1v1 · ${fmtT(time)} into the battle</p>`:`<h1>BATTLE STATS</h1><p>Wave ${wave} · ${fmtT(time)} into the battle</p>`;
   const earned=S.earned.grain+S.earned.wool+S.earned.gold;
   $('stTiles').innerHTML=[[fmtN(score),'Score · '+DIFF[diff].n],[fmtT(time),'Time survived'],V1?[S.rKilled||0,'Red buildings razed']:[S.bestWave,'Waves reached'],[kills,'Enemies defeated'],[fmtN(tot),'Damage dealt'],[fmtN(earned),'Resources earned']].map(([v,l])=>`<div class="stTile"><b>${v}</b><span>${l}</span></div>`).join('');
   const recs=S.all.slice().sort((a,b)=>b.kills-a.kills||b.dmg-a.dmg);const mvp=recs[0];
@@ -2085,7 +2098,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   frameDt=dt;inputTick(dt);applyCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();renderProd();if(bans)renderBans();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 window.__G={setDiff:i=>setDiff(i),get score(){return score},get ageRes(){return ageRes},dbg:()=>({lt:lsel&&lsel.t,lp:lastPt,box:!!boxSel,moved,hold:!!hold,paint:!!paint,anchor:!!anchor,ptrs:ptrs.size}),ser:()=>serialize(),load:d=>loadGame(d),get age(){return age},set age(v){age=v},depos:DEPOS,startWave:n=>{wave=n;startWave(n)},get spawnQ(){return spawnQ},cost:t=>costOf(t),spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
-  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies,rSpot,rbCan,rCore,rWant,rCost}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt)};
+  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies,rSpot,rbCan,rCore,rWant,rCost,destroyRB,rIncome,redStr,blueStrNear,rResignCheck}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt)};
 </script>
 </body>
 </html>
