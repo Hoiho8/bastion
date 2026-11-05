@@ -795,7 +795,7 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     if(L>=2){const posts=[[0.42,0.42],[-0.42,0.42],[0.42,-0.42],[-0.42,-0.42]];for(const[x,z]of posts)parts.push(P(cyl(0.012,0.012,0.22,4),STEEL,x,0.11,z));wire(parts,-0.45,0.42,0.45,0.42,0.1);wire(parts,-0.45,-0.42,0.45,-0.42,0.1)}
     if(L===3){metal.push(P(cone(0.11,0.2,4),'#9a978d',0.38,0.1,0.38,0,Math.PI/4),P(cone(0.11,0.2,4),'#9a978d',-0.38,0.1,-0.38,0,Math.PI/4));for(const r of[0.6,-0.6,2.1])metal.push(P(box(0.36,0.03,0.03),'#3a3a3a',-0.36,0.13,0.36,0,r,0.6))}}
   // ---------------- FARM (wheat) — merges with neighbours ----------------
-  else if(type==='wheat'){top=0.4;barH=L===1?1.0:1.3;const n=nb||{},ex=s=>n[s]?1.5:1.38;const x0=-ex('w'),x1=ex('e'),z0=-ex('n'),z1=ex('s');
+  else if(type==='wheat'){top=0.4;barH=L===1?1.0:1.3;const n=nb||{},full=s=>n[s]&&n[s].gap===0&&n[s].a<=-1.49&&n[s].b>=1.49,ex=s=>full(s)?1.5:1.38;const x0=-ex('w'),x1=ex('e'),z0=-ex('n'),z1=ex('s');
     const soil=L===1?'#6b5236':'#5e4a30';parts.push(P(box(x1-x0,0.03,z1-z0),soil,(x0+x1)/2,0.01,(z0+z1)/2));
     const crop=L===3?'#d9b84a':L===2?'#c8b24a':'#7aa04a',crop2=L===3?'#e8c95a':'#8fb05a';const rows=[];for(let z=z0+0.12;z<z1-0.05;z+=0.17){for(let x=x0+0.1;x<x1-0.05;x+=0.13){if(x<-0.6&&z<-0.6)continue;rows.push(P(box(0.08,L===1?0.12:0.2,0.06),((Math.round(z*6)%2)?crop:crop2),x,L===1?0.06:0.1,z))}}
     const cm=new THREE.Mesh(merge(rows),VM);cm.receiveShadow=true;group.add(cm);const ph=Math.random()*6;anims.push(t=>{cm.rotation.z=Math.sin(t*1.1+ph)*0.006});
@@ -806,8 +806,13 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     anims.push(t=>{cows.forEach((g,i)=>{const a=t*0.12+i*2.1+ph;g.position.set(-0.55+Math.cos(a)*0.22,0,-0.35+Math.sin(a*1.3)*0.18);g.rotation.y=-a-Math.PI/2});ch.forEach((g,i)=>{const a=t*0.6+i*1.7;g.position.set(-0.6+Math.cos(a)*0.12+i*0.05,Math.abs(Math.sin(t*6+i))*0.01,-0.85+Math.sin(a*1.6)*0.1);g.rotation.y=-a})});
     // fences only on sides without a neighbouring farm; a thin path where farms join
     const fence=(xa,za,xb,zb)=>{const L2=Math.hypot(xb-xa,zb-za),k=Math.max(2,Math.round(L2/0.3));for(let i=0;i<=k;i++)parts.push(P(box(0.035,0.2,0.035),WOODD,xa+(xb-xa)*i/k,0.1,za+(zb-za)*i/k));parts.push(P(box(Math.abs(xb-xa)+0.03,0.025,Math.abs(zb-za)+0.03),WOOD,(xa+xb)/2,0.15,(za+zb)/2))};
-    if(!n.n)fence(-1.42,-1.42,1.42,-1.42);else parts.push(P(box(2.9,0.012,0.05),'#8a7550',0,0.02,-1.48));if(!n.s)fence(-1.42,1.42,1.42,1.42);else parts.push(P(box(2.9,0.012,0.05),'#8a7550',0,0.02,1.48));
-    if(!n.w)fence(-1.42,-1.42,-1.42,1.42);else parts.push(P(box(0.05,0.012,2.9),'#8a7550',-1.48,0.02,0));if(!n.e)fence(1.42,-1.42,1.42,1.42);else parts.push(P(box(0.05,0.012,2.9),'#8a7550',1.48,0.02,0));
+    const brows=[];for(const[sd,dx,dz]of[['n',0,-1],['s',0,1],['w',-1,0],['e',1,0]]){const m=n[sd];const seg=(p0,p1)=>{if(p1-p0<0.25)return;if(dx)fence(dx*1.42,p0,dx*1.42,p1);else fence(p0,dz*1.42,p1,dz*1.42)};
+      if(!m){seg(-1.42,1.42);continue}const a=Math.max(-1.42,m.a+0.02),b2=Math.min(1.42,m.b-0.02);seg(-1.42,a-0.04);seg(b2+0.04,1.42);
+      if(full(sd))continue;const r0=1.36,r1=1.5+m.gap*0.5+0.02,mid=(r0+r1)/2,len=r1-r0,span=b2-a;
+      parts.push(dx?P(box(len,0.03,span),soil,dx*mid,0.01,(a+b2)/2):P(box(span,0.03,len),soil,(a+b2)/2,0.01,dz*mid));
+      for(let u=a+0.08;u<b2-0.04;u+=0.13)for(let v=r0+0.07;v<r1-0.03;v+=0.17){const X=dx?dx*v:u,Z=dx?u:dz*v;brows.push(P(box(0.08,L===1?0.12:0.2,0.06),((Math.round(Z*6)%2)?crop:crop2),X,L===1?0.06:0.1,Z))}
+      if(m.gap)parts.push(dx?P(box(0.06,0.014,span),'#8a7550',dx*(1.5+m.gap*0.5),0.025,(a+b2)/2):P(box(span,0.014,0.06),'#8a7550',(a+b2)/2,0.025,dz*(1.5+m.gap*0.5)))}
+    if(brows.length){const bm=new THREE.Mesh(merge(brows),VM);bm.receiveShadow=true;group.add(bm)}
     if(L>=2){const tr=new THREE.Mesh(merge([P(box(0.2,0.12,0.12),L===3?'#2f7a3a':'#c0382a',0,0.1,0),P(box(0.08,0.08,0.1),'#333',-0.04,0.2,0),P(cyl(0.06,0.06,0.03,8),'#222',-0.07,0.06,0.07,Math.PI/2),P(cyl(0.06,0.06,0.03,8),'#222',-0.07,0.06,-0.07,Math.PI/2)]),VM);tr.castShadow=true;group.add(tr);anims.push(t=>{const u=(Math.sin(t*0.15+ph)+1)/2;tr.position.set(x0+0.3+u*(x1-x0-0.6),0,0.9);tr.rotation.y=Math.cos(t*0.15+ph)>0?0:Math.PI})}
     if(L===3){metal.push(P(cyl(0.025,0.025,0.5,6),'#c9cfd8',0.6,0.25,0.4),P(box(1.6,0.03,0.03),'#c9cfd8',0.6,0.5,0.4))}}
   // ---------------- FACTORY (sheep) — merges with neighbours ----------------
@@ -818,8 +823,11 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     else{hall(-0.4,-0.4,2.0,1.5,0.9,'#c9cfd8','#5a6a7a');for(let i=0;i<6;i++)glow.push(P(box(0.2,0.25,0.005),'#9fd8ff',-1.2+i*0.32,0.5,0.355));metal.push(P(box(1.0,0.04,0.6),'#1e2a44',0.8,0.5,0.8,0.4),P(cyl(0.1,0.13,1.9,8),'#6a6e72',1.0,0.95,-0.9));metal.push(P(box(0.1,1.6,0.1),'#d0a020',-1.2,0.8,1.0),P(box(1.0,0.08,0.08),'#d0a020',-0.75,1.6,1.0))}
     const smk=[[1.0,L===3?1.9:L===2?1.6:1.3,-0.9]];anims.push((t,b)=>{if(b&&Math.random()<0.08)for(const[x,y,z]of smk)fx(b.X+x,b.Y+y,b.Z+z,1,'#8a8a8a',0.25,0.25,2.2,-0.25,0,1.2)});
     // conveyors to merged neighbours, fence elsewhere
-    for(const[s,dx,dz]of[['n',0,-1],['s',0,1],['w',-1,0],['e',1,0]]){if(n[s])metal.push(P(box(dx?0.6:0.18,0.06,dz?0.6:0.18),'#6a6e72',dx*1.2,0.35,dz*1.2),P(box(dx?0.6:0.04,0.3,dz?0.6:0.04),'#6a6e72',dx*1.2,0.17,dz*1.2));
-      else{const len=2.9;for(let i=0;i<=8;i++){const f=-1.42+i*len/8;parts.push(P(box(0.03,0.28,0.03),'#8a8f94',dx?dx*1.42:f,0.14,dz?dz*1.42:f))}parts.push(P(box(dx?0.02:2.86,0.02,dz?0.02:2.86),'#8a8f94',dx*1.42,0.26,dz*1.42))}}
+    for(const[sd,dx,dz]of[['n',0,-1],['s',0,1],['w',-1,0],['e',1,0]]){const m=n[sd];const fseg=(p0,p1)=>{if(p1-p0<0.25)return;const k=Math.max(1,Math.round((p1-p0)/0.36));for(let i=0;i<=k;i++){const f=p0+i*(p1-p0)/k;parts.push(P(box(0.03,0.28,0.03),'#8a8f94',dx?dx*1.42:f,0.14,dz?dz*1.42:f))}parts.push(dx?P(box(0.02,0.02,p1-p0),'#8a8f94',dx*1.42,0.26,(p0+p1)/2):P(box(p1-p0,0.02,0.02),'#8a8f94',(p0+p1)/2,0.26,dz*1.42))};
+      if(!m){fseg(-1.42,1.42);continue}const a=Math.max(-1.45,m.a),b2=Math.min(1.45,m.b);fseg(-1.42,a-0.04);fseg(b2+0.04,1.42);const r1=1.5+m.gap*0.5+0.02,span=b2-a,mid=(1.4+r1)/2,len=r1-1.4,c=(a+b2)/2;
+      parts.push(dx?P(box(len,0.04,span),'#8a8478',dx*mid,0.01,c):P(box(span,0.04,len),'#8a8478',c,0.01,dz*mid));
+      const cl=r1-1.0,cm=(1.0+r1)/2;metal.push(dx?P(box(cl,0.06,0.18),'#6a6e72',dx*cm,0.35,c):P(box(0.18,0.06,cl),'#6a6e72',c,0.35,dz*cm));for(let q=0;q<Math.max(1,Math.round(cl/0.5));q++){const v=1.05+q*0.5;if(v>r1-0.05)break;metal.push(dx?P(box(0.04,0.33,0.04),'#5a5e62',dx*v,0.17,c):P(box(0.04,0.33,0.04),'#5a5e62',c,0.17,dz*v))}
+      if(L>=2)for(let q=0;q<3;q++){const v=1.1+q*(cl/3);metal.push(dx?P(box(0.09,0.07,0.1),'#8a6a3a',dx*v,0.42,c):P(box(0.1,0.07,0.09),'#8a6a3a',c,0.42,dz*v))}}
     const truck=new THREE.Mesh(merge([P(box(0.3,0.16,0.14),'#c9c3b4',0,0.12,0),P(box(0.1,0.13,0.14),'#3a6aa0',0.2,0.1,0),P(cyl(0.035,0.035,0.16,6),'#222',-0.08,0.035,0,Math.PI/2),P(cyl(0.035,0.035,0.16,6),'#222',0.18,0.035,0,Math.PI/2)]),VM);truck.castShadow=true;group.add(truck);const ph=Math.random()*6;anims.push(t=>{const u=(Math.sin(t*0.2+ph)+1)/2;truck.position.set(-1.1+u*1.6,0,1.05)})}
   // ---------------- BANK (mine) — Treasury-style; grime builds up in stages and never washes off ----------------
   else if(type==='mine'){const dirt=(nb&&nb.dirt)||0,G=dirt>=0.6?3:dirt>=0.4?2:dirt>=0.2?1:0;
@@ -1036,18 +1044,26 @@ function addBuilding(type,tx,ty,instant){const T=BT[type],s=T.size;
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++)occ[x+y*GW]=b.id;
   b.X=tx+s/2;b.Z=ty+s/2;b.Y=flattenAt(tx,ty,s);
   if(type==='barracks'||type==='helipad')b.formAng=Math.atan2(SPY-b.y,SPX-b.x);
-  buildings.push(b);makeVisual(b);if(type==='wall')refreshWalls(tx,ty);if(type==='wheat'||type==='sheep')refreshMerge(b);navCache.clear();return b}
+  buildings.push(b);makeVisual(b);if(type==='wall')refreshWalls(tx,ty);refreshMerge(b);navCache.clear();return b}
 const discTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,225,110,0.55)');gr.addColorStop(0.6,'rgba(255,200,60,0.3)');gr.addColorStop(0.82,'rgba(255,200,60,0.25)');gr.addColorStop(0.9,'rgba(255,225,100,0.85)');gr.addColorStop(0.97,'rgba(255,210,80,0.3)');gr.addColorStop(1,'rgba(255,200,60,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t})();
 const discMat=new THREE.MeshBasicMaterial({map:discTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true});
 let oldG=[],waves=[];
 const bAt=(x,y)=>{if(x<0||y<0||x>=GW||y>=GH)return null;const id=occ[x+y*GW];return id?buildings.find(b=>b.id===id):null};
 function wallNb(b){const w=(x,y)=>{const o=bAt(x,y);return!!(o&&o.type==='wall')};return{n:w(b.tx,b.ty-1),e:w(b.tx+1,b.ty),s:w(b.tx,b.ty+1),w:w(b.tx-1,b.ty)}}
-function mergeNb(b){const m=(dx,dy)=>{const o=bAt(b.tx+dx,b.ty+dy);return!!(o&&o!==b&&o.type===b.type&&o.tx===b.tx+dx&&o.ty===b.ty+dy)};return{n:m(0,-3),e:m(3,0),s:m(0,3),w:m(-3,0)}}
+function mergeNb(b){const L=b.red?rbuildings:buildings,out={n:false,e:false,s:false,w:false};
+  for(const o of L){if(o===b||o.type!==b.type)continue;
+    for(const gap of[0,1]){let side=null,lo,hi;
+      if(o.tx===b.tx+3+gap||o.tx+3+gap===b.tx){side=o.tx>b.tx?'e':'w';lo=Math.max(b.ty,o.ty);hi=Math.min(b.ty+3,o.ty+3)}
+      else if(o.ty===b.ty+3+gap||o.ty+3+gap===b.ty){side=o.ty>b.ty?'s':'n';lo=Math.max(b.tx,o.tx);hi=Math.min(b.tx+3,o.tx+3)}
+      if(!side||hi-lo<1)continue;
+      if(gap){let clear=true;for(let k=lo;k<hi;k++){const x=side==='e'?b.tx+3:side==='w'?b.tx-1:k,y=side==='s'?b.ty+3:side==='n'?b.ty-1:k;const ii=x+y*GW;if(occ[ii]||terrain[ii]!==0||(typeof CITY!=='undefined'&&CITY[ii]))clear=false}if(!clear)continue}
+      const c=side==='e'||side==='w'?b.ty+1.5:b.tx+1.5,cur=out[side];if(!cur||gap<cur.gap||hi-lo>cur.b-cur.a)out[side]={gap,a:lo-c,b:hi-c}}}
+  return out}
 const mergeN=b=>b.mN||0;
-function refreshMerge(b){for(const[dx,dy]of[[0,-3],[3,0],[0,3],[-3,0]]){const o=bAt(b.tx+dx,b.ty+dy);if(o&&o!==b&&o.type===b.type&&o.tx===b.tx+dx&&o.ty===b.ty+dy)makeVisual(o)}}
+function refreshMerge(b){for(const o of buildings){if(o===b||(o.type!=='wheat'&&o.type!=='sheep'))continue;const g=Math.max(o.tx-(b.tx+b.s),b.tx-(o.tx+o.s),o.ty-(b.ty+b.s),b.ty-(o.ty+o.s));if(g<=1)makeVisual(o)}}
 function refreshWalls(tx,ty){for(const[dx,dy]of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const o=bAt(tx+dx,ty+dy);if(o&&o.type==='wall')makeVisual(o)}}
 function makeVisual(b,keepOld){if(b.group){if(keepOld){oldG.push({g:b.group,t:0})}else scene.remove(b.group)}
-  const mnb=(b.type==='wheat'||b.type==='sheep')?mergeNb(b):null;if(mnb)b.mN=mnb.n+mnb.e+mnb.s+mnb.w;const m=buildModel(b.type,b.lvl,b.type==='wall'?wallNb(b):b.type==='mine'?{dirt:b.dirt||0}:mnb);b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);b.group.userData.b=b;b.group.traverse(o=>{o.userData.b=b});scene.add(b.group);if(b.dirt){b.dirtA=-1;applyDirt(b)}
+  const mnb=(b.type==='wheat'||b.type==='sheep')?mergeNb(b):null;if(mnb)b.mN=(mnb.n?1:0)+(mnb.e?1:0)+(mnb.s?1:0)+(mnb.w?1:0);const m=buildModel(b.type,b.lvl,b.type==='wall'?wallNb(b):b.type==='mine'?{dirt:b.dirt||0}:mnb);b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);b.group.userData.b=b;b.group.traverse(o=>{o.userData.b=b});scene.add(b.group);if(b.dirt){b.dirtA=-1;applyDirt(b)}
   if(!b.disc){b.disc=new THREE.Mesh(new THREE.CircleGeometry(b.s*0.82+0.2,40).rotateX(-Math.PI/2),discMat);b.disc.renderOrder=2;b.disc.visible=false;b.disc.position.set(b.X,b.Y+0.14,b.Z);scene.add(b.disc)}}
 function canPlace(type,tx,ty){const s=BT[type].size;if(type==='minef'){if(tx<1||ty<1||tx>=GW-1||ty>=GH-1)return false;const i=tx+ty*GW;if(terrain[i]!==0||occ[i]||!reach[i]||CITY[i]||nearSpawn(tx,ty,9))return false;const L=MINEL[i];return !L||MINEB[i]<mineCap(L)||L<Math.min(3,age)}
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++){if(x<1||y<1||x>=GW-1||y>=GH-1)return false;const i=x+y*GW;if(terrain[i]!==0||occ[i]||!reach[i]||CITY[i])return false}
@@ -1130,7 +1146,7 @@ function nearestBuilding(x,y){let b=null,bd=1e9;for(const o of buildings){if(o.t
 function hurtBuilding(b,d){const real=Math.min(d,Math.max(0,b.hp));if(b.type!=='wall'){b.dirt=Math.min(0.72,(b.dirt||0)+real/b.maxhp*0.5);applyDirt(b)}if(b.st)b.st.taken+=real;ST.taken+=real;ST.acc.taken+=real;b.hp-=d;b.hit=0.15;const[X,Y,Z]=[b.X,b.Y,b.Z];if(Math.random()<0.35)fx(X+(Math.random()-.5)*b.s*0.8,Y+0.3,Z+(Math.random()-.5)*b.s*0.8,2,'#8a8070',1.2,0.12,0.6,4,2);if(b.hp<=0)destroyBuilding(b)}
 function destroyBuilding(b,sold){const i=buildings.indexOf(b);if(i<0)return;if(b.st){b.st.died=time;b.st.sold=!!sold}if(sold)ST.sold++;else ST.lost++;buildings.splice(i,1);scene.remove(b.group);
   for(let y=b.ty;y<b.ty+b.s;y++)for(let x=b.tx;x<b.tx+b.s;x++)occ[x+y*GW]=0;
-  for(const k of knights)if(k.b===b)k.hp=0;if(b.disc)scene.remove(b.disc);if(b.flame){scene.remove(b.flame);b.flame=null}selSet.delete(b);navCache.clear();if(b.type==='wall')refreshWalls(b.tx,b.ty);if(b.type==='wheat'||b.type==='sheep')refreshMerge(b);
+  for(const k of knights)if(k.b===b)k.hp=0;if(b.disc)scene.remove(b.disc);if(b.flame){scene.remove(b.flame);b.flame=null}selSet.delete(b);navCache.clear();if(b.type==='wall')refreshWalls(b.tx,b.ty);refreshMerge(b);
   if(sold){fx(b.X,b.Y+0.3,b.Z,10+b.s*6,'#cdbb94',2,0.35,1.1,0,0,0.4);fx(b.X,b.Y+0.5,b.Z,8,'#ffd34a',1.6,0.07,0.9,-0.5,1,1);if(sel===b)sel=null;if(hold&&hold.b===b)hold=null;return}
   fx(b.X,b.Y+0.6,b.Z,26,'#7a6a58',3,0.16,1.6,7,2,1.2);fx(b.X,b.Y+0.6,b.Z,22,'#8a8580',1.4,0.55,2.8,-0.3,0,0.8);fx(b.X,b.Y+0.5,b.Z,10,'#ff9a30',1.5,0.3,0.6,0,1);
   const rp=[];for(let k=0;k<6+b.s*4;k++)rp.push(P(dod(0.14+Math.random()*0.16),['#8f897c','#6c675d','#7d5432'][k%3],(Math.random()-.5)*b.s*0.9,0.05,(Math.random()-.5)*b.s*0.9,Math.random(),Math.random(),0,1,0.6,1));
