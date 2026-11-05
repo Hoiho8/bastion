@@ -821,15 +821,40 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     for(const[s,dx,dz]of[['n',0,-1],['s',0,1],['w',-1,0],['e',1,0]]){if(n[s])metal.push(P(box(dx?0.6:0.18,0.06,dz?0.6:0.18),'#6a6e72',dx*1.2,0.35,dz*1.2),P(box(dx?0.6:0.04,0.3,dz?0.6:0.04),'#6a6e72',dx*1.2,0.17,dz*1.2));
       else{const len=2.9;for(let i=0;i<=8;i++){const f=-1.42+i*len/8;parts.push(P(box(0.03,0.28,0.03),'#8a8f94',dx?dx*1.42:f,0.14,dz?dz*1.42:f))}parts.push(P(box(dx?0.02:2.86,0.02,dz?0.02:2.86),'#8a8f94',dx*1.42,0.26,dz*1.42))}}
     const truck=new THREE.Mesh(merge([P(box(0.3,0.16,0.14),'#c9c3b4',0,0.12,0),P(box(0.1,0.13,0.14),'#3a6aa0',0.2,0.1,0),P(cyl(0.035,0.035,0.16,6),'#222',-0.08,0.035,0,Math.PI/2),P(cyl(0.035,0.035,0.16,6),'#222',0.18,0.035,0,Math.PI/2)]),VM);truck.castShadow=true;group.add(truck);const ph=Math.random()*6;anims.push(t=>{const u=(Math.sin(t*0.2+ph)+1)/2;truck.position.set(-1.1+u*1.6,0,1.05)})}
-  // ---------------- BANK (mine) ----------------
-  else if(type==='mine'){top=1.0;const stone=L===3?'#d8d3c6':L===2?'#c6c1b4':'#b4b0a4',dk=L===3?'#a8a396':'#94907f';
-    const ncol=L===1?4:6,w=L===1?1.4:1.7,h=L===1?0.75:L===2?0.95:1.1;barH=h+0.9;
-    parts.push(P(box(w+0.2,0.08,1.5),dk,0,0.04,0),P(box(w+0.1,0.08,1.4),stone,0,0.12,0),P(box(w,h,1.1),stone,0,0.16+h/2,-0.1),P(box(w+0.1,0.1,1.25),dk,0,0.21+h,-0.05),P(prism(0.22,w+0.12),stone,0,0.38+h,0.25,0,Math.PI,0,1,0.6,1));
-    for(let i=0;i<ncol;i++){const x=-w/2+0.1+i*(w-0.2)/(ncol-1);parts.push(P(cyl(0.05,0.055,h,8),'#e4e0d4',x,0.16+h/2,0.55),P(box(0.13,0.04,0.13),dk,x,0.18+h,0.55))}
-    for(let i=0;i<3;i++)parts.push(P(box(w*0.6,0.03,0.1),dk,0,0.04+i*0.03,0.78+i*0.08));parts.push(P(box(0.2,0.35,0.02),'#2e2a26',0,0.33,0.46));glow.push(P(box(0.5,0.05,0.005),'#f0e0a0',0,0.12+h*0.85,0.46));
-    if(L>=2)for(let i=0;i<4;i++)glow.push(P(box(0.12,0.18,0.005),'#ffe7a0',-0.6+i*0.4,0.55,-0.655));
-    if(L===3){metal.push(P(box(w+0.12,0.03,1.27),GOLDM,0,0.27+h,-0.05),P(box(0.25,0.18,0.02),GOLDM,0,0.5+h,0.27))}
-    flag(w/2-0.05,-0.55,h+1.0,BLUE)}
+  // ---------------- BANK (mine) — Treasury-style; grime builds up in stages and never washes off ----------------
+  else if(type==='mine'){const dirt=(nb&&nb.dirt)||0,G=dirt>=0.6?3:dirt>=0.4?2:dirt>=0.2?1:0;
+    const ST='#d2cdbf',SH='#aea99b',DK='#7d796f',GR='#8f8b82',BR='#6e4c24',WIN='#2b3036',SOOT='#2e2b28',SC='#3b3632';
+    const w=L===1?1.2:1.3,d=1.0,h=L===1?0.7:L===2?0.82:0.92,zf=0.42,y0=0.24,ncol=L===1?4:L===2?6:8;top=h+0.6;barH=h+(L===3?1.5:1.1);
+    parts.push(P(box(1.94,0.1,1.94),GR,0,0.05,0),P(box(1.78,0.14,1.6),SH,0,0.17,-0.05));
+    // main hall
+    parts.push(P(box(w,h,d),ST,0,y0+h/2,-0.12),P(box(w+0.08,0.06,d+0.08),SH,0,y0+0.03,-0.12));
+    // side window rows
+    for(const sx of[1,-1])for(let r=0;r<2;r++)for(let i=0;i<3;i++){const z=-0.5+i*0.3,y=y0+0.2+r*(h*0.45),broke=G>=2&&(i+r+(sx>0?1:0))%2===0;
+      parts.push(P(box(0.01,0.18,0.12),broke?'#101010':WIN,sx*(w/2+0.005),y,z),P(box(0.015,0.025,0.15),SH,sx*(w/2+0.008),y-0.1,z));if(!broke&&(i+r)%2===0)glow.push(P(box(0.005,0.13,0.08),'#ffe2a0',sx*(w/2+0.012),y,z))}
+    // portico: entablature, pediment, columns, steps, bronze doors
+    parts.push(P(box(w+0.16,0.12,0.62),SH,0,y0+h+0.06,zf-0.15),P(box(w+0.2,0.035,0.66),DK,0,y0+h+0.135,zf-0.15),P(box(w*0.62,0.05,0.005),DK,0,y0+h+0.06,zf+0.163));
+    for(let i=0;i<7;i++)parts.push(P(box(0.04,0.02,0.005),'#e8e2d0',-0.21+i*0.07,y0+h+0.06,zf+0.167));
+    if(G<3)parts.push(P(prism(0.24,w+0.16),ST,0,y0+h+0.27,zf+0.06,0,0,0,1,0.7,0.2));else parts.push(P(prism(0.24,(w+0.16)*0.55),ST,-(w+0.16)*0.22,y0+h+0.27,zf+0.06,0,0,0,1,0.7,0.2),P(dod(0.09),SH,0.25,0.12,zf+0.45,1,2,0),P(dod(0.07),ST,0.4,0.1,zf+0.55,2,1,0));
+    parts.push(P(prism(0.3,w+0.1),SH,0,y0+h+0.2,-0.12,0,0,0,1,0.55,1.85));
+    for(let i=0;i<ncol;i++){const x=-w/2+0.06+i*(w-0.12)/(ncol-1),brk=G>=3&&i===ncol-2,ch=brk?h*0.45:h;
+      parts.push(P(cyl(0.048,0.055,ch,10),'#e6e1d3',x,y0+ch/2,zf+0.1),P(box(0.13,0.04,0.13),SH,x,y0+0.02,zf+0.1));if(!brk)parts.push(P(box(0.13,0.045,0.13),SH,x,y0+h-0.02,zf+0.1));else parts.push(P(cyl(0.048,0.05,h*0.4,10),'#d6d1c3',x+0.25,0.14,zf+0.62,0,0.4,Math.PI/2));
+      if(G>=1&&i%2===0)parts.push(P(box(0.014,ch*(0.3+0.15*((i*7)%3)),0.01),'#4a453f',x+0.018,y0+ch*0.72,zf+0.152));if(G>=2&&i%2===1)parts.push(P(box(0.016,ch*0.28,0.01),'#3f3a35',x-0.014,y0+ch*0.78,zf+0.152));if(G>=3&&i%3===0)parts.push(P(box(0.05,0.06,0.02),'#2a2724',x,y0+ch*0.4,zf+0.15))}
+    for(let i=0;i<4;i++)parts.push(P(box(w+0.1-i*0.04,0.045,0.12),i%2?SH:ST,0,0.215-i*0.045+0.05,zf+0.25+i*0.1));
+    parts.push(P(box(0.36,0.46,0.03),SH,0,y0+0.23,-0.12+d/2+0.005),P(box(0.15,0.4,0.02),BR,-0.08,y0+0.2,-0.12+d/2+0.02),P(box(0.15,0.4,0.02),BR,0.08,y0+0.2,-0.12+d/2+0.02));metal.push(P(box(0.02,0.04,0.01),'#c9a24a',-0.02,y0+0.2,-0.12+d/2+0.035),P(box(0.02,0.04,0.01),'#c9a24a',0.02,y0+0.2,-0.12+d/2+0.035));
+    glow.push(P(box(0.24,0.06,0.005),'#ffe2a0',0,y0+0.48,-0.12+d/2+0.03));
+    // tier II: wings
+    if(L>=2)for(const sx of[1,-1]){const wx=sx*(w/2+0.2);parts.push(P(box(0.38,h*0.72,0.78),ST,wx,y0+h*0.36,-0.22),P(box(0.42,0.05,0.82),SH,wx,y0+h*0.72+0.025,-0.22));
+      for(let i=0;i<2;i++){parts.push(P(box(0.12,0.16,0.01),WIN,wx,y0+0.25,-0.22+0.395+0.001+i*0));if(i===0&&G<2)glow.push(P(box(0.08,0.11,0.005),'#ffe2a0',wx,y0+0.25,0.181))}}
+    // tier III: dome and armored-truck bay
+    if(L===3){const dy=y0+h+0.42;parts.push(P(cyl(0.3,0.32,0.22,14),ST,0,dy,-0.2));for(let i=0;i<10;i++){const a=i/10*Math.PI*2;parts.push(P(box(0.04,0.2,0.04),'#e6e1d3',Math.cos(a)*0.31,dy,-0.2+Math.sin(a)*0.31))}
+      parts.push(P(sph(0.3,14,8),G>=2?'#55605a':'#6f9a86',0,dy+0.11,-0.2,0,0,0,1,0.72,1),P(cyl(0.05,0.06,0.14,8),ST,0,dy+0.39,-0.2),P(cone(0.05,0.1,8),'#6f9a86',0,dy+0.5,-0.2));
+      parts.push(P(box(0.42,0.32,0.5),SH,-0.72,y0+0.16,-0.62),P(box(0.3,0.24,0.01),'#3a3d40',-0.72,y0+0.13,-0.367));for(let i=0;i<4;i++)parts.push(P(box(0.3,0.012,0.012),'#55585b',-0.72,y0+0.05+i*0.06,-0.36));
+      parts.push(P(box(0.34,0.16,0.16),'#3e4636',-0.72,0.32,-0.12),P(box(0.12,0.12,0.15),'#4a5240',-0.58,0.3,-0.12),P(box(0.02,0.06,0.13),'#6f93ab',-0.52,0.33,-0.12));for(const x of[-0.85,-0.6])for(const z of[-0.04,-0.2])parts.push(P(cyl(0.035,0.035,0.03,8),'#1c1c1c',x,0.25,z,Math.PI/2))}
+    // grime: scorch, soot, rubble
+    if(G>=1){parts.push(P(box(0.3,0.22,0.008),SC,w/2-0.25,y0+h*0.75,-0.12+d/2+0.006),P(box(0.008,0.25,0.3),SC,w/2+0.006,y0+h*0.6,-0.3));for(let i=0;i<3;i++)parts.push(P(box(0.025,h*0.6,0.008),SOOT,-w/2+0.15+i*0.18,y0+h*0.55,-0.12+d/2+0.007))}
+    if(G>=2){parts.push(P(box(0.45,0.3,0.009),SOOT,-w/2+0.3,y0+h*0.45,-0.12+d/2+0.008),P(box(0.009,0.35,0.45),SOOT,-w/2-0.006,y0+h*0.5,0),P(box(0.18,0.12,0.18),'#5a564e',w/2-0.05,y0+h-0.03,-0.12+d/2-0.05));for(let k=0;k<6;k++)parts.push(P(dod(0.04+(k%3)*0.02),k%2?SH:DK,-0.8+k*0.32,0.13,zf+0.75+(k%2)*0.08,k,k*0.7,0))}
+    if(G>=3){parts.push(P(box(0.6,0.5,0.01),'#1e1c1a',0.1,y0+h*0.5,-0.12+d/2+0.009),P(box(0.25,0.2,0.02),'#0e0e0e',w/2-0.3,y0+h*0.55,-0.12+d/2+0.012));bagLine(parts,-0.3,zf+0.62,0.3,zf+0.62,2)}
+    flag(w/2-0.05,-0.55,h+(L===3?1.25:1.0),BLUE)}
   if(false){}
   // ---------------- 155mm HOWITZER ----------------
   else if(type==='howitzer'){top=0.7;barH=1.5;const tur=new THREE.Group();
@@ -1022,7 +1047,7 @@ const mergeN=b=>b.mN||0;
 function refreshMerge(b){for(const[dx,dy]of[[0,-3],[3,0],[0,3],[-3,0]]){const o=bAt(b.tx+dx,b.ty+dy);if(o&&o!==b&&o.type===b.type&&o.tx===b.tx+dx&&o.ty===b.ty+dy)makeVisual(o)}}
 function refreshWalls(tx,ty){for(const[dx,dy]of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const o=bAt(tx+dx,ty+dy);if(o&&o.type==='wall')makeVisual(o)}}
 function makeVisual(b,keepOld){if(b.group){if(keepOld){oldG.push({g:b.group,t:0})}else scene.remove(b.group)}
-  const mnb=(b.type==='wheat'||b.type==='sheep')?mergeNb(b):null;if(mnb)b.mN=mnb.n+mnb.e+mnb.s+mnb.w;const m=buildModel(b.type,b.lvl,b.type==='wall'?wallNb(b):mnb);b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);b.group.userData.b=b;b.group.traverse(o=>{o.userData.b=b});scene.add(b.group);if(b.dirt){b.dirtA=-1;applyDirt(b)}
+  const mnb=(b.type==='wheat'||b.type==='sheep')?mergeNb(b):null;if(mnb)b.mN=mnb.n+mnb.e+mnb.s+mnb.w;const m=buildModel(b.type,b.lvl,b.type==='wall'?wallNb(b):b.type==='mine'?{dirt:b.dirt||0}:mnb);b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);b.group.userData.b=b;b.group.traverse(o=>{o.userData.b=b});scene.add(b.group);if(b.dirt){b.dirtA=-1;applyDirt(b)}
   if(!b.disc){b.disc=new THREE.Mesh(new THREE.CircleGeometry(b.s*0.82+0.2,40).rotateX(-Math.PI/2),discMat);b.disc.renderOrder=2;b.disc.visible=false;b.disc.position.set(b.X,b.Y+0.14,b.Z);scene.add(b.disc)}}
 function canPlace(type,tx,ty){const s=BT[type].size;if(type==='minef'){if(tx<1||ty<1||tx>=GW-1||ty>=GH-1)return false;const i=tx+ty*GW;if(terrain[i]!==0||occ[i]||!reach[i]||CITY[i]||nearSpawn(tx,ty,9))return false;const L=MINEL[i];return !L||MINEB[i]<mineCap(L)||L<Math.min(3,age)}
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++){if(x<1||y<1||x>=GW-1||y>=GH-1)return false;const i=x+y*GW;if(terrain[i]!==0||occ[i]||!reach[i]||CITY[i])return false}
@@ -1061,7 +1086,7 @@ let stepT=0;function wearGround(dt){stepT+=dt;if(stepT<0.35)return;const k=stepT
   for(const L of[enemies,troops])for(const u of L){if(!(u.mvT>0))continue;const X=u.x/TILE,Z=u.y/TILE;if(VEHT.has(u.type)){if(u.tkx!=null&&Math.hypot(X-u.tkx,Z-u.tkz)>0.12)DEC.track(u.tkx,u.tkz,X,Z,u.type==='cav'?0.17:0.21);u.tkx=X;u.tkz=Z;if(Math.random()<0.3)DEC.mud(X,Z,0.3,0.03)}else DEC.mud(X+(Math.random()-.5)*0.2,Z+(Math.random()-.5)*0.2,0.16,0.022*k*3)}}
 // buildings get grimy from nearby blasts and damage; banks never come clean
 function grime(X,Z,r,a){for(const L of[buildings,rbuildings])for(const b of L){if(b.type==='wall')continue;const d=Math.hypot(b.X-X,b.Z-Z)-b.s*0.5;if(d<r){b.dirt=Math.min(0.72,(b.dirt||0)+a*(1-Math.max(0,d)/r));applyDirt(b)}}}
-function applyDirt(b){const d=b.dirt||0;if(Math.abs(d-(b.dirtA??0))<0.04&&b.dirtA!==-1)return;b.dirtA=d;if(!b.dirtM)b.dirtM=VM.clone();b.dirtM.color.setRGB(1-0.5*d,1-0.56*d,1-0.62*d);b.group.traverse(o=>{if(o.isMesh&&o.material===VM)o.material=b.dirtM})}
+function applyDirt(b){const d=b.dirt||0;if(b.type==='mine'){const st=d>=0.6?3:d>=0.4?2:d>=0.2?1:0;if(st!==(b.gst||0)){b.gst=st;if(b.red)makeRVisual(b,false);else makeVisual(b,false);return}}if(Math.abs(d-(b.dirtA??0))<0.04&&b.dirtA!==-1)return;b.dirtA=d;if(!b.dirtM)b.dirtM=VM.clone();b.dirtM.color.setRGB(1-0.62*d,1-0.66*d,1-0.7*d);b.group.traverse(o=>{if(o.isMesh&&o.material===VM)o.material=b.dirtM})}
 // ---------- FX helpers (3D units) ----------
 function fx(X,Y,Z,n,col,spd,size,life,grav,kind,up=0.6){const c=new THREE.Color(col);for(let i=0;i<n;i++){if(parts.length>1100)return;parts.push({x:X,y:Y,z:Z,vx:(Math.random()-.5)*spd,vy:(Math.random()*up+0.1)*spd,vz:(Math.random()-.5)*spd,life:life*(0.7+Math.random()*0.5),max:life,s:size*(0.6+Math.random()*0.6),c,g:grav,k:kind})}}
 const W3=(x,y)=>[x/TILE,heightAt(x/TILE,y/TILE),y/TILE];
@@ -1487,9 +1512,9 @@ function troopSlots(){const order={cav:0,spear:1,shield:1,bowman:2,catapult:3,ra
 function redden(group){group.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.color)return;o.geometry=o.geometry.clone();const c=o.geometry.attributes.color;
   for(let i=0;i<c.count;i++){const r=c.getX(i),g=c.getY(i),b=c.getZ(i);if(b>r*1.35&&b>g*1.05&&b>0.2){c.setXYZ(i,Math.min(1,b*1.05+0.08),g*0.35,r*0.35)}}c.needsUpdate=true})}
 const RMARK=new THREE.MeshBasicMaterial({color:'#ff3a2a',transparent:true,opacity:0.55,depthWrite:false});
-function makeRVisual(b,keepOld){if(b.group){if(keepOld)oldG.push({g:b.group,t:0});else scene.remove(b.group)}const m=buildModel(b.type,b.lvl,null);redden(m.group);
+function makeRVisual(b,keepOld){if(b.group){if(keepOld)oldG.push({g:b.group,t:0});else scene.remove(b.group)}const m=buildModel(b.type,b.lvl,b.type==='mine'?{dirt:b.dirt||0}:null);redden(m.group);
   if(b.type!=='wall'){const h=b.s/2+0.02,w=0.09;const ring=new THREE.Mesh(merge([P(box(b.s+0.04,0.02,w),'#ffffff',0,0,h),P(box(b.s+0.04,0.02,w),'#ffffff',0,0,-h),P(box(w,0.02,b.s+0.04),'#ffffff',h,0,0),P(box(w,0.02,b.s+0.04),'#ffffff',-h,0,0)]),RMARK);ring.position.y=0.06;ring.renderOrder=2;m.group.add(ring);
-    if(BT[b.type].kind==='eco'){const px=-b.s/2+0.15,pz=-b.s/2+0.15;const pole=new THREE.Mesh(merge([P(cyl(0.02,0.02,1.5,4),WOODD,0,0.75,0)]),VM);pole.position.set(px,0,pz);m.group.add(pole);flagM(m.group,m.anims,px,1.32,pz,RED,b.tx)}}b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);scene.add(b.group)}
+    if(BT[b.type].kind==='eco'){const px=-b.s/2+0.15,pz=-b.s/2+0.15;const pole=new THREE.Mesh(merge([P(cyl(0.02,0.02,1.5,4),WOODD,0,0.75,0)]),VM);pole.position.set(px,0,pz);m.group.add(pole);flagM(m.group,m.anims,px,1.32,pz,RED,b.tx)}}b.group=m.group;b.anims=m.anims;b.top=m.top;b.barH=m.barH;b.group.position.set(b.X,b.Y,b.Z);scene.add(b.group);if(b.dirt){b.dirtA=-1;applyDirt(b)}}
 function addRB(type,tx,ty,lvl=1,instant){const T=BT[type],s=T.size;const b={id:nextRid--,red:1,type,tx,ty,s,px:tx*TILE,py:ty*TILE,x:(tx+s/2)*TILE,y:(ty+s/2)*TILE,lvl,hp:T.hp*HPM[lvl-1],maxhp:T.hp*HPM[lvl-1],cd:0,aim:-2.3,raim:-2.3,hit:0,build:instant?1:0,pulse:0,recoil:0,q:[],qT:0};
   for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++)occ[x+y*GW]=b.id;b.X=tx+s/2;b.Z=ty+s/2;b.Y=flattenAt(tx,ty,s);rbuildings.push(b);makeRVisual(b);navCache.clear();return b}
 function rbCan(type,tx,ty){const s=BT[type].size;for(let y=ty;y<ty+s;y++)for(let x=tx;x<tx+s;x++){if(x<2||y<2||x>=GW-2||y>=GH-2)return false;const i=x+y*GW;if(terrain[i]!==0||occ[i]||CITY[i])return false}
