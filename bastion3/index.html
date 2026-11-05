@@ -112,7 +112,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #bFix{position:fixed;left:calc(env(safe-area-inset-left) + 16px);bottom:calc(env(safe-area-inset-bottom) + 150px);width:66px;height:66px;border-radius:50%!important;z-index:6;padding:0;color:#ffe9a8;font-family:inherit;flex-direction:column;align-items:center;justify-content:center;touch-action:none;border-color:#9dff9d}
 #bFix .ic{font-size:20px;line-height:1}#bFix .nm{font-size:9.5px;font-weight:bold}#bFix .cs{font-size:8px;line-height:1.1;max-width:62px;text-align:center}#bFix .bad{color:#ff8a7a}
 #bFix.no{filter:grayscale(.8) brightness(.7)}#bFix.press{transform:scale(.88)}
-#prod{position:fixed;left:0;top:0;width:0;height:0;z-index:5}
+#prod{position:fixed;left:0;top:0;width:0;height:0;z-index:7}
 .pc{position:absolute;width:62px;height:62px;border-radius:50%!important;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffe9a8;touch-action:none;user-select:none;-webkit-user-select:none;padding:0;transition:transform .08s,filter .08s}
 .pc .ic{font-size:22px;line-height:1;position:relative}.pc .nm{font-size:8.5px;font-weight:bold;position:relative}.pc .cs{font-size:8px;line-height:1.05;text-align:center;max-width:60px;position:relative}.pc .bad{color:#ff8a7a}
 .pc .q{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;border-radius:10px;background:#ffd34a;color:#2e1d0e;font-weight:bold;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.6)}
@@ -181,7 +181,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
   <div class="step i1"><div class="n">3</div><div class="e">🚩</div><div><b>Send your banner</b><span>Drag the 🚩 banner onto a Red building to attack it, or tap 🔥 and your troops pick their own targets.</span></div></div>
   <div class="step iw"><div class="n">2</div><div class="e">🏹</div><div><b>Raise a defense</b><span>Tap <span class="chip">🏹 Defense</span> and pick a tower. Drag it toward the bottom-left, where the enemy comes from.</span></div></div>
   <div class="step iw"><div class="n">3</div><div class="e">⬆️</div><div><b>Upgrade and repair</b><span>Press and hold a building to upgrade it. Double-tap to repair.</span></div></div>
-  <div class="step"><div class="n">4</div><div class="e">⚜️</div><div><b>Advance the ages</b><span>The gold button, bottom left, unlocks cannons, knights and stronger tiers.</span></div></div>
+  <div class="step"><div class="n">4</div><div class="e">⚜️</div><div><b>Advance the ages</b><span>The gold button, bottom left, unlocks cannons, eagles and stronger tiers.</span></div></div>
   <div class="hfoot"><button class="go wood" id="bIntroGo">⚔ To Battle!</button><div style="margin-top:8px"><button class="wood" id="bIntroHelp" style="font-family:inherit;color:#ffe08a;padding:6px 12px;font-size:13px">📖 All controls</button></div></div>
 </div></div>
 <div id="helpOv" class="hidden"><div class="box"><h1 class="it" style="font-size:24px">INSTRUCTIONS</h1><div id="helpBody"></div>
@@ -229,11 +229,11 @@ const TRD={
 'Here is how to get started:':'Başlamak için:','Grow your economy':'Ekonomini büyüt','then':'sonra',
 '. Grain pays for everything.':'— her şey tahılla ödenir.','Raise a defense':'Savunma kur','and pick a tower. Drag it toward the bottom-left, where the enemy comes from.':'ve bir kule seç. Düşmanın geldiği sol alta doğru sürükle.',
 'Upgrade and repair':'Yükselt ve tamir et','Press and hold a building to upgrade it. Double-tap to repair.':'Yükseltmek için binaya basılı tut. Tamir için çift dokun.',
-'Advance the ages':'Çağları ilerlet','The gold button, bottom left, unlocks cannons, knights and stronger tiers.':'Sol alttaki altın buton topları, şövalyeleri ve güçlü seviyeleri açar.',
+'Advance the ages':'Çağları ilerlet','The gold button, bottom left, unlocks cannons, eagles and stronger tiers.':'Sol alttaki altın buton topları, şövalyeleri ve güçlü seviyeleri açar.',
 '⚔ To Battle!':'⚔ Savaşa!','⟲ New Game':'⟲ Yeni Oyun','Tap again — this battle goes to the Hall of Fame':'Tekrar dokun — bu savaş Şöhret Salonuna kaydedilir','Tap again to start over':'Baştan başlamak için tekrar dokun','Previous battle saved to the Hall of Fame':'Önceki savaş Şöhret Salonuna kaydedildi','📖 All controls':'📖 Tüm kontroller','📖 Instructions':'📖 Talimatlar','INSTRUCTIONS':'TALİMATLAR',
 'Hold the high ground. Build an economy, raise towers, survive the boss waves.':'Tepeleri tut. Ekonomi kur, kuleler dik, patron dalgalarından sağ çık.',
 'GESTURES':'HAREKETLER','BUTTONS':'BUTONLAR','ON THE MAP':'HARİTADA',
-'Select a building or a knight squad.':'Bir bina veya şövalye birliği seç.','Double-tap':'Çift dokun','Repair a building.':'Binayı tamir et.',
+'Select a building or an eagle flight.':'Bir bina veya şövalye birliği seç.','Double-tap':'Çift dokun','Repair a building.':'Binayı tamir et.',
 'Press and hold':'Basılı tut','Upgrade a building (keep holding to chain tiers).':'Binayı yükselt (seviye zinciri için basılı tutmaya devam et).',
 'Drag a new building':'Yeni binayı sürükle','Move it before you confirm.':'Onaylamadan önce taşı.','Drag the map':'Haritayı sürükle','Move the camera.':'Kamerayı kaydır.',
 'Swipe across buildings':'Binaların üzerinden kaydır','Select several at once.':'Birkaçını birden seç.','Long-press empty ground and drag':'Boş yere basılı tut ve sürükle',
@@ -268,6 +268,13 @@ const TRD={
 'Tap a Barracks or Workshop: tap a circle to train one, or hold and slide up or down to set how many.':'Kışlaya veya Atölyeye dokun: bir tane yetiştirmek için daireye dokun, ya da kaç tane istediğini basılı tutup yukarı/aşağı kaydırarak ayarla.',
 'Cannae':'Cannae','Win a 1v1 battle.':'Bir 1v1 savaşı kazan.','The Conqueror':'Fatih','Win a 1v1 battle on Lord or Emperor.':'Bey veya İmparator zorluğunda bir 1v1 savaşı kazan.',
 'Warwolf':'Savaş Kurdu','Raze 12 Red buildings in one 1v1 battle.':'Tek bir 1v1 savaşında 12 Kırmızı bina yık.','Red':'Kırmızı',
+'Eagle Aerie':'Kartal Yuvası','Eagles':'Kartallar','Five eagles guard a big zone, fly over anything & replenish.':'Beş kartal geniş bir bölgeyi korur, her şeyin üstünden uçar ve yenilenir.',
+'EAGLES OF BLUE':'MAVİNİN KARTALLARI','Five eagles now guard a wide zone — they fly over walls, trees and water.':'Beş kartal artık geniş bir bölgeyi koruyor — duvarların, ağaçların ve suyun üstünden uçarlar.',
+'Aquila of Rome':'Roma Kartalı','An eagle flight reaches Veteran V.':'Bir kartal sürüsü Kıdemli V olsun.','Select a building or an eagle flight.':'Bir bina veya kartal sürüsü seç.','Archer, cannon, eagles, wall.':'Okçu, top, kartallar, duvar.',
+'The gold button, bottom left, unlocks cannons, eagles and stronger tiers.':'Sol alttaki altın buton topları, kartalları ve güçlü seviyeleri açar.','Cannons, Eagles and Stone-tier upgrades unlocked.':'Toplar, Kartallar ve Taş seviyesi yükseltmeleri açıldı.',
+'Eagles fallen in battle':'Savaşta düşen kartallar','Red retreats to regroup':'Kırmızı toparlanmak için geri çekiliyor','Red pulls its army back to defend':'Kırmızı savunmak için ordusunu geri çekiyor','⚠ Red cavalry raids your farms!':'⚠ Kırmızı süvari çiftliklerine baskın yapıyor!',
+'Clever foes: dodge kill zones, mass before charging, raid farms, kite eagles.':'Zeki düşman: ölüm bölgelerinden kaçar, hücumdan önce toplanır, çiftliklere baskın yapar, kartalları oyalar.',
+'Ruthless: reads your defenses and counters them, pincers both fronts, lures your eagles.':'Acımasız: savunmanı okur ve karşılık verir, iki cepheden kıskaca alır, kartallarını tuzağa çeker.',
 // --- whole sentences / UI ---
 'Bastion 3D — Tower Defense':'Bastion 3D — Kule Savunması','RAISING THE REALM…':'KRALLIK KURULUYOR…',
 'Blue holds the high ground. Red comes from the southwest — and later, the west.':'Mavi tepeleri tutuyor. Kırmızı güneybatıdan gelir — sonra batıdan da.',
@@ -301,7 +308,7 @@ const TRD={
 'KNIGHTS OF BLUE':'MAVİNİN ŞÖVALYELERİ','Mounted knights now guard a wide zone.':'Atlı şövalyeler artık geniş bir bölgeyi koruyor.',
 'WELCOME BACK':'TEKRAR HOŞ GELDİN','Build your economy. The first enemies come in 40 seconds.':'Ekonomini kur. İlk düşmanlar 40 saniyede geliyor.',
 'AGE II · THE AGE OF STONE':'II. ÇAĞ · TAŞ ÇAĞI','AGE III · THE JEWELED AGE':'III. ÇAĞ · MÜCEVHER ÇAĞI',
-'Cannons, Knights and Stone-tier upgrades unlocked.':'Toplar, Şövalyeler ve Taş seviyesi yükseltmeleri açıldı.','Jeweled-tier upgrades unlocked. Gleam.':'Mücevher seviyesi yükseltmeleri açıldı. Parılda.',
+'Cannons, Eagles and Stone-tier upgrades unlocked.':'Toplar, Şövalyeler ve Taş seviyesi yükseltmeleri açıldı.','Jeweled-tier upgrades unlocked. Gleam.':'Mücevher seviyesi yükseltmeleri açıldı. Parılda.',
 'The Red Host gathers on both fronts.':'Kızıl Ordu iki cephede toplanıyor.','WAVE 1':'DALGA 1','BOSS WAVE':'PATRON DALGASI',
 'Spearmen approach from the southwest.':'Mızrakçılar güneybatıdan yaklaşıyor.',
 'Battering Rams! Arrows barely scratch them — build Cannons (Age II).':'Koçbaşları! Oklar onları zor çizer — Top kur (II. Çağ).',
@@ -313,9 +320,9 @@ const TRD={
 'A siege train: rams and sappers on both fronts.':'Kuşatma kafilesi: iki cephede koçbaşları ve lağımcılar.','ERA V · VETERANS':'DEVİR V · KIDEMLİLER',
 'Hardened veterans on every front. Every tower counts.':'Her cephede pişmiş kıdemliler. Her kule önemli.',
 'Relaxed. Enemies take the shortest road and arrive slowly.':'Rahat. Düşman en kısa yolu seçer ve yavaş gelir.','The standard campaign.':'Standart sefer.',
-'Clever foes: dodge kill zones, mass before charging, raid farms, kite knights.':'Zeki düşman: ölüm bölgelerinden kaçar, hücumdan önce toplanır, çiftliklere baskın yapar, şövalyeleri oyalar.',
-'Ruthless: reads your defenses and counters them, pincers both fronts, lures your knights.':'Acımasız: savunmanı okur ve karşılık verir, iki cepheden kıskaca alır, şövalyelerini tuzağa çeker.',
-'Medals earned':'Kazanılan madalyalar','Knights fallen in battle':'Savaşta düşen şövalyeler','Biggest horde':'En büyük sürü','Toughest building:':'En dayanıklı bina:','Oldest standing defense:':'Ayakta kalan en eski savunma:',
+'Clever foes: dodge kill zones, mass before charging, raid farms, kite eagles.':'Zeki düşman: ölüm bölgelerinden kaçar, hücumdan önce toplanır, çiftliklere baskın yapar, şövalyeleri oyalar.',
+'Ruthless: reads your defenses and counters them, pincers both fronts, lures your eagles.':'Acımasız: savunmanı okur ve karşılık verir, iki cepheden kıskaca alır, şövalyelerini tuzağa çeker.',
+'Medals earned':'Kazanılan madalyalar','Eagles fallen in battle':'Savaşta düşen şövalyeler','Biggest horde':'En büyük sürü','Toughest building:':'En dayanıklı bina:','Oldest standing defense:':'Ayakta kalan en eski savunma:',
 'Buildings raised':'Kurulan bina','Earned':'Kazanılan','Spent':'Harcanan','just now':'az önce',
 // achievements
 'Medici Ledger':'Medici Defteri','Raise a Gold Mine to the Jeweled tier.':'Bir Altın Madenini Mücevher seviyesine çıkar.',
@@ -579,7 +586,7 @@ function buildCampAt(X0,Z0){const parts=[];
 const BT={
   archer:{name:'Archer Tower',ic:'🏹',kind:'def',size:2,cost:{grain:80,wool:40,gold:0},hp:360,range:195,dmg:9,rate:0.8,desc:'Fast arrows. Weak vs rams.'},
   cannon:{name:'Cannon Tower',ic:'💣',kind:'def',size:2,cost:{grain:160,wool:110,gold:60},hp:500,range:235,dmg:36,rate:2.2,splash:60,desc:'Slow, heavy splash. Smashes rams.'},
-  barracks:{name:'Soldier Tower',ic:'🛡️',kind:'def',size:2,cost:{grain:280,wool:220,gold:160},hp:620,squad:5,respawn:9,guard:560,desc:'Knights guard a big zone & replenish.'},
+  barracks:{name:'Eagle Aerie',ic:'🦅',kind:'def',size:2,cost:{grain:280,wool:220,gold:160},hp:620,squad:5,respawn:9,guard:560,desc:'Five eagles guard a big zone, fly over anything & replenish.'},
   wall:{name:'Wall',ic:'🧱',kind:'def',size:1,cost:{grain:30,wool:10,gold:0},hp:900,desc:'Huge health, no attack. Channel the enemy.'},
   wheat:{name:'Wheat Field',ic:'🌾',kind:'eco',size:3,cost:{grain:50,wool:0,gold:0},hp:160,prod:{grain:1.2},desc:'+1.2 grain / sec'},
   sheep:{name:'Sheep Farm',ic:'🐑',kind:'eco',size:3,cost:{grain:120,wool:0,gold:0},hp:190,prod:{wool:0.8},desc:'+0.8 wool / sec'},
@@ -597,7 +604,7 @@ const ET={
   sapper:{name:'Sapper',hp:38,speed:34,dmg:300,rate:1,range:14,r:7,bounty:6,sapper:true},
   catapult:{name:'Catapult',hp:190,speed:14,dmg:44,rate:4.2,range:215,r:12,bounty:25,ranged:true,bldOnly:true,siege:true,splash:55},
 };
-const KN={hp:140,dmg:14,rate:0.8,speed:66,r:12};
+const KN={hp:220,dmg:18,rate:0.75,speed:84,r:11,armor:0.75};
 const MAXLVL=3,MUL=[1,2.2,4.5],HPM=[1,2.5,6],RNG=[1,1.15,1.32],CDM=[1,1.15,1.35],SQ=[5,7,9],ZONE=[560,690,820],TIERN=['','WOOD','STONE','JEWELED'];
 const VETK={archer:[10,25,60,120,250],cannon:[6,15,35,70,140],barracks:[8,20,45,90,180],hall:[10,25,60,120,250],workshop:[5,12,30,60,120]},VETM=[1,1.15,1.3,1.5,1.75,2],VETC=['','#ff9a2a','#ff6a14','#ffe68a','#4aa8ff','#b040ff'],VETN=['','I','II','III','IV','V'];
 const vetOf=b=>b.vet||0,vetCD=b=>vetOf(b)>=3?1.15:1;
@@ -617,7 +624,7 @@ function pay(c){res.grain-=c.grain;res.wool-=c.wool;res.gold-=c.gold;if(ST)for(c
 // ---------- battle statistics ----------
 let ST=null,waveHeld=false,age=1,fires=[];
 const DIFF=[{n:'Squire',ic:'🌱',spd:0.9,hp:0.85,gap:1.25,ai:0,sm:0.6,d:'Relaxed. Enemies take the shortest road and arrive slowly.'},{n:'Knight',ic:'⚔️',spd:1,hp:1,gap:1,ai:1,sm:1,d:'The standard campaign.'},
-  {n:'Lord',ic:'🦅',spd:1.06,hp:1,gap:0.88,ai:2,sm:1.5,d:'Clever foes: dodge kill zones, mass before charging, raid farms, kite knights.'},{n:'Emperor',ic:'👑',spd:1.12,hp:1.1,gap:0.78,ai:3,sm:2.2,d:'Ruthless: reads your defenses and counters them, pincers both fronts, lures your knights.'}];
+  {n:'Lord',ic:'🦅',spd:1.06,hp:1,gap:0.88,ai:2,sm:1.5,d:'Clever foes: dodge kill zones, mass before charging, raid farms, kite eagles.'},{n:'Emperor',ic:'👑',spd:1.12,hp:1.1,gap:0.78,ai:3,sm:2.2,d:'Ruthless: reads your defenses and counters them, pincers both fronts, lures your eagles.'}];
 let diff=1;try{const v=localStorage.getItem('bastion_diff');if(v!=null)diff=clamp(+v,0,3)}catch(e){}
 let score=0,grpState={},lureNext=0;const AI=()=>DIFF[diff].ai;
 function newStats(){ST={samples:[],acc:{a:0,c:0,k:0,u:0,taken:0,g:0,w:0,o:0},sampT:0,earned:{grain:0,wool:0,gold:0},spent:{grain:0,wool:0,gold:0},dmgBy:{archer:0,cannon:0,barracks:0,hall:0,workshop:0},killsBy:{archer:0,cannon:0,barracks:0,hall:0,workshop:0},
@@ -720,36 +727,22 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     const bp=[];const bs=L===3?1.15:1;for(const oz of offs){bp.push(P(cyl(0.08*bs,0.11*bs,0.9*bs,10),bc,0.32,0.3,oz,0,0,-Math.PI/2),P(cyl(0.11*bs,0.11*bs,0.07,10),rc,0.32+0.45*bs,0.3,oz,0,0,-Math.PI/2),P(sph(0.11*bs),bc,-0.12,0.3,oz));if(L===3)bp.push(P(cyl(0.1*bs,0.1*bs,0.05,10),SILVER,0.3,0.3,oz,0,0,-Math.PI/2))}
     const barrel=new THREE.Mesh(merge(bp),bmat);carr.castShadow=barrel.castShadow=true;tur.add(carr,barrel);group.userData.tur=tur;group.userData.barrel=barrel}
   // ---------------- BARRACKS ----------------
-  else if(type==='barracks'){
-    if(L===1){top=1.2;barH=2.3;
-      parts.push(P(box(1.9,0.3,1.5),'#6e5a3e',0,-0.05,0),P(box(1.8,0.72,1.3),LOG,0,0.46,0));for(let i=0;i<5;i++)parts.push(P(box(1.82,0.025,1.32),LOGD,0,0.16+i*0.14,0));
-      for(const sx of[-1,1])for(const sz of[-1,1])parts.push(P(cyl(0.08,0.08,0.9,6),LOGD,sx*0.9,0.45,sz*0.66));
-      parts.push(P(prism(0.78,2.05),THATCH,0,1.21,0,0,0,0,1,1,1.22),P(box(2.08,0.08,0.1),THATCHD,0,1.98,0),P(box(0.36,0.52,0.04),'#3a2414',0,0.36,0.66),P(box(0.2,0.18,0.03),'#2b2a35',-0.6,0.56,0.66),P(box(0.2,0.18,0.03),'#2b2a35',0.6,0.56,0.66));
-      for(let i=0;i<9;i++){const x=-0.95+i*0.24;if(Math.abs(x)<0.3)continue;parts.push(P(cyl(0.05,0.055,0.5,5),LOG,x,0.25,1.0),P(cone(0.055,0.12,5),LOGD,x,0.56,1.0))}
-      parts.push(P(cyl(0.04,0.04,0.5,5),WOOD,0.95,0.25,-0.95),P(box(0.3,0.06,0.06),WOOD,0.95,0.42,-0.95),P(sph(0.1),'#d9c08a',0.95,0.58,-0.95));
-      for(const x of[-0.98,0.98]){parts.push(P(cyl(0.02,0.02,1.5,4),WOODD,x,0.75,0.75));flagM(group,anims,x,1.35,0.75,BLUE,x)}}
-    else if(L===2){top=1.5;barH=3.0;
-      parts.push(P(box(1.95,0.5,1.6),STONED,0,-0.15,0),P(box(1.8,0.85,1.4),'#e4d6ae',0,0.52,0),P(box(1.83,0.34,1.43),STONE2,0,0.27,0));
-      for(const sx of[-1,1])for(const sz of[-1,1])parts.push(P(box(0.09,0.87,0.09),WOODD,sx*0.88,0.52,sz*0.68));
-      for(const x of[-0.45,0.45])parts.push(P(box(0.07,0.85,0.03),WOODD,x,0.52,0.71));
-      parts.push(P(box(1.82,0.07,0.03),WOODD,0,0.93,0.71),P(box(1.82,0.07,0.03),WOODD,0,0.45,0.72),P(box(0.36,0.56,0.04),'#3a2414',0,0.4,0.72));
-      for(const x of[-0.68,0.68])parts.push(P(box(0.22,0.2,0.03),'#2b2a35',x,0.66,0.72),P(box(0.07,0.22,0.03),BLUE,x-0.15,0.66,0.73),P(box(0.07,0.22,0.03),BLUE,x+0.15,0.66,0.73));
-      parts.push(P(prism(0.8,2.05),'#3d5f9c',0,1.35,0,0,0,0,1,1,1.25),P(box(2.08,0.06,0.09),'#2a446f',0,2.14,0),P(box(0.2,0.55,0.2),STONE2,0.55,1.9,-0.25));
-      const th=2.0;parts.push(P(cyl(0.3*r2,0.34*r2,th,4),STONE,-1.02,th/2,-0.55,0,Math.PI/4),P(box(0.72,0.12,0.72),STONE2,-1.02,th,-0.55),P(cone(0.52,0.62,4),'#3d5f9c',-1.02,th+0.36,-0.55,0,Math.PI/4));
-      for(const[dx,dz]of[[-0.3,-0.3],[0.3,-0.3],[-0.3,0.3],[0.3,0.3]])parts.push(P(box(0.14,0.14,0.14),STONE,-1.02+dx,th+0.12,-0.55+dz));
-      for(const x of[-0.62,0.62])parts.push(P(cyl(0.13,0.13,0.03,10),BLUE,x,0.82,0.72,Math.PI/2),P(cyl(0.05,0.05,0.035,8),GOLD,x,0.82,0.735,Math.PI/2));
-      parts.push(P(box(0.6,0.04,0.04),WOOD,-0.35,0.38,0.98));for(let i=0;i<4;i++)parts.push(P(cyl(0.012,0.012,0.7,4),WOOD,-0.6+i*0.16,0.4,0.95),P(cone(0.025,0.07,4),'#ccc',-0.6+i*0.16,0.78,0.95));
-      for(const x of[-0.95,0.95]){parts.push(P(cyl(0.02,0.02,1.7,4),WOODD,x,0.85,0.85));flagM(group,anims,x,1.55,0.85,BLUE,x)}}
-    else{top=1.8;barH=4.2;
-      parts.push(P(box(2.0,0.5,1.65),STONED,0,-0.15,0),P(box(1.84,0.4,1.44),MARBLE,0,0.3,0),P(box(1.8,0.6,1.4),MARBLE,0,0.75,0));
-      metal.push(P(box(1.86,0.06,1.46),GOLDM,0,0.5,0),P(box(1.86,0.06,1.46),GOLDM,0,1.06,0));for(const sx of[-1,1])for(const sz of[-1,1])metal.push(P(box(0.1,1.0,0.1),GOLDM,sx*0.9,0.55,sz*0.7));
-      metal.push(P(prism(0.82,2.08),ENAMEL,0,1.48,0,0,0,0,1,1,1.25),P(box(2.12,0.07,0.1),GOLDM,0,2.3,0));
-      for(const x of[-0.62,0.62]){glow.push(P(box(0.2,0.24,0.02),'#ffe7a0',x,0.78,0.705));metal.push(P(box(0.26,0.04,0.03),GOLDM,x,0.92,0.71));gemAt(gems,x,0.36,0.74,0.07,SAPH)}
-      metal.push(P(box(0.86,0.8,0.5),MARBLE,0,0.5,0.94),P(box(0.9,0.06,0.04),GOLDM,0,0.88,1.19),P(prism(0.5,0.66),ENAMEL,0,1.14,0.96,0,Math.PI/2),P(box(0.34,0.55,0.04),ENAMEL,0,0.32,1.2),P(box(0.4,0.06,0.05),GOLDM,0,0.62,1.21));gemAt(gems,0,1.28,1.22,0.11,RUBY);
-      const th=2.9;parts.push(P(cyl(0.34*r2,0.38*r2,th*0.4,4),MARBLE,-1.02,th*0.2,-0.55,0,Math.PI/4));metal.push(P(cyl(0.3*r2,0.34*r2,th*0.6,4),SILVER,-1.02,th*0.4+th*0.3,-0.55,0,Math.PI/4),P(box(0.76,0.12,0.76),GOLDM,-1.02,th,-0.55),P(cone(0.54,0.7,4),ENAMEL,-1.02,th+0.41,-0.55,0,Math.PI/4),P(cone(0.1,0.8,6),GOLDM,-1.02,th+1.1,-0.55));
-      for(const[dx,dz]of[[-0.32,-0.32],[0.32,-0.32],[-0.32,0.32],[0.32,0.32]])metal.push(P(box(0.14,0.16,0.14),SILVER,-1.02+dx,th+0.14,-0.55+dz));gemAt(gems,-1.02,th*0.7,-0.18,0.09,EMER);glow.push(P(box(0.07,0.22,0.02),'#ffe7a0',-1.02,th*0.5,-0.17));
-      for(const x of[-1.0,1.0]){parts.push(P(cyl(0.022,0.022,1.9,4),WOODD,x,0.95,0.9));flagM(group,anims,x,1.75,0.9,GOLD,x)}
-      beacon(group,anims,-1.02,th+1.8,-0.55,'#9fe8ff')}}
+  else if(type==='barracks'){ // EAGLE AERIE
+    const nest=(arr,y,r,col)=>{for(let i=0;i<14;i++){const a=i/14*Math.PI*2;arr.push(P(box(0.32,0.07,0.08),col,Math.cos(a)*r,y+(i%2)*0.04,Math.sin(a)*r,0,-a+Math.PI/2,0.2))}arr.push(P(cyl(r*0.85,r*0.7,0.1,10),'#4a3018',0,y-0.02,0))};
+    const egg=(arr,y,col)=>{for(let i=0;i<3;i++)arr.push(P(sph(0.07,6,5),col,Math.cos(i*2.1)*0.12,y+0.06,Math.sin(i*2.1)*0.12,0,0,0,1,1.25,1))};
+    if(L===1){top=2.3;barH=3.2;parts.push(P(box(1.7,0.18,1.7),'#6e5a3e',0,-0.04,0));for(const sx of[-1,1])for(const sz of[-1,1])parts.push(P(cyl(0.07,0.09,2.1,6),LOG,sx*0.55,1.05,sz*0.55,sz*0.08,0,-sx*0.08));
+      for(const y of[0.7,1.4])parts.push(P(box(1.2,0.06,0.06),LOGD,0,y,0.55),P(box(1.2,0.06,0.06),LOGD,0,y,-0.55),P(box(0.06,0.06,1.2),LOGD,0.55,y,0),P(box(0.06,0.06,1.2),LOGD,-0.55,y,0));
+      parts.push(P(box(1.5,0.1,1.5),WOOD,0,2.05,0));nest(parts,2.18,0.5,'#8a6a3a');egg(parts,2.15,'#efe6d0');parts.push(P(box(2.0,0.06,0.07),LOGD,0,2.45,0,0,0.6),P(cyl(0.03,0.03,0.42,4),LOGD,0.62,2.27,0.5));
+      for(let i=0;i<6;i++)parts.push(P(box(0.05,0.02,0.18),'#e8e0d0',-0.4+i*0.16,0.06,0.7+((i%2)*0.08),0,i));parts.push(P(cyl(0.02,0.02,1.4,4),WOODD,-0.75,2.7,-0.75));flagM(group,anims,-0.75,3.25,-0.75,BLUE,3)}
+    else if(L===2){top=2.7;barH=3.7;parts.push(P(box(1.8,0.3,1.8),STONED,0,-0.1,0),P(cyl(0.55,0.72,2.2,8),STONE,0,1.1,0),P(cyl(0.58,0.58,0.12,8),STONE2,0,0.6,0),P(cyl(0.58,0.58,0.12,8),STONE2,0,1.5,0));
+      parts.push(P(box(0.3,0.5,0.04),'#3a2414',0,0.3,0.71),P(cyl(0.85,0.75,0.18,10),STONE2,0,2.25,0));for(let i=0;i<8;i++){const a=i/8*Math.PI*2;parts.push(P(box(0.18,0.2,0.18),STONE,Math.cos(a)*0.78,2.45,Math.sin(a)*0.78))}
+      nest(parts,2.42,0.48,'#a07c32');egg(parts,2.4,'#f2ede2');metal.push(P(box(2.2,0.05,0.06),'#9aa3ad',0,2.75,0,0,0.6),P(box(2.0,0.05,0.06),'#9aa3ad',0,2.65,0,0,-0.9));
+      for(const a of[0.4,2.5,4.4]){parts.push(P(box(0.22,0.4,0.03),BLUE,Math.cos(a)*0.66,1.05,Math.sin(a)*0.66,0,-a+Math.PI/2,0),P(box(0.09,0.09,0.035),GOLD,Math.cos(a)*0.67,1.1,Math.sin(a)*0.67,0,-a+Math.PI/2,0))}
+      parts.push(P(cyl(0.02,0.02,1.4,4),WOODD,0.7,3.1,-0.4));flagM(group,anims,0.7,3.65,-0.4,BLUE,1)}
+    else{top=3.1;barH=4.4;parts.push(P(box(1.85,0.3,1.85),STONED,0,-0.1,0),P(cyl(0.6,0.76,1.2,10),MARBLE,0,0.6,0));metal.push(P(cyl(0.5,0.6,1.3,10),SILVER,0,1.85,0),P(cyl(0.63,0.63,0.1,10),GOLDM,0,1.2,0),P(cyl(0.88,0.78,0.2,12),GOLDM,0,2.55,0));
+      for(let i=0;i<10;i++){const a=i/10*Math.PI*2;metal.push(P(cone(0.07,0.32,5),GOLDM,Math.cos(a)*0.82,2.8,Math.sin(a)*0.82))}nest(metal,2.72,0.5,GOLDM);egg(gems,2.7,'#bfefff');
+      for(const a of[0.3,2.4,4.5]){glow.push(P(box(0.14,0.3,0.02),'#ffe7a0',Math.cos(a)*0.62,0.7,Math.sin(a)*0.62,0,-a+Math.PI/2,0));gemAt(gems,Math.cos(a)*0.53,1.85,Math.sin(a)*0.53,0.08,[SAPH,RUBY,EMER][Math.round(a)%3])}
+      metal.push(P(box(2.4,0.06,0.07),GOLDM,0,3.15,0,0,0.6),P(box(2.2,0.06,0.07),SILVER,0,3.05,0,0,-0.9));parts.push(P(cyl(0.022,0.022,1.5,4),WOODD,0.75,3.4,-0.45));flagM(group,anims,0.75,3.95,-0.45,GOLD,1);beacon(group,anims,0,4.1,0,'#9fe8ff')}}
   // ---------------- BARRACKS (attack) ----------------
   else if(type==='hall'){
     const dummy=(x,z,armor)=>{parts.push(P(cyl(0.035,0.035,0.6,5),WOODD,x,0.3,z),P(box(0.34,0.05,0.05),WOODD,x,0.47,z),P(sph(0.09),armor?'#9aa3ad':'#d9c08a',x,0.68,z),P(box(0.17,0.24,0.13),armor?'#aeb6bf':'#c9b080',x,0.43,z))};
@@ -889,13 +882,19 @@ function catapult(team='red',tier=1){const BL=team==='blue',wood=BL&&tier===3?'#
   const wheel=(x,z)=>({geo:merge([P(cyl(0.12,0.12,0.05,8),'#4a3018',0,0,0,Math.PI/2),P(box(0.22,0.03,0.055),fit,0,0,0)]),pivot:[x,0.12,z]});
   const arm=merge([P(box(0.72,0.05,0.06),wood,-0.34,0,0),P(box(0.15,0.07,0.15),fit,-0.68,0.04,0),P(sph(0.06),'#8a867c',-0.68,0.1,0)]);
   return[{geo:body,pivot:[0,0,0]},wheel(0.3,0.27),wheel(-0.3,0.27),wheel(0.3,-0.27),wheel(-0.3,-0.27),{geo:arm,pivot:[-0.1,0.32,0]}]}
+function eagle(tier){const body=tier===3?'#f3c440':tier===2?'#4e3624':'#5e3f22',wing=tier===3?'#ffe27a':tier===2?'#5c4030':'#6b4a2a',tip=tier===3?'#fff4d0':'#2e1d10';
+  const b=[P(box(0.34,0.13,0.15),body,0,0,0),P(box(0.13,0.12,0.12),'#f2ede2',0.2,0.04,0),P(cone(0.035,0.1,5),'#f3b21a',0.31,0.02,0,0,0,-Math.PI/2),P(box(0.18,0.03,0.16),tier===3?'#fff4d0':'#f2ede2',-0.25,-0.01,0),P(box(0.06,0.06,0.03),'#f3b21a',0.02,-0.1,0.04),P(box(0.06,0.06,0.03),'#f3b21a',0.02,-0.1,-0.04)];
+  if(tier>=2)b.push(P(box(0.2,0.08,0.165),tier===3?SILVER:'#aeb6bf',0.02,0.06,0),P(box(0.03,0.1,0.17),tier===3?ENAMEL:BLUE,-0.06,0,0));if(tier===3)b.push(P(oct(0.03),SAPH,0.06,0.11,0),P(box(0.04,0.08,0.02),'#ff3a50',0.2,0.13,0));
+  const wingG=sd=>merge([P(box(0.24,0.025,0.4),wing,0,0,sd*0.2),P(box(0.16,0.02,0.18),tip,-0.05,0,sd*0.45),...(tier>=2?[P(box(0.1,0.03,0.12),tier===3?GOLDM:'#9aa3ad',0.03,0.01,sd*0.08)]:[])]);
+  return[{geo:merge(b),pivot:[0,0,0]},{geo:wingG(1),pivot:[0.02,0.04,0.06]},{geo:wingG(-1),pivot:[0.02,0.04,-0.06]}]}
 function buildRigs(){makeRig('catapult',catapult('red'),40,1.05);for(const L of[1,2,3]){makeRig('t_spear'+L,human('blue','spear',L),110,1.12);makeRig('t_bowman'+L,human('blue','bow',L),90,1.12);makeRig('t_shield'+L,human('blue','shield',L),80,1.2);
-    makeRig('t_cav'+L,horse('blue','lance',L),60,1.04+L*0.02);makeRig('t_ram'+L,ram('blue',L),24,0.95+L*0.03);makeRig('t_catapult'+L,catapult('blue',L),24,1.05+L*0.04)}makeRig('spear',human('red','spear'),420,1.12);makeRig('bowman',human('red','bow'),220,1.12);makeRig('shield',human('red','shield'),220,1.2);makeRig('sapper',human('red','sapper'),120,1.08);makeRig('boss',human('red','axe'),12,1.85);makeRig('cav',horse('red','lance'),160,1.02);makeRig('knight1',horse('blue','sword',1),200,1.04);makeRig('knight2',horse('blue','sword',2),200,1.1);makeRig('knight3',horse('blue','sword',3),200,1.18);makeRig('ram',ram(),70,0.95)}
+    makeRig('t_cav'+L,horse('blue','lance',L),60,1.04+L*0.02);makeRig('t_ram'+L,ram('blue',L),24,0.95+L*0.03);makeRig('t_catapult'+L,catapult('blue',L),24,1.05+L*0.04)}makeRig('spear',human('red','spear'),420,1.12);makeRig('bowman',human('red','bow'),220,1.12);makeRig('shield',human('red','shield'),220,1.2);makeRig('sapper',human('red','sapper'),120,1.08);makeRig('boss',human('red','axe'),12,1.85);makeRig('cav',horse('red','lance'),160,1.02);makeRig('eagle1',eagle(1),200,1.3);makeRig('eagle2',eagle(2),200,1.38);makeRig('eagle3',eagle(3),200,1.46);makeRig('ram',ram(),70,0.95)}
 const POSE=Array.from({length:8},()=>[0,0,0,0,0,0]);
 function poseOf(kind,u,t){if(kind.startsWith('t_'))kind=kind.slice(2,-1);const m=u.mvb||0,k=u.swing>0?clamp(u.swing/0.25,0,1):0,a=Math.sin(k*Math.PI),o=POSE;for(const p of o)p.fill(0);
   if(kind==='spear'||kind==='boss'||kind==='bowman'||kind==='shield'||kind==='sapper'){const s=u.walk,sw=Math.sin(s)*0.7*m,bob=Math.abs(Math.cos(s))*0.03*m;
     o[0][5]=sw;o[1][5]=-sw;o[2][1]=bob;o[2][5]=-0.08*m+Math.sin(t*1.5+u.x)*0.02*(1-m);o[3][1]=bob;
     if(kind==='spear'){o[3][0]=a*0.14;o[3][5]=-sw*0.25+a*0.08}else{o[3][5]=0.5-1.6*a-sw*0.2}}
+  else if(kind.startsWith('eagle')){const f=Math.sin(t*(7+3*m)+u.x*0.05)*(0.45+0.35*m)+0.12;o[1][3]=f;o[2][3]=-f;o[0][1]=Math.sin(t*(7+3*m)+u.x*0.05+1.2)*0.03;o[0][5]=-0.55*a;o[0][3]=Math.sin(t*0.9+u.y)*0.08}
   else if(kind==='cav'||kind.startsWith('knight')){const s=u.walk*1.15,bob=Math.sin(s*2)*0.035*m,pitch=Math.sin(s)*0.06*m+Math.sin(t*1.2+u.x)*0.015*(1-m);
     o[0][1]=bob;o[0][5]=pitch;const L=0.85*m;o[1][5]=Math.sin(s)*L;o[2][5]=Math.sin(s+0.6)*L;o[3][5]=Math.sin(s+Math.PI)*L;o[4][5]=Math.sin(s+Math.PI+0.6)*L;
     for(let i=1;i<5;i++)o[i][1]=bob;o[5][1]=bob;o[5][5]=pitch*0.5;o[6][1]=bob;
@@ -904,7 +903,7 @@ function poseOf(kind,u,t){if(kind.startsWith('t_'))kind=kind.slice(2,-1);const m
   else if(kind==='catapult'){const r=-u.walk*1.6;for(let i=1;i<5;i++)o[i][5]=r;o[5][5]=-0.12-a*1.45}
   return o}
 const _U=new THREE.Matrix4(),_L=new THREE.Matrix4(),_M=new THREE.Matrix4(),_q=new THREE.Quaternion(),_e=new THREE.Euler(),_v=new THREE.Vector3(),_s=new THREE.Vector3(),ONE=new THREE.Vector3(1,1,1),_c=new THREE.Color();
-function drawUnitInst(kind,u,t,dead){const R=rigs[kind];if(R.n>=R.max)return;const idx=R.n++;const X=u.x/TILE,Z=u.y/TILE;let Y=heightAt(X,Z);
+function drawUnitInst(kind,u,t,dead){const R=rigs[kind];if(R.n>=R.max)return;const idx=R.n++;const X=u.x/TILE,Z=u.y/TILE;let Y=heightAt(X,Z);if(u.fly&&!dead)Y+=u.fly;
   let roll=0;if(dead){const f=smooth(0,0.45,u.die);roll=kind==='ram'?0:f*1.45;Y-=Math.max(0,u.die-2.5)*0.12+(kind==='ram'?0:f*0.04)}
   _e.set(roll,-u.rAng,0,'YXZ');_q.setFromEuler(_e);_v.set(X,Y,Z);const sc=R.scale;_s.set(sc,sc,sc);_U.compose(_v,_q,_s);
   const pose=poseOf(kind,u,t);let col=WHITE;if(u.flash>0&&!dead)col=FLASH;else if(dead){const k=Math.max(0.35,1-u.die*0.25);col=_c.setRGB(k,k,k)}
@@ -1037,7 +1036,7 @@ function followField(e,f,T,dt){const i=tileAt(e.x,e.y);if(i<0)return false;const
 function sapperBlast(e){const T=ET.sapper,X=e.x,Y=e.y;for(const b of [...buildings]){const d=edgeDist(b,X,Y);if(d<TILE*1.7)hurtBuilding(b,(b.type==='wall'?T.dmg:T.dmg*0.35)*e.dm)}
   for(const L of[knights,troops])for(const k of L)if(dst(k.x,k.y,X,Y)<TILE*1.5){k.hp-=60;k.flash=0.1}e.hp=0;e.blew=1;const[x3,y3,z3]=W3(X,Y);fx(x3,y3+0.3,z3,18,'#ffae3a',3.4,0.3,0.45,0,1,0.9);fx(x3,y3+0.3,z3,14,'#6a625a',2,0.6,2,-0.25,0,0.7);fx(x3,y3+0.2,z3,10,'#5e4a32',4,0.08,1,8,2,1.2);AU.boom(1);shake=Math.max(shake,0.25)}
 function updEnemy(e,dt){if(e.frozen)return;const T=ET[e.type];if(e.cd>0)e.cd-=dt;if(e.swing>0)e.swing-=dt;if(e.flash>0)e.flash-=dt;if(e.mvT>0)e.mvT-=dt;
-  if(e.home){updHomeEnemy(e,T,dt);return}
+  if(e.red1){updRedUnit(e,dt);return}
   if(e.type==='catapult'){let tg=null,td=T.range;for(const b of buildings){const d=edgeDist(b,e.x,e.y);if(d<td){td=d;tg=b}}if(!tg)for(const L of[troops,knights])for(const o of L){const d=dst(o.x,o.y,e.x,e.y);if(d<td){td=d;tg=o}}
     if(tg){e.ang=Math.atan2(tg.y-e.y,tg.x-e.x);if(e.cd<=0){e.cd=T.rate;e.swing=0.25;projs.push({k:'rball',sx:e.x,sy:e.y,tx:tg.x,ty:tg.y,time:0,dur:0.6+td/600,dmg:T.dmg*e.dm,splash:T.splash,h0:heightAt(e.x/TILE,e.y/TILE)+0.7,bmul:1});AU.boom(0.3)}return}}
   if(T.ranged&&e.type!=='catapult'){let tg=null,td=T.range;for(const L of[knights,troops])for(const k of L){const d=dst(k.x,k.y,e.x,e.y);if(d<td){td=d;tg=k}}if(!tg)for(const b of buildings){const d=edgeDist(b,e.x,e.y);if(d<td){td=d;tg=b}}
@@ -1046,7 +1045,7 @@ function updEnemy(e,dt){if(e.frozen)return;const T=ET[e.type];if(e.cd>0)e.cd-=dt
       if(wb&&wd<=T.range){sapperBlast(e);return}if(followField(e,wflow,T,dt))return}
     const[b,bd]=nearestBuilding(e.x,e.y);if(b&&bd<=T.range){sapperBlast(e);return}}
   if(!T.bldOnly){let k=null,kd=34;for(const L of[knights,troops])for(const o of L){const d=dst(o.x,o.y,e.x,e.y)-o.r;if(d<kd){kd=d;k=o}}
-    if(k){if(kd<=T.range){e.ang=Math.atan2(k.y-e.y,k.x-e.x);if(e.cd<=0){k.hp-=T.dmg*e.dm;k.flash=0.1;e.cd=T.rate;e.swing=0.25}}else moveUnit(e,k.x,k.y,T.speed,dt,enemies);return}}
+    if(k){if(kd<=T.range){e.ang=Math.atan2(k.y-e.y,k.x-e.x);if(e.cd<=0){k.hp-=T.dmg*e.dm*(k.armor||1)*(e.type==='spear'&&k.eagle?1.6:1);k.flash=0.1;e.cd=T.rate;e.swing=0.25}}else moveUnit(e,k.x,k.y,T.speed,dt,enemies);return}}
   const ai=AI();
   if(ai>=2&&(T.ranged||e.lure)){let k=null,kd=e.lure?150:85;for(const o of knights){const d=dst(o.x,o.y,e.x,e.y);if(d<kd){kd=d;k=o}}if(k){const ax=e.x+(e.x-k.x)/kd*48,ay=e.y+(e.y-k.y)/kd*48;if(walkable(ax,ay)){moveUnit(e,ax,ay,T.speed*1.05,dt,enemies);return}}}
   if(ai>=2&&e.type==='cav'&&ecoFlow){const eb=buildings.filter(b=>BT[b.type].kind==='eco');let tb=null,td=1e9;for(const b of eb){const d=edgeDist(b,e.x,e.y);if(d<td){td=d;tb=b}}
@@ -1066,6 +1065,7 @@ const D8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 const navCache=new Map();
 function getNav(tx,ty){tx=clamp(tx,0,GW-1);ty=clamp(ty,0,GH-1);const key=tx+ty*GW;let c=navCache.get(key);if(c&&time-c.t<0.7)return c.f;
   const f=c?c.f:new Int32Array(GW*GH);f.fill(1e9);const q=new Int32Array(GW*GH);let h=0,t=0;f[key]=0;q[t++]=key;const blk=j=>terrain[j]>=1||occ[j];
+  if(occ[key]){const id=occ[key];for(let y=ty-3;y<=ty+3;y++)for(let x=tx-3;x<=tx+3;x++){if(x<0||y<0||x>=GW||y>=GH||occ[x+y*GW]!==id)continue;for(const[dx,dy]of D4){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(!blk(j)&&f[j]>0){f[j]=0;q[t++]=j}}}}
   while(h<t){const i=q[h++],x=i%GW,y=(i/GW)|0,d=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(blk(j))continue;if(dx&&dy&&(blk(x+dx+y*GW)||blk(x+(y+dy)*GW)))continue;const nd=d+(dx&&dy?14:10);if(f[j]>nd){f[j]=nd;q[t++]=j}}}
   navCache.delete(key);navCache.set(key,{f,t:time});if(navCache.size>24)navCache.delete(navCache.keys().next().value);return f}
 function los(x0,y0,x1,y1,r){const d=Math.hypot(x1-x0,y1-y0);if(d<1)return true;const n=Math.ceil(d/8),px=-(y1-y0)/d*r,py=(x1-x0)/d*r;
@@ -1075,9 +1075,13 @@ function steerPoint(k,X,Y){if(los(k.x,k.y,X,Y,k.r*0.7))return[X,Y];
   for(let step=0;step<10;step++){const x=i%GW,y=(i/GW)|0;let bi=-1,bv=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<bv){bv=f[j];bi=j}}
     if(bi<0)break;i=bi;const cx=(i%GW)*TILE+16,cy=((i/GW)|0)*TILE+16;if(step===0||los(k.x,k.y,cx,cy,k.r*0.7))best=[cx,cy];else break}
   return best||[X,Y]}
-function knightMove(k,X,Y,spd,dt,stopAt=0){const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.8;k.vy=(k.vy||0)*0.8;return}
+function flyMove(k,X,Y,spd,dt,stopAt=0){const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.85;k.vy=(k.vy||0)*0.85;return}
+  const dx=(X-k.x)/d,dy=(Y-k.y)/d;let sx=0,sy=0;for(const o of knights){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+5;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
+  let wx=dx+sx*1.2,wy=dy+sy*1.2;const wl=Math.hypot(wx,wy)||1,sp=Math.min(spd,(d-stopAt)/dt+5);k.vx=(k.vx||0)+(wx/wl*sp-(k.vx||0))*Math.min(1,dt*5);k.vy=(k.vy||0)+(wy/wl*sp-(k.vy||0))*Math.min(1,dt*5);
+  k.x=clamp(k.x+k.vx*dt,8,GW*TILE-8);k.y=clamp(k.y+k.vy*dt,8,GH*TILE-8);const vl=Math.hypot(k.vx,k.vy);if(vl>3)k.ang=Math.atan2(k.vy,k.vx);k.walk+=dt*vl*0.25;k.mvT=0.18}
+function knightMove(k,X,Y,spd,dt,stopAt=0){if(k.eagle)return flyMove(k,X,Y,spd,dt,stopAt);const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.8;k.vy=(k.vy||0)*0.8;return}
   let [tx,ty]=steerPoint(k,X,Y);let dx=tx-k.x,dy=ty-k.y;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;
-  let sx=0,sy=0;for(const o of (k.troop?troops:knights)){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+3;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
+  let sx=0,sy=0;for(const o of (k.troop?troops:k.red1?enemies:knights)){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+3;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
   if(k.nudge>0){k.nudge-=dt;dx+=Math.cos(k.nudgeA)*0.9;dy+=Math.sin(k.nudgeA)*0.9}
   let wx=dx+sx*1.2,wy=dy+sy*1.2;const wl=Math.hypot(wx,wy)||1;wx/=wl;wy/=wl;
   const sp=Math.min(spd,(d-stopAt)/dt+5);k.vx=(k.vx||0)+(wx*sp-(k.vx||0))*Math.min(1,dt*7);k.vy=(k.vy||0)+(wy*sp-(k.vy||0))*Math.min(1,dt*7);
@@ -1089,7 +1093,7 @@ function knightGo(k,X,Y,spd,dt){knightMove(k,X,Y,spd,dt)}
 function slotPos(b,slot){const n=squadSize(b),a=b.formAng+slot/n*Math.PI*2,r=b.s*TILE*0.5+46;let x=b.x+Math.cos(a)*r,y=b.y+Math.sin(a)*r;
   for(let e=0;e<4&&!walkable(x,y);e++){x+=Math.cos(a)*18;y+=Math.sin(a)*18}if(!walkable(x,y)){x=b.x+Math.cos(b.formAng)*r;y=b.y+Math.sin(b.formAng)*r}return[x,y]}
 function spawnKnight(b){const used=new Set(knights.filter(k=>k.b===b).map(k=>k.slot));let slot=0;while(used.has(slot))slot++;const[x,y]=slotPos(b,slot);
-  knights.push({b,slot,tier:b.lvl,x,y,hp:KN.hp*hpMulOf(b),maxhp:KN.hp*hpMulOf(b),dmg:KN.dmg*mulOf(b),cd:0,r:KN.r,ang:b.formAng,rAng:b.formAng,walk:0,swing:0,flash:0,mvT:0,mvb:0});
+  knights.push({b,slot,eagle:1,armor:KN.armor,fly:2.2,tier:b.lvl,x,y,hp:KN.hp*hpMulOf(b),maxhp:KN.hp*hpMulOf(b),dmg:KN.dmg*mulOf(b),cd:0,r:KN.r,ang:b.formAng,rAng:b.formAng,walk:0,swing:0,flash:0,mvT:0,mvb:0});
   const[X,Y,Z]=W3(x,y);fx(X,Y+0.2,Z,8,b.lvl===3?'#ffe27a':'#c9c0a8',1,0.2,0.8,0,b.lvl===3?1:0)}
 function updBarracks(b,dt){b.navAge=(b.navAge||0)+dt;const mine=knights.filter(k=>k.b===b);
   if(mine.length<squadSize(b)){b.respawnT-=dt;if(b.respawnT<=0){spawnKnight(b);b.respawnT=respawnTime(b)}}
@@ -1100,7 +1104,7 @@ function updBarracks(b,dt){b.navAge=(b.navAge||0)+dt;const mine=knights.filter(k
   else if(sq.state==='hold'){sq.hold-=dt;if(sq.hold<=0)sq.state='return'}
   else if(sq.state==='return'){if(mine.every(k=>{const p=slotPos(b,k.slot);return dst(p[0],p[1],k.x,k.y)<10}))sq.state='home'}}
 function pickTarget(k,sq){let t=null,bs=1e9;for(const e of sq.inZ){if(e.hp<=0)continue;const d=dst(e.x,e.y,k.x,k.y);let sc=d+(e.tgtBy||0)*34;
-    if(e.type==='ram')sc-=70;if(e.type==='boss')sc-=90;const fi=tileAt(e.x,e.y);if(fi>=0&&flow[fi]<=2)sc-=55;if(!los(k.x,k.y,e.x,e.y,k.r*0.7))sc+=40;if(e===k.tgt)sc-=45;if(e===k.badTgt)sc+=400;if(sc<bs){bs=sc;t=e}}return t}
+    if(e.type==='ram')sc-=70;if(e.type==='boss')sc-=90;const fi=tileAt(e.x,e.y);if(fi>=0&&flow[fi]<=2)sc-=55;if(!k.eagle&&!los(k.x,k.y,e.x,e.y,k.r*0.7))sc+=40;if(e===k.tgt)sc-=45;if(e===k.badTgt)sc+=400;if(sc<bs){bs=sc;t=e}}return t}
 function updKnight(k,dt){const b=k.b,sq=b.sq;if(k.cd>0)k.cd-=dt;if(k.swing>0)k.swing-=dt;if(k.flash>0)k.flash-=dt;if(k.mvT>0)k.mvT-=dt;if(!sq)return;
   // stuck watchdog
   k.prT=(k.prT||0)+dt;if(k.prT>0.7){const mv=dst(k.x,k.y,k.px??k.x,k.py??k.y);if(k.wantMove&&mv<4){k.nudge=0.45;k.nudgeA=Math.random()*6.28;k.badTgt=k.tgt;k.tgt=null}k.prT=0;k.px=k.x;k.py=k.y}k.wantMove=false;
@@ -1120,10 +1124,10 @@ function updTower(b,dt){b.cd-=dt;if(b.cd>0)return;const T=BT[b.type],R=rangeOf(b
     const a=b.aim;fx(b.X+Math.cos(a)*0.9,b.Y+b.top,b.Z+Math.sin(a)*0.9,7,'#d8d4cc',1.2,0.3,1.1,0.2,0,0.5);fx(b.X+Math.cos(a)*0.9,b.Y+b.top,b.Z+Math.sin(a)*0.9,4,'#ffb040',1,0.15,0.18,0,1)}}
 function updProj(p,dt){
   if(p.k==='earrow'){const tg=p.tg,alive=tg&&(tg.hp>0)&&(tg.troop?troops.includes(tg):tg.b?knights.includes(tg):buildings.includes(tg));if(alive){p.lx=tg.x;p.ly=tg.y}const dx=p.lx-p.x,dy=p.ly-p.y,d=Math.hypot(dx,dy),s=420*dt;
-    if(d<=s){if(alive){if(tg.b){tg.hp-=p.dmg*(tg.troop?(UT[tg.type].arrowRes||1):1);tg.flash=0.1}else hurtBuilding(tg,p.dmg)}p.dead=1}else{p.x+=dx/d*s;p.y+=dy/d*s}return}
+    if(d<=s){if(alive){if(tg.b){tg.hp-=p.dmg*(tg.troop?(UT[tg.type].arrowRes||1):1)*(tg.armor||1);tg.flash=0.1}else hurtBuilding(tg,p.dmg)}p.dead=1}else{p.x+=dx/d*s;p.y+=dy/d*s}return}
   if(p.k==='arrow'){if(p.t&&p.t.hp>0){p.lx=p.t.x;p.ly=p.t.y}const dx=p.lx-p.x,dy=p.ly-p.y,d=Math.hypot(dx,dy),s=560*dt;
     if(d<=s){if(p.rb){if(rbuildings.includes(p.t))hurtRB(p.t,p.dmg,p.src)}else if(p.t&&p.t.hp>0){hitEnemy(p.t,p.dmg*(ET[p.t.type].arrowRes||1),p.src);p.t.flash=0.08;if(p.src&&vetOf(p.src)>=5){let n=0;for(const o of enemies){if(n>=2)break;if(o!==p.t&&o.hp>0&&dst(o.x,o.y,p.t.x,p.t.y)<48){hitEnemy(o,p.dmg*0.6*(ET[o.type].arrowRes||1),p.src);n++}}}}p.dead=1}else{p.x+=dx/d*s;p.y+=dy/d*s}}
-  else if(p.k==='rball'){p.time+=dt;if(p.time>=p.dur){p.dead=1;if(p.bmul)for(const b of [...buildings])if(edgeDist(b,p.tx,p.ty)<p.splash*0.7)hurtBuilding(b,p.dmg*p.bmul);for(const L of[knights,troops])for(const u of L)if(dst(u.x,u.y,p.tx,p.ty)<p.splash){u.hp-=p.dmg*(p.bmul?0.6:1);u.flash=0.1}
+  else if(p.k==='rball'){p.time+=dt;if(p.time>=p.dur){p.dead=1;if(p.bmul)for(const b of [...buildings])if(edgeDist(b,p.tx,p.ty)<p.splash*0.7)hurtBuilding(b,p.dmg*p.bmul);for(const L of[knights,troops])for(const u of L)if(dst(u.x,u.y,p.tx,p.ty)<p.splash){u.hp-=p.dmg*(p.bmul?0.6:1)*(u.armor||1);u.flash=0.1}
     const[X,Y,Z]=W3(p.tx,p.ty);fx(X,Y+0.1,Z,9,'#ffae3a',2.4,0.22,0.35,0,1,0.8);fx(X,Y+0.1,Z,10,'#857a6c',1.6,0.4,1.4,-0.2,0,0.7);AU.boom(0.6);shake=Math.max(shake,0.08)}}
   else{p.time+=dt;if(p.time>=p.dur){p.dead=1;if(p.cat)for(const b of [...rbuildings])if(edgeDist(b,p.tx,p.ty)<p.splash*0.7)hurtRB(b,p.dmg*1.25,p.src);if(p.src&&vetOf(p.src)>=5)fires.push({x:p.tx,y:p.ty,r:p.splash*0.75,t:3.2,dps:p.dmg*0.3,src:p.src});for(const e of enemies){const d=dst(e.x,e.y,p.tx,p.ty);if(d<p.splash){hitEnemy(e,p.dmg*(d<p.splash*0.4?1:0.6),p.src);e.flash=0.1}}
     const[X,Y,Z]=W3(p.tx,p.ty);fx(X,Y+0.1,Z,p.lv===3?16:9,p.lv===3?'#7fd8ff':'#ffae3a',p.lv===3?3.2:2.4,0.22,0.35,0,1,0.8);fx(X,Y+0.1,Z,10,'#857a6c',1.6,0.4,1.4,-0.2,0,0.7);fx(X,Y+0.1,Z,8,'#5e4a32',3,0.07,0.9,8,2,1.1);
@@ -1133,13 +1137,13 @@ function update(dt){time+=dt;checkAch(dt);if(AI()>=2)for(const g in grpState){co
   for(let i=spawnQ.length-1;i>=0;i--){const s=spawnQ[i];s.t-=dt;if(s.t<=0){spawnEnemy(s.type,s.n,s.side||0);spawnQ.splice(i,1)}}
   for(const b of buildings){const T=BT[b.type];if(b.hit>0)b.hit-=dt;if(T.prod){const m=mulOf(b);for(const k in T.prod){const v=T.prod[k]*m*dt;res[k]+=v;ST.earned[k]+=v;ST.acc[k==='grain'?'g':k==='wool'?'w':'o']+=v}}
     if(b.type==='archer'||b.type==='cannon')updTower(b,dt);if(b.type==='wall'&&b.hp<b.maxhp&&b.lvl===3)b.hp=Math.min(b.maxhp,b.hp+dt*6);if(b.type==='barracks')updBarracks(b,dt);if(isArmy(b.type))updArmyB(b,dt)}if(V1)redAI(dt);
-  for(const e of enemies){e.tgtBy=0;updEnemy(e,dt)}for(const k of knights)updKnight(k,dt);armT-=dt;if(armT<=0){armT=0.5;troopSlots();if(V1)checkEnd1v1()}for(const t of troops)updTroop(t,dt);
+  for(const t of troops)t.tgtR=0;for(const k of knights)k.tgtR=0;for(const e of enemies){e.tgtBy=0;updEnemy(e,dt)}for(const k of knights)updKnight(k,dt);armT-=dt;if(armT<=0){armT=0.5;troopSlots();if(V1)checkEnd1v1()}for(const t of troops)updTroop(t,dt);
   for(const p of projs)updProj(p,dt);projs=projs.filter(p=>!p.dead);
   for(const f of fires){f.t-=dt;for(const e of enemies)if(e.hp>0&&dst(e.x,e.y,f.x,f.y)<f.r)hitEnemy(e,f.dps*dt,f.src)}fires=fires.filter(f=>f.t>0);
   for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(e.hp<=0){enemies.splice(i,1);kills++;const bo=ET[e.type].bounty;res.grain+=bo;ST.earned.grain+=bo;ST.acc.g+=bo;ST.killsE[e.type]++;addScore(({spear:10,bowman:12,shield:15,sapper:15,cav:20,ram:40,catapult:35,boss:250}[e.type]||10)*(1+0.2*(eraOf(wave)-1)));{const kb=e.killedBy;if(kb&&kb.st){kb.st.kills++;ST.killsBy[kb.type]++;checkVet(kb)}}const[X,Y,Z]=W3(e.x,e.y);texts.push({X,Y:Y+0.9,Z,s:'+'+bo+' 🌾',life:1.3});
     corpses.push({kind:e.type,x:e.x,y:e.y,rAng:e.rAng,walk:e.walk,die:0,mvb:0,swing:0,flash:0});fx(X,Y+0.15,Z,5,'#bfae88',0.9,0.2,0.7,0,0)}}
   for(let i=troops.length-1;i>=0;i--){const t=troops[i];if(t.hp<=0){ST.tLost++;troops.splice(i,1);corpses.push({kind:'t_'+t.type+t.tier,x:t.x,y:t.y,rAng:t.rAng,walk:t.walk,die:0,mvb:0,swing:0,flash:0})}}
-  for(let i=knights.length-1;i>=0;i--){const k=knights[i];if(k.hp<=0){ST.kLost++;knights.splice(i,1);corpses.push({kind:'knight'+k.tier,x:k.x,y:k.y,rAng:k.rAng,walk:k.walk,die:0,mvb:0,swing:0,flash:0})}}
+  for(let i=knights.length-1;i>=0;i--){const k=knights[i];if(k.hp<=0){ST.kLost++;knights.splice(i,1);corpses.push({kind:'eagle'+k.tier,x:k.x,y:k.y,rAng:k.rAng,walk:k.walk,die:0,mvb:0,swing:0,flash:0})}}
   for(const c of corpses)c.die+=dt;corpses=corpses.filter(c=>c.die<5.5);
   for(const r of rubble){r.life-=dt;if(r.life<4)r.mesh.position.y-=dt*0.08}rubble=rubble.filter(r=>{if(r.life<=0){scene.remove(r.mesh);return false}return true});
   // music intensity — slow swells
@@ -1193,7 +1197,7 @@ function troopAttack(t,tg,isB){const U=UT[t.type],dmg=t.dmg*VETM[vetOf(t.b)];
   if(t.type==='catapult'){projs.push({k:'ball',cat:1,sx:t.x,sy:t.y,tx:tg.x,ty:tg.y,time:0,dur:0.6+dst(t.x,t.y,tg.x,tg.y)/600,dmg,splash:U.splash*(t.tier===3?1.2:1),h0:heightAt(t.x/TILE,t.y/TILE)+0.7,lv:t.tier,src:t.b});AU.boom(0.35);return}
   if(U.ranged){projs.push({k:'arrow',x:t.x,y:t.y,t:tg,rb:isB?1:0,lx:tg.x,ly:tg.y,d0:Math.max(1,dst(t.x,t.y,tg.x,tg.y)),h0:heightAt(t.x/TILE,t.y/TILE)+0.6,dmg:isB?dmg*0.35:dmg,lv:t.tier,src:t.b});return}
   if(isB){hurtRB(tg,dmg*(U.siege?1:0.4),t.b);return}
-  hitEnemy(tg,dmg,t.b);tg.flash=0.1;if(t.tier===3){const[X,Y,Z]=W3(tg.x,tg.y);fx(X,Y+0.4,Z,2,'#9fe8ff',1.2,0.06,0.4,0,1)}}
+  hitEnemy(tg,dmg*(t.type==='spear'&&tg.type==='cav'?1.8:t.type==='cav'&&(tg.type==='bowman'||tg.type==='catapult'||tg.type==='ram')?1.5:1),t.b);tg.flash=0.1;if(t.tier===3){const[X,Y,Z]=W3(tg.x,tg.y);fx(X,Y+0.4,Z,2,'#9fe8ff',1.2,0.06,0.4,0,1)}}
 function updTroop(t,dt){const U=UT[t.type];if(t.cd>0)t.cd-=dt;if(t.swing>0)t.swing-=dt;if(t.flash>0)t.flash-=dt;if(t.mvT>0)t.mvT-=dt;
   t.prT=(t.prT||0)+dt;if(t.prT>0.8){const mv=dst(t.x,t.y,t.px??t.x,t.py??t.y);if(t.wantMove&&mv<4){t.nudge=0.5;t.nudgeA=Math.random()*6.28;t.tg=null}t.prT=0;t.px=t.x;t.py=t.y}t.wantMove=false;
   const B=bans[t.ban];t.tgT=(t.tgT||0)-dt;
@@ -1231,54 +1235,153 @@ function destroyRB(b,src){const i=rbuildings.indexOf(b);if(i<0)return;rbuildings
   ST.rKilled++;addScore((b.type==='wall'?10:60*b.s)*b.lvl);if(src&&src.st){src.st.kills+=b.type==='wall'?0:2;checkVet(src)}
   texts.push({X:b.X,Y:b.Y+b.barH,Z:b.Z,s:['grain','wool','gold'].filter(k=>bo[k]).map(k=>'+'+bo[k]+SHORT[k]).join(' ')||'+0',life:1.8,c:'#ffe9a8'});toast(`Red ${BT[b.type].name} destroyed!`);for(const B of bans)if(B.tb===b)B.tb=null;computeFlow()}
 function updRTower(b,dt){b.cd-=dt;if(b.cd>0)return;const T=BT[b.type],R=T.range*RNG[b.lvl-1];let t=null,bd=R;for(const L of[troops,knights])for(const u of L){const d=dst(u.x,u.y,b.x,b.y);if(d<bd){bd=d;t=u}}if(!t)return;
-  b.cd=T.rate/CDM[b.lvl-1];b.aim=Math.atan2(t.y-b.y,t.x-b.x);const dmg=T.dmg*MUL[b.lvl-1]*[0.8,0.9,1,1.1][diff];
+  b.cd=T.rate/CDM[b.lvl-1];b.aim=Math.atan2(t.y-b.y,t.x-b.x);const dmg=T.dmg*MUL[b.lvl-1];
   if(b.type==='archer'){for(let i=0;i<b.lvl;i++)projs.push({k:'earrow',x:b.x,y:b.y,tg:t,lx:t.x,ly:t.y,d0:Math.max(1,bd),h0:b.Y+b.top,dmg,lv:b.lvl});AU.arrow()}
   else{projs.push({k:'rball',sx:b.x,sy:b.y,tx:t.x,ty:t.y,time:0,dur:0.45+bd/700,dmg,splash:T.splash,h0:b.Y+b.top,lv:b.lvl,bmul:0});b.recoil=1;AU.boom(0.4)}}
 // ---------- red AI (1v1) ----------
+// ---------- red commander (1v1) — honest AI: same income, same unit stats, same upgrades as the player ----------
 const RUNIT={hall:['spear','bowman','shield','cav'],workshop:['ram','catapult']};
-function newRAI(){RAI={res:{grain:160,wool:80,gold:0},arm:{grain:0,wool:0,gold:0},age:1,ageT:null,t:0,tick:0,gid:5000,nextAtk:[300,210,170,140][diff],cx:(RBASE.tx+1)*TILE,cy:(RBASE.ty+1)*TILE,rally:null}}
+let RFc=null;
+const RF=()=>({tick:[2.4,1.5,1.0,0.6][diff],eco:[0.8,0.9,1,1][diff],stage:diff>=1,retreat:diff>=2,raid:diff>=2,counter:diff>=1,focus:diff>=2,kite:diff>=2,smart:diff>=2,recall:diff>=3,reinforce:diff>=3,upg:diff>=1,q:[1,2,2,2][diff]});
+function newRAI(){RAI={res:{grain:160,wool:80,gold:0},age:1,ageT:null,t:0,tick:0,army:{state:'idle',t:0,tb:null,stage:null,n0:0},raid:null,mix:{spear:1,bowman:0.7,shield:0,cav:0,ram:1,catapult:0},mixT:0,cx:(RBASE.tx+1)*TILE,cy:(RBASE.ty+1)*TILE,rally:null,threat:0,threatPos:null,nextAtk:0,lastAtk:0}}
 function rCore(){const L=rbuildings.filter(b=>b.type!=='wall');if(!L.length)return[(RBASE.tx+1),(RBASE.ty+1)];let x=0,z=0;for(const b of L){x+=b.X;z+=b.Z}return[x/L.length,z/L.length]}
 function rAfford(c){const r=RAI.res;return r.grain>=c.grain&&r.wool>=c.wool&&r.gold>=c.gold}
 function rPay(c){const r=RAI.res;r.grain-=c.grain;r.wool-=c.wool;r.gold-=c.gold}
-function rCost(type){const n=rbuildings.filter(b=>b.type===type).length,f=1+(SCALE[type]||0)*n,c=BT[type].cost;return{grain:Math.round(c.grain*f),wool:Math.round(c.wool*f),gold:Math.round(c.gold*f)}}
+function rCost(type){const n=rbuildings.filter(b=>b.type===type).length,f=1+(SCALE[type]||0)*n,c=BT[type].cost,r5=v=>Math.round(v*f/5)*5;return{grain:r5(c.grain),wool:r5(c.wool),gold:r5(c.gold)}}
 function rSpot(type){const s=BT[type].size;if(type==='mine'){const[cx,cz]=rCore();let best=null,bd=1e9;for(const d of DEPOS){if(!rbCan('mine',d.tx,d.ty))continue;const dd=Math.hypot(d.tx-cx,d.ty-cz);if(dd<bd&&dd<30){bd=dd;best=[d.tx,d.ty]}}return best}
-  const[cx,cz]=rCore();const ux=BASE.tx-cx,uz=BASE.ty-cz,ul=Math.hypot(ux,uz)||1;const def=type==='archer'||type==='cannon',army=isArmy(type);let best=null,bs=-1e9;
-  for(let ty=Math.floor(cz-13);ty<=cz+13;ty++)for(let tx=Math.floor(cx-13);tx<=cx+13;tx++){if(!rbCan(type,tx,ty))continue;const X=tx+s/2,Z=ty+s/2,d=Math.hypot(X-cx,Z-cz),fwd=((X-cx)*ux+(Z-cz)*uz)/ul;
-    const sc=def?-Math.abs(d-6.5)*1.5+fwd*1.2-rbuildings.filter(o=>o.type===type&&Math.hypot(o.X-X,o.Z-Z)<5).length*8:army?-Math.abs(d-5)-Math.abs(fwd-2)*0.5:-d-fwd*0.8+Math.random()*0.5;if(sc>bs){bs=sc;best=[tx,ty]}}return best}
-function rWant(){const t=RAI.t,dm=[0.75,0.9,1.05,1.2][diff],T=t*dm,n=k=>rbuildings.filter(b=>b.type===k).length,list=[];
-  const want=(k,c)=>{if(n(k)<c)list.push(k)};const md=DEPOS.filter(d=>d.red).length;
-  want('wheat',3);if(T>30)want('hall',1);want('sheep',2);if(T>100)want('sheep',3);if(T>50)want('mine',Math.min(md,1+Math.floor((T-50)/70)));want('archer',2);want('wheat',Math.min(8,3+Math.floor(T/70)));want('sheep',Math.min(5,2+Math.floor(T/120)));
-  if(T>200)want('workshop',1);want('archer',Math.min(6,2+Math.floor(T/150)));if(RAI.age>=2)want('cannon',Math.min(3,Math.floor((T-150)/140)));if(T>420)want('hall',2);return list}
-function redAI(dt){const R=RAI;R.t+=dt;if(!R.arm)R.arm={grain:0,wool:0,gold:0};const m=[1.1,1.35,1.55,1.8][diff],sh=R.t<60?0.1:[0.35,0.4,0.45,0.5][diff];const inc=(k,v)=>{R.res[k]+=v*(1-sh);R.arm[k]+=v*sh};inc('grain',0.7*dt*m);if(R.t>90)inc('gold',0.18*dt*m);
-  for(const b of rbuildings){const P2=BT[b.type].prod;if(P2)for(const k in P2)inc(k,P2[k]*MUL[b.lvl-1]*dt*m);if(isArmy(b.type)&&b.q.length){b.qT+=dt;if(b.qT>=UT[b.q[0]].t*PROD_SP[b.lvl-1]){spawnRedUnit(b,b.q.shift());b.qT=0}}
+  const[cx,cz]=rCore();let ux=BASE.tx-cx,uz=BASE.ty-cz;if(RAI.threatPos&&(type==='archer'||type==='cannon')){ux=RAI.threatPos[0]/TILE-cx;uz=RAI.threatPos[1]/TILE-cz}const ul=Math.hypot(ux,uz)||1;const def=type==='archer'||type==='cannon',army=isArmy(type);let best=null,bs=-1e9;
+  const RR=s>=3?19:15;for(let ty=Math.floor(cz-RR);ty<=cz+RR;ty++)for(let tx=Math.floor(cx-RR);tx<=cx+RR;tx++){if(!rbCan(type,tx,ty))continue;const X=tx+s/2,Z=ty+s/2,d=Math.hypot(X-cx,Z-cz),fwd=((X-cx)*ux+(Z-cz)*uz)/ul;
+    // towers: cover the approach and the farms, don't stack on each other
+    let sc;if(def){let cov=0;for(const o of rbuildings)if(BT[o.type].kind==='eco'&&Math.hypot(o.X-X,o.Z-Z)<6)cov++;sc=-Math.abs(d-5.5)*1.2+fwd*1.4+cov*0.8-rbuildings.filter(o=>(o.type==='archer'||o.type==='cannon')&&Math.hypot(o.X-X,o.Z-Z)<5).length*9}
+    else if(army)sc=-Math.abs(d-4.5)-Math.abs(fwd-1.5)*0.6;else sc=-d-Math.max(0,fwd)*1.2+Math.random()*0.4;if(sc>bs){bs=sc;best=[tx,ty]}}return best}
+// strength = total health × total damage per second (Lanchester-style)
+const rUnitDps=e=>{const U=UT[e.type];return U?(U.siege&&e.type!=='catapult'?0.5:(e.udmg||U.dmg)/U.rate):0};
+function redStr(list){let H=0,D=0;for(const e of list){H+=e.hp;D+=rUnitDps(e)}return H*D}
+function blueStrNear(x,y,R,towers=true){let H=0,D=0;for(const t of troops)if(dst(t.x,t.y,x,y)<R){const U=UT[t.type];H+=t.hp;D+=U.bldOnly?0.5:t.dmg/U.rate}
+  for(const k of knights)if(dst(k.x,k.y,x,y)<R){H+=k.hp/(k.armor||1);D+=k.dmg/KN.rate}
+  if(towers)for(const b of buildings){if(b.type!=='archer'&&b.type!=='cannon')continue;if(dst(b.x,b.y,x,y)<rangeOf(b)+R*0.35){H+=b.hp*0.7;D+=towerAtk(b)*3}}return H*D}
+function rSiegeEst(list,tb){let bd=0,H=0;for(const e of list){const U=UT[e.type],dps=(e.udmg||U.dmg)/U.rate;bd+=U.siege?dps*(e.type==='catapult'?1.25:1):U.ranged?dps*0.35:dps*0.4;H+=e.hp}
+  const t=tb.hp/Math.max(1,bd)+4;let tdps=0;for(const b of buildings)if((b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,tb.x,tb.y)<rangeOf(b)+tb.s*TILE*0.5+20)tdps+=towerAtk(b)*3;
+  for(const o of troops)if(dst(o.x,o.y,tb.x,tb.y)<350)tdps+=o.dmg/UT[o.type].rate;for(const k of knights)if(dst(k.x,k.y,tb.x,tb.y)<450)tdps+=k.dmg/KN.rate;return{t,loss:tdps*t/Math.max(1,H)}}
+function centroid(L){let x=0,y=0;for(const e of L){x+=e.x;y+=e.y}return L.length?[x/L.length,y/L.length]:[0,0]}
+function stagePoint(tb){const R=RAI;let maxR=0;for(const b of buildings)if((b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,tb.x,tb.y)<rangeOf(b)+TILE*3)maxR=Math.max(maxR,rangeOf(b)-dst(b.x,b.y,tb.x,tb.y)+tb.s*TILE*0.5);
+  const dx=R.cx-tb.x,dy=R.cy-tb.y,dl=Math.hypot(dx,dy)||1,d=Math.max(150,maxR+110);return snapWalk(tb.x+dx/dl*d,tb.y+dy/dl*d)}
+function rChooseTarget(list,raid){const R=RAI,rs=redStr(list),siege=list.filter(e=>UT[e.type].siege).length;let best=null,bs=-1e9;
+  let bx=0,by=0,bn=0;for(const t of troops){bx+=t.x;by+=t.y;bn++}
+  for(const b of buildings){if(b.type==='wall')continue;const T=BT[b.type];let val=T.kind==='eco'?(b.type==='mine'?4:3)*b.lvl:isArmy(b.type)?4.5:b.type==='barracks'?3.5:(siege?3.2:1.2);if(raid&&T.kind!=='eco')continue;
+    const def=blueStrNear(b.x,b.y,330),est=rSiegeEst(list,b);let sc=val*(rs/(rs+def*1.3+1))/(1+est.loss*2.5)-dst(b.x,b.y,R.cx,R.cy)/TILE/45;if(raid&&bn&&dst(b.x,b.y,bx/bn,by/bn)<520)sc-=4;if(sc>bs){bs=sc;best=b}}return best}
+function rNextTarget(list){const c=centroid(list),siege=list.some(e=>UT[e.type].siege);let best=null,bs=-1e9;
+  for(const b of buildings){if(b.type==='wall')continue;const d=dst(b.x,b.y,c[0],c[1]);if(d>520)continue;const tower=b.type==='archer'||b.type==='cannon';const sc=-d/TILE+(tower?(siege?6:3):0)+(BT[b.type].kind==='eco'?2:0);if(sc>bs){bs=sc;best=b}}return best||(RFc.smart?rChooseTarget(list):null)}
+function counterMul(at,tg){const mounted=tg.eagle||tg.type==='cav';if(at==='spear'&&mounted)return 1.8;if(at==='cav'&&tg.type&&UT[tg.type]&&(UT[tg.type].ranged||UT[tg.type].siege))return 1.5;return 1}
+function redAttack(e,tg,isB){const U=UT[e.type],dmg=e.udmg||U.dmg;
+  if(e.type==='catapult'){const d=dst(e.x,e.y,tg.x,tg.y);projs.push({k:'rball',sx:e.x,sy:e.y,tx:tg.x,ty:tg.y,time:0,dur:0.6+d/600,dmg,splash:U.splash,h0:heightAt(e.x/TILE,e.y/TILE)+0.7,bmul:1.25});AU.boom(0.3);return}
+  if(U.ranged){projs.push({k:'earrow',x:e.x,y:e.y,tg,lx:tg.x,ly:tg.y,d0:Math.max(1,dst(e.x,e.y,tg.x,tg.y)),h0:heightAt(e.x/TILE,e.y/TILE)+0.6,dmg:isB?dmg*0.35:dmg,lv:1});return}
+  if(isB){hurtBuilding(tg,dmg*(U.siege?1:0.4));return}
+  tg.hp-=dmg*counterMul(e.type,tg)*(tg.armor||1);tg.flash=0.1}
+function rReachable(e,b){const f=getNav((b.x/TILE)|0,(b.y/TILE)|0),i=tileAt(e.x,e.y);if(i<0)return true;for(const[dx,dy]of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const j=i+dx+dy*GW;if(j>=0&&j<GW*GH&&f[j]<1e9)return true}return false}
+function redPick(e){const U=UT[e.type],R=RAI,F=RFc,role=e.role||'home';let best=null,bs=-1e9;
+  if(!U.bldOnly){const ag=U.ranged?U.range+30:(role==='home'?150:120);
+    for(const L of[troops,knights])for(const o of L){const d=dst(o.x,o.y,e.x,e.y);if(d>ag)continue;let sc=-d;
+      if(F.focus){sc+=(1-o.hp/o.maxhp)*110+(o.tgtR||0)*22;const ot=o.type;if(e.type==='spear'&&(o.eagle||ot==='cav'))sc+=130;if(e.type==='cav'&&ot&&UT[ot]&&(UT[ot].ranged||UT[ot].siege))sc+=150;if(U.ranged&&ot==='catapult')sc+=90;if(e.type==='spear'&&ot==='bowman')sc+=30}
+      if(sc>bs){bs=sc;best=o}}
+    if(best){best.tgtR=(best.tgtR||0)+1;return best}}
+  if(role==='home'){let k=null,kd=1e9;if(!U.bldOnly)for(const L of[troops,knights])for(const o of L){if(dst(o.x,o.y,R.cx,R.cy)>540)continue;const d=dst(o.x,o.y,e.x,e.y);if(d<kd){kd=d;k=o}}if(k)return k;
+    const[nb,nbd]=nearestBuilding(e.x,e.y);if(nb&&dst(nb.x,nb.y,R.cx,R.cy)<600&&nbd<300)return nb;return null}
+  if(role==='retreat')return null;
+  // catapults: hit whatever building is already in range (towers first)
+  if(e.type==='catapult'){let b=null,bsc=-1e9;for(const o of buildings){const d=edgeDist(o,e.x,e.y);if(d>U.range)continue;const sc=(o.type==='archer'||o.type==='cannon'?200:0)-d-(o.type==='wall'?150:0);if(sc>bsc){bsc=sc;b=o}}if(b)return b;
+    if(!U.bldOnly){const o=nearestBlueUnit(e.x,e.y,U.range);if(o)return o}}
+  const goal=role==='raid'?(R.raid&&R.raid.tb):(R.army.state==='attack'?R.army.tb:null);
+  if(goal&&buildings.includes(goal)){if(rReachable(e,goal))return goal;let w=null,wd=260;for(const o of buildings){if(o.type!=='wall')continue;const d=edgeDist(o,e.x,e.y);if(d<wd){wd=d;w=o}}return w||goal}
+  if(R.army.state==='attack'&&role==='army'){const[nb,nbd]=nearestBuilding(e.x,e.y);if(nb&&nbd<200)return nb}return null}
+function nearestBlueUnit(x,y,R){let b=null,bd=R;for(const L of[troops,knights])for(const o of L){const d=dst(o.x,o.y,x,y);if(d<bd){bd=d;b=o}}return b}
+function updRedUnit(e,dt){const U=UT[e.type],R=RAI,F=RFc||(RFc=RF());
+  e.prT=(e.prT||0)+dt;if(e.prT>0.8){const mv=dst(e.x,e.y,e.px??e.x,e.py??e.y);if(e.wantMove&&mv<4){e.nudge=0.5;e.nudgeA=Math.random()*6.28;e.tg=null}e.prT=0;e.px=e.x;e.py=e.y}e.wantMove=false;
+  const role=e.role||'home',spd=e.uspd||U.speed;
+  if(!R.rally){const[cx,cz]=rCore();const ux=BASE.tx-cx,uz=BASE.ty-cz,ul=Math.hypot(ux,uz)||1;R.rally=snapWalk((cx+ux/ul*6)*TILE,(cz+uz/ul*6)*TILE)}
+  if(role==='retreat'){if(dst(e.x,e.y,R.rally[0],R.rally[1])<110){e.role='home';e.tg=null}else{e.wantMove=true;knightMove(e,R.rally[0],R.rally[1],spd*1.05,dt)}e.hp=Math.min(e.maxhp,e.hp+dt*0.5);return}
+  // ranged units keep melee attackers at arm's length
+  if(F.kite&&(U.ranged)){const m=nearestBlueMelee(e.x,e.y,e.type==='catapult'?80:52);if(m){const a=Math.atan2(e.y-m.y,e.x-m.x),ax=e.x+Math.cos(a)*50,ay=e.y+Math.sin(a)*50;if(walkable(ax,ay)){e.wantMove=true;knightMove(e,ax,ay,spd,dt);return}}}
+  e.tgT=(e.tgT||0)-dt;const alive=t=>t&&t.hp>0&&(t.troop?troops.includes(t):t.eagle?knights.includes(t):buildings.includes(t));
+  if(e.tgT<=0||!alive(e.tg)){e.tg=redPick(e);e.tgT=F.focus?0.35:0.7}const tg=e.tg;
+  if(tg){const isB=!tg.troop&&!tg.eagle;const d=isB?edgeDist(tg,e.x,e.y):dst(tg.x,tg.y,e.x,e.y)-(tg.r||0);const reach=U.ranged?U.range:e.r+6;
+    if(d<=reach){e.ang=Math.atan2(tg.y-e.y,tg.x-e.x);e.vx=(e.vx||0)*0.5;e.vy=(e.vy||0)*0.5;if(e.cd<=0){redAttack(e,tg,isB);e.cd=U.rate;e.swing=0.25}return}
+    e.wantMove=true;knightMove(e,tg.x,tg.y,spd*(d<TILE*3&&!U.siege?1.12:1),dt,isB?Math.max(0,tg.s*TILE/2-6):0);return}
+  // no target: follow orders
+  let gx,gy,sp=spd;const A=R.army;
+  if(role==='army'&&A.state==='stage'&&A.stage){const[ox,oy]=slotOff(e.slot||0);gx=A.stage[0]+ox;gy=A.stage[1]+oy}
+  else if(role==='army'&&A.state==='attack'&&A.tb){gx=A.tb.x;gy=A.tb.y;const arm=A.list||[];if(arm.length>2){const c=centroid(arm),dg=dst(e.x,e.y,gx,gy),dc=dst(c[0],c[1],gx,gy);if(dg<dc-140)sp*=0.35}}
+  else if(role==='raid'&&R.raid&&R.raid.tb){gx=R.raid.tb.x;gy=R.raid.tb.y}
+  else{const a=(e.hslot||0)*Math.PI*2,rr=24+(e.hslot||0)*80;gx=R.rally[0]+Math.cos(a)*rr;gy=R.rally[1]+Math.sin(a)*rr;sp*=0.8}
+  if(dst(gx,gy,e.x,e.y)>8){e.wantMove=true;knightMove(e,gx,gy,sp,dt)}else{e.vx=0;e.vy=0}}
+function nearestBlueMelee(x,y,R){let b=null,bd=R;for(const t of troops){const U=UT[t.type];if(U.ranged||U.bldOnly)continue;const d=dst(t.x,t.y,x,y);if(d<bd){bd=d;b=t}}for(const k of knights){const d=dst(k.x,k.y,x,y);if(d<bd){bd=d;b=k}}return b}
+function rWant(){const R=RAI,n=k=>rbuildings.filter(b=>b.type===k).length,md=DEPOS.filter(d=>d.red).length,list=[];const want=(k,c)=>{if(n(k)<c&&!list.includes(k))list.push(k)};
+  const w=n('wheat'),sh=n('sheep'),mi=n('mine'),eco=w+sh+mi,tow=n('archer')+n('cannon');
+  if(R.threat>0&&tow<2)want('archer',tow+1);
+  if(R.res.grain>450&&R.res.wool<120&&sh<10)want('sheep',sh+1);if(R.res.grain>450&&R.res.gold<60&&mi<md)want('mine',mi+1);
+  want('wheat',5);want('sheep',2);want('hall',1);want('wheat',6);want('sheep',3);want('mine',1);want('archer',1);
+  if(R.needSiege||eco>=12)want('workshop',1);
+  // steady growth at roughly 2 wheat : 1 sheep : 1 mine
+  if(mi<md&&mi*2<w)want('mine',mi+1);if(sh*2<w+2)want('sheep',sh+1);if(w<12)want('wheat',w+1);if(sh<7)want('sheep',sh+1);if(mi<md)want('mine',mi+1);
+  want('archer',Math.min(5,1+Math.floor(eco/6)));if(R.age>=2)want('cannon',Math.min(3,Math.floor((eco-8)/5)));if(eco>=14)want('hall',2);if(eco>=22)want('hall',3);if(eco>=20&&R.age>=2)want('workshop',2);return list}
+function rThreat(){const R=RAI;const[cx,cz]=rCore();R.cx=cx*TILE;R.cy=cz*TILE;let x=0,y=0,n=0;const L=[];for(const G of[troops,knights])for(const o of G){let near=dst(o.x,o.y,R.cx,R.cy)<560;if(!near)for(const b of rbuildings)if(edgeDist(b,o.x,o.y)<230){near=true;break}if(near){L.push(o);x+=o.x;y+=o.y;n++}}
+  R.threat=n?blueStrNear(x/n,y/n,400,false):0;R.threatPos=n?[x/n,y/n]:null;return L}
+function rEconomy(threat){const R=RAI,F=RFc;
+  // age up as soon as the economy can carry it
+  let saveAge=null;if(!R.ageT&&R.age<3){const eco=rbuildings.filter(b=>BT[b.type].kind==='eco').length,c=AGEC[R.age+1];if(eco>=(R.age===1?8:14)&&rbuildings.filter(b=>b.type==='mine').length>=R.age&&rbuildings.some(b=>isArmy(b.type))){if(rAfford(c)&&!threat){rPay(c);R.ageT={to:R.age+1,t:0,dur:AGET[R.age+1]}}else if(!threat)saveAge=c}}R.saving=saveAge;
+  const wl=rWant();R.next=null;
+  for(const k of wl){if((AGEREQ[k]||1)>R.age)continue;const c=rCost(k),eco=BT[k].kind==='eco';if(threat&&eco&&R.res.grain<c.grain+120)break;
+    if(saveAge&&!eco&&!(R.res.grain>=c.grain+saveAge.grain&&R.res.wool>=c.wool+saveAge.wool))continue;
+    if(!rAfford(c)){if(!R.next){R.next=c;R.nextEco=eco}if(eco)break;continue}const sp=rSpot(k);if(!sp)continue;rPay(c);addRB(k,sp[0],sp[1]);break}
+  // emergency tower towards an attack (Lord+)
+  if(threat&&F.smart&&R.threatPos&&rAfford(rCost('archer'))){const near=rbuildings.some(b=>(b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,R.threatPos[0],R.threatPos[1])<rangeOf(b)+40);if(!near&&Math.random()<0.5){const sp=rSpot('archer');if(sp){rPay(rCost('archer'));addRB('archer',sp[0],sp[1])}}}
+  // upgrades: troops' buildings first, then mines, then towers, then farms — only with money to spare
+  if(F.upg&&!threat&&!saveAge){const spare=c=>R.res.grain>=c.grain+(R.next?R.next.grain:0)&&R.res.wool>=c.wool+(R.next?R.next.wool:0)&&R.res.gold>=c.gold+(R.next?R.next.gold:0);
+    const order=b=>isArmy(b.type)?0:b.type==='mine'?1:(b.type==='archer'||b.type==='cannon')?2:3;const up=rbuildings.filter(b=>b.lvl<R.age&&b.type!=='wall').sort((a,b)=>order(a)-order(b)||a.lvl-b.lvl)[0];
+    if(up){const c=upCost(up);if(spare(c)){rPay(c);up.lvl++;up.maxhp=BT[up.type].hp*HPM[up.lvl-1];up.hp=up.maxhp;makeRVisual(up,true)}}}}
+function rMix(){const R=RAI,F=RFc;R.mixT-=RFc.tick;if(R.mixT>0)return;R.mixT=10;const a2=R.age>=2;
+  if(!F.counter){R.mix={spear:1,bowman:0.6,shield:a2?0.4:0,cav:a2?0.35:0,ram:1,catapult:a2?0.8:0};return}
+  let cav=knights.length,bow=0,inf=0,sie=0;for(const t of troops){if(t.type==='cav')cav++;else if(t.type==='bowman')bow++;else if(t.type==='spear'||t.type==='shield')inf++;else sie++}
+  let tow=0;for(const b of buildings)if(b.type==='archer'||b.type==='cannon')tow+=b.lvl;const walls=buildings.filter(b=>b.type==='wall').length;
+  const ns=R.needSiege?2.5:1;R.mix={spear:0.8+cav*0.35,bowman:0.5+inf*0.18+sie*0.25,shield:a2?0.3+bow*0.3+tow*0.06:0,cav:a2?0.3+bow*0.25+sie*0.35:0,ram:(0.5+tow*0.06+walls*0.03)*ns,catapult:a2?(0.6+tow*0.15+walls*0.02)*ns:0}}
+function rTrain(threat){const R=RAI,F=RFc;const nx=R.next;
+  for(const b of rbuildings){if(!isArmy(b.type)||b.q.length>=F.q)continue;const opts=RUNIT[b.type].filter(k=>(UT[k].age||1)<=R.age);let tot=0;for(const k of opts)tot+=R.mix[k]||0.01;let r=Math.random()*tot,pick=opts[0];for(const k of opts){r-=R.mix[k]||0.01;if(r<=0){pick=k;break}}
+    if(R.res.wool<60&&R.res.grain>300&&b.type==='hall')pick='spear';const c=UT[pick].cost;if(!rAfford(c))continue;
+    // balance: grow the economy, but never fall behind on soldiers
+    const desire=(diff>=3?4:3)+R.t/(diff>=3?28:36),behind=enemies.length<desire,ecoN=rbuildings.filter(o=>BT[o.type].kind==='eco').length,ecoLow=ecoN<Math.min(20,6+R.t/45);const k2=enemies.length<3?0:ecoLow&&R.nextEco?0.9:behind?0.35:(R.nextEco?1:0.5);if(!threat&&R.saving&&enemies.length>=desire*0.7&&!(R.res.wool-c.wool>=R.saving.wool&&R.res.grain-c.grain>=R.saving.grain*0.6))continue;if(!threat&&nx&&!(R.res.grain-c.grain>=nx.grain*k2&&R.res.wool-c.wool>=nx.wool*k2&&R.res.gold-c.gold>=nx.gold*k2))continue;rPay(c);b.q.push(pick)}}
+function rLaunch(list,tb,state){const R=RAI,A=R.army;for(const e of list){e.role='army';e.tg=null}A.tb=tb;A.stage=state==='stage'?stagePoint(tb):null;A.state=state;A.t=0;A.n0=list.length;A.list=list;list.forEach((e,i)=>e.slot=i);showBanner('RED ATTACKS',`${list.length} Red soldiers march on your realm.`)}
+function rArmy(threatList){const R=RAI,F=RFc,A=R.army;A.t+=F.tick;const home=enemies.filter(e=>(e.role||'home')==='home'),army=enemies.filter(e=>e.role==='army');A.list=army;
+  if(A.state==='idle'){if(R.threat>0)return;const minT=[320,230,180,150][diff];if(R.t<minT||home.length<4)return;
+    if(!F.smart){const goal=Math.min(30,(5+R.t/50)*[0.7,0.9,1,1][diff]);if(home.length>=goal||R.t>=R.nextAtk){const tb=nearestBuilding(R.cx,R.cy)[0];if(tb){rLaunch(home,tb,F.stage?'stage':'attack');R.nextAtk=R.t+[220,180,150,130][diff]}}return}
+    // keep a small guard of ranged units at home if the player has an army
+    const guardN=troops.length?Math.min(3,Math.floor(home.length*0.2)):0;const guard=home.filter(e=>e.type==="bowman").slice(0,guardN),go=home.filter(e=>!guard.includes(e));
+    const tb=rChooseTarget(go);if(!tb)return;let need=blueStrNear(tb.x,tb.y,380);let bx=0,by=0,bn=0;for(const t of troops){bx+=t.x;by+=t.y;bn++}if(bn&&dst(bx/bn,by/bn,tb.x,tb.y)<900)need+=blueStrNear(bx/bn,by/bn,300,false)*0.6;
+    const have=redStr(go),mult=diff>=3?1.3:1.6,est=rSiegeEst(go,tb),lossOk=est.loss<(diff>=3?0.45:0.6);R.needSiege=!lossOk;
+    if(go.length>=5&&lossOk&&(have>=need*mult||(go.length>=26&&have>=need*0.8))){rLaunch(go,tb,'stage');A.peak=go.length}return}
+  if(!army.length){A.state='idle';A.tb=null;R.lastAtk=R.t;return}
+  if(A.state==='stage'){const near=army.filter(e=>dst(e.x,e.y,A.stage[0],A.stage[1])<150).length;if(near>=army.length*0.8||A.t>(diff>=3?24:32)){A.state='attack';A.t=0;for(const e of army)e.tg=null}return}
+  if(A.state==='attack'){if(!A.tb||!buildings.includes(A.tb)){A.tb=rNextTarget(army);if(!A.tb){A.state='retreat';for(const e of army)e.role='retreat';return}}
+    // recall to defend a serious attack on home (Emperor)
+    if(F.recall&&R.threat>redStr(home)*0.8&&R.threat>0){A.state='retreat';for(const e of army)e.role='retreat';toast('Red pulls its army back to defend');return}
+    A.peak=Math.max(A.peak||0,army.length);
+    if(F.retreat){const c=centroid(army),rs=redStr(army),bs=blueStrNear(c[0],c[1],360),prog=A.tb?A.tb.hp/A.tb.maxhp:0;if((army.length<A.peak*0.55&&prog>0.45)||(rs<bs*(diff>=3?0.6:0.4)&&army.length<A.peak*0.8)){A.state='retreat';for(const e of army)e.role='retreat';toast('Red retreats to regroup');return}}
+    // send fresh troops as one group, only into a push that is winning
+    if(F.reinforce&&A.tb&&home.length>=3){if(redStr(army)>blueStrNear(A.tb.x,A.tb.y,380)*1.5){for(const e of home){e.role='army';e.tg=null}A.peak+=home.length}}return}
+  if(A.state==='retreat'){if(!enemies.some(e=>e.role==='retreat'))A.state='idle'}}
+function rRaid(){const R=RAI,F=RFc;if(!F.raid)return;const rd=R.raid;
+  if(rd){const L=enemies.filter(e=>e.role==='raid');if(!L.length){R.raid=null;return}const c=centroid(L),hp=L.reduce((a,e)=>a+e.hp/e.maxhp,0)/L.length;
+    if(!rd.tb||!buildings.includes(rd.tb)){rd.tb=null;let best=null,bd=380;for(const b of buildings){if(BT[b.type].kind!=='eco')continue;const d=dst(b.x,b.y,c[0],c[1]);if(d<bd&&blueStrNear(b.x,b.y,300)<redStr(L)*0.6){bd=d;best=b}}rd.tb=best}
+    if(!rd.tb||hp<0.45||blueStrNear(c[0],c[1],200)>redStr(L)*0.9){for(const e of L)e.role='retreat';R.raid=null}return}
+  if(R.threat>0||R.army.state!=='idle'&&diff<3)return;const cav=enemies.filter(e=>(e.role||'home')==='home'&&e.type==='cav');if(cav.length<(diff>=3?3:4))return;
+  const tb=rChooseTarget(cav,true);if(!tb||blueStrNear(tb.x,tb.y,320)>redStr(cav)*0.6)return;R.raid={tb};for(const e of cav){e.role='raid';e.tg=null}toast('⚠ Red cavalry raids your farms!')}
+function redAI(dt){const R=RAI;RFc=RF();const F=RFc;R.t+=dt;
+  for(const b of rbuildings){const P2=BT[b.type].prod;if(P2)for(const k in P2)R.res[k]+=P2[k]*MUL[b.lvl-1]*dt*F.eco;if(isArmy(b.type)&&b.q.length){b.qT+=dt;if(b.qT>=UT[b.q[0]].t*PROD_SP[b.lvl-1]){spawnRedUnit(b,b.q.shift());b.qT=0}}
     if(b.type==='archer'||b.type==='cannon')updRTower(b,dt)}
   if(R.ageT){R.ageT.t+=dt;if(R.ageT.t>=R.ageT.dur){R.age=R.ageT.to;R.ageT=null;toast(`⚠ Red has reached ${AGEN[R.age]}`)}}
-  R.tick-=dt;if(R.tick>0)return;R.tick=1;
-  // age up
-  let saveAge=false;if(!R.ageT&&R.age<3){const eco=rbuildings.filter(b=>BT[b.type].kind==='eco').length;const c=AGEC[R.age+1];if(eco>=(R.age===1?5:9)&&R.t>(R.age===1?170:460)/m&&rbuildings.some(b=>b.type==='mine')){if(rAfford(c)){rPay(c);R.ageT={to:R.age+1,t:0,dur:AGET[R.age+1]}}else if(R.res.gold>=c.gold)saveAge=c}}
-  // build
-  const wl=rWant();for(const k of wl){const c=rCost(k);if(saveAge&&BT[k].kind!=='eco'&&!(R.res.grain>=c.grain+saveAge.grain&&R.res.wool>=c.wool+saveAge.wool))break;if((AGEREQ[k]||1)>R.age)continue;if(!rAfford(c))break;const sp=rSpot(k);if(!sp)continue;rPay(c);addRB(k,sp[0],sp[1]);break}
-  // upgrade when rich
-  if(R.res.grain>900&&R.res.wool>500){const up=rbuildings.filter(b=>b.lvl<R.age&&b.type!=='wall').sort((a,b)=>(a.type==='archer'||a.type==='cannon'?0:1)-(b.type==='archer'||b.type==='cannon'?0:1))[0];if(up){const c=upCost(up);if(rAfford(c)){rPay(c);up.lvl++;up.maxhp=BT[up.type].hp*HPM[up.lvl-1];up.hp=up.maxhp;makeRVisual(up,true)}}}
-  // train
-  for(const b of rbuildings){if(!isArmy(b.type)||b.q.length>=2)continue;const opts=RUNIT[b.type].filter(k=>(UT[k].age||1)<=R.age);const w={spear:1,bowman:0.7,shield:0.6,cav:0.45,ram:1,catapult:0.9};
-    let tot=0;for(const k of opts)tot+=w[k];let r=Math.random()*tot,pick=opts[0];for(const k of opts){r-=w[k];if(r<=0){pick=k;break}}const c=UT[pick].cost,A=R.arm;if(A.grain>=c.grain&&A.wool>=c.wool&&A.gold>=c.gold){A.grain-=c.grain;A.wool-=c.wool;A.gold-=c.gold;b.q.push(pick)}else if(c.gold>A.gold&&(pick==='cav'||pick==='shield'||pick==='catapult')){const c2=UT[b.type==='hall'?'spear':'ram'].cost;if(A.grain>=c2.grain&&A.wool>=c2.wool&&A.gold>=c2.gold){A.grain-=c2.grain;A.wool-=c2.wool;A.gold-=c2.gold;b.q.push(b.type==='hall'?'spear':'ram')}}}
-  // spill: if the army pot overflows (no barracks yet), return some to the build pot
-  if(!rbuildings.some(b=>isArmy(b.type)))for(const k in R.arm){if(R.arm[k]>300){R.res[k]+=R.arm[k]-300;R.arm[k]=300}}
-  // attack
-  const home=enemies.filter(e=>e.home),goal=Math.min(40,(6+R.t/45)*[0.7,0.9,1,1.15][diff]);
-  if(home.length>=4&&(home.length>=goal||R.t>=R.nextAtk)&&R.t>[240,170,130,100][diff]){const g=R.gid++;grpState[g]={charge:AI()<2,wait0:null,spread:AI()>=3};for(const e of home){e.home=false;e.g=g}R.nextAtk=R.t+[200,160,140,120][diff];
-    showBanner('RED ATTACKS',`${home.length} Red soldiers march on your realm.`);AU.levelUp&&0}}
-function spawnRedUnit(b,type){const T=ET[type];const a=Math.atan2(BASE.ty+1-b.Z,BASE.tx+1-b.X),r=b.s*TILE*0.5+18;const[x,y]=snapWalk(b.x+Math.cos(a)*r,b.y+Math.sin(a)*r);const L=b.lvl-1;
-  const hm=[1,1.5,2.2][L]*DIFF[diff].hp*(1+RAI.t/1500),dm=[1,1.35,1.8][L]*(1+RAI.t/2400);
-  enemies.push({type,side:0,sm:DIFF[diff].spd,g:-1,home:true,hslot:Math.random(),x,y,hp:T.hp*hm,maxhp:T.hp*hm,dm,cd:Math.random(),ang:a,rAng:a,r:T.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0})}
-function updHomeEnemy(e,T,dt){const H=RAI;if(!H.rally){const[cx,cz]=rCore();const ux=BASE.tx-cx,uz=BASE.ty-cz,ul=Math.hypot(ux,uz)||1;H.rally=snapWalk((cx+ux/ul*7)*TILE,(cz+uz/ul*7)*TILE)}
-  let k=null,kd=1e9;for(const L of[knights,troops])for(const o of L){const d=dst(o.x,o.y,e.x,e.y);if(d<kd&&dst(o.x,o.y,H.cx,H.cy)<460){kd=d;k=o}}
-  if(k&&!(T.bldOnly&&!T.ranged)){e.ang=Math.atan2(k.y-e.y,k.x-e.x);if(T.ranged){if(kd<=T.range){if(e.cd<=0){e.cd=T.rate;e.swing=0.25;if(e.type==='catapult')projs.push({k:'rball',sx:e.x,sy:e.y,tx:k.x,ty:k.y,time:0,dur:0.6+kd/600,dmg:T.dmg*e.dm,splash:T.splash,h0:heightAt(e.x/TILE,e.y/TILE)+0.7,bmul:1});else projs.push({k:'earrow',x:e.x,y:e.y,tg:k,lx:k.x,ly:k.y,d0:Math.max(1,kd),h0:heightAt(e.x/TILE,e.y/TILE)+0.6,dmg:T.dmg*e.dm,lv:1})}return}}
-    else if(kd-k.r<=T.range+4){if(e.cd<=0){k.hp-=T.dmg*e.dm;k.flash=0.1;e.cd=T.rate;e.swing=0.25}return}moveUnit(e,k.x,k.y,T.speed,dt,enemies);return}
-  // blue buildings close to the red base get attacked too
-  const[nb,nbd]=nearestBuilding(e.x,e.y);if(nb&&nbd<160&&dst(nb.x,nb.y,H.cx,H.cy)<520){if(nbd<=T.range+2){e.ang=Math.atan2(nb.y-e.y,nb.x-e.x);if(e.cd<=0){hurtBuilding(nb,T.dmg*e.dm);e.cd=T.rate;e.swing=0.25}}else moveUnit(e,nb.x,nb.y,T.speed,dt,enemies);return}
-  const a=e.hslot*Math.PI*2,rr=20+e.hslot*70,px=H.rally[0]+Math.cos(a)*rr,py=H.rally[1]+Math.sin(a)*rr;if(dst(px,py,e.x,e.y)>8)moveUnit(e,px,py,T.speed*0.8,dt,enemies)}
+  R.tick-=dt;if(R.tick>0)return;R.tick=F.tick;
+  const tl=rThreat(),threat=R.threat>0;rMix();rEconomy(threat);rTrain(threat);rArmy(tl);rRaid()}
+function spawnRedUnit(b,type){const U=UT[type],L=b.lvl-1;const a=Math.atan2(BASE.ty+1-b.Z,BASE.tx+1-b.X),r=b.s*TILE*0.5+18;const[x,y]=snapWalk(b.x+Math.cos(a)*r,b.y+Math.sin(a)*r);const hp=U.hp*TROOP_HP[L];
+  enemies.push({type,red1:1,role:'home',side:0,sm:1,g:-1,hslot:Math.random(),tier:b.lvl,x,y,hp,maxhp:hp,udmg:U.dmg*TROOP_DM[L],uspd:U.speed*TROOP_SP[L],dm:TROOP_DM[L],cd:Math.random(),ang:a,rAng:a,r:U.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0,vx:0,vy:0})}
 function checkEnd1v1(){if(gameOver)return;const redLeft=rbuildings.some(b=>b.type!=='wall')||enemies.length,blueLeft=buildings.some(b=>b.type!=='wall')||troops.length;
   if(!redLeft){gameOver=true;ST.won=true;addScore(2500*[0.6,1,1.5,2.2][diff]);checkAch(5);clearSave();lastRec=recordPlay();AU.levelUp(3);showBanner('VICTORY','The Red realm has fallen.');setTimeout(()=>{showStats('win');renderHof()},2200)}
   else if(!blueLeft){gameOver=true;clearSave();lastRec=recordPlay();setTimeout(()=>{showStats('over');renderHof()},1600)}}
@@ -1311,12 +1414,12 @@ function renderBans(force){const el=$('bans');if(!el)return;if(!started||gameOve
     row.querySelector('.banc').classList.toggle('on',bans[i].charge);row.querySelector('.banb').classList.toggle('atk',bans[i].mode==='atk')})}
 // ---------- production circles over a selected Barracks / Workshop ----------
 let prodB=null,prodDrag=null;
-function prodTarget(){if(!started||gameOver||place||menu||selSet.size!==1)return null;const b=sel;return b&&buildings.includes(b)&&isArmy(b.type)&&b.build>=1?b:null}
+function prodTarget(){if(!started||gameOver||place||menu||!selSet.size)return null;const b=sel;if(selSet.size>1&&!(b&&isArmy(b.type)&&[...selSet].every(o=>isArmy(o.type))))return null;return b&&buildings.includes(b)&&isArmy(b.type)&&b.build>=1?b:null}
 function renderProd(){const el=$('prod');if(!el)return;const b=prodTarget();
   if(b!==prodB){prodB=b;el.innerHTML='';if(b){el.innerHTML=unitsOf(b).map(k=>`<div class="pc wood" data-k="${k}"><span class="ring"></span><span class="ic">${UT[k].ic}</span><span class="nm">${UTS[k]}</span><span class="cs"></span><span class="q"></span><span class="pn"></span></div>`).join('')+`<button class="pban wood"></button>`;
       el.querySelectorAll('.pc').forEach(bindPc);onPress(el.querySelector('.pban'),()=>{if(!prodB)return;prodB.ban=((prodB.ban||0)+1)%3;ensureBan(prodB.ban);toast(`New troops from this ${BT[prodB.type].name} join banner ${BANN[prodB.ban]}`);renderBans(true)})}}
   if(!b){el.style.display='none';return}const s=scr(b.X,b.Y-0.2,b.Z+b.s*0.5);if(!s){el.style.display='none';return}el.style.display='';
-  const kids=[...el.querySelectorAll('.pc')],n=kids.length,sp=70,y=clamp(s[1]+48,170,H-240);const x0=clamp(s[0]-(n-1)*sp/2,46,W-46-(n-1)*sp-60);
+  const kids=[...el.querySelectorAll('.pc')],n=kids.length,sp=70;let y=s[1]+48;if(y>H-250){const st=scr(b.X,b.Y+b.barH+0.4,b.Z);y=st?st[1]-110:H-250}y=clamp(y,175,H-250);const x0=clamp(s[0]-(n-1)*sp/2,46,Math.min(W-46-(n-1)*sp-60,W-200-(n-1)*sp));
   kids.forEach((c,i)=>{c.style.left=(x0+i*sp)+'px';c.style.top=y+'px';const k=c.dataset.k,U=UT[k],cnt=(b.q||[]).filter(x=>x===k).length,lk=(U.age||1)>age;
     const key=lk+'|'+['grain','wool','gold'].map(r=>res[r]>=U.cost[r]?1:0).join('')+'|'+cnt;if(c.dataset.key!==key){c.dataset.key=key;c.querySelector('.cs').innerHTML=lk?'🔒 '+AGEN[U.age]:shortCost(U.cost);c.querySelector('.q').textContent=cnt||'';c.querySelector('.q').style.display=cnt?'':'none';c.classList.toggle('lock',lk);c.classList.toggle('no',!lk&&!afford(U.cost))}
     const head=b.q&&b.q[0]===k;c.style.setProperty('--p',head?(b.qT/prodTime(b,k)).toFixed(3):0);c.classList.toggle('busy',head);
@@ -1404,7 +1507,7 @@ function pend(e){if(!ptrs.has(e.pointerId))return;
   if(wdraw&&wdraw.id===e.pointerId){if(e.type==='pointerup')commitWall();wdraw=null}
   else if(gdrag&&gdrag.id===e.pointerId){gdrag=null;if(place)place.lift=0}
   else if(boxSel&&boxSel.id===e.pointerId){finishBox();boxSel=null}
-  else if(ptrs.size===1&&!moved&&e.type==='pointerup'){if(!(hold&&(hold.ups>0||hold.fail||hold.t>0.3)))onTap(e.clientX,e.clientY)}
+  else if(ptrs.size===1&&!moved&&e.type==='pointerup'){if(!(hold&&(hold.ups>0||hold.fail||hold.t>0.3)))onTap(e.clientX,e.clientY);else if(hold&&isArmy(hold.b.type)&&!hold.ups){clearSel();addSel(hold.b)}}
   else if(ptrs.size===1&&moved&&anchor&&!paint&&velS&&velS.length>1){const t0=velS[0][0],t1=velS[velS.length-1][0],dtv=Math.max(16,t1-t0)/1000;let vx=0,vz=0;for(const v of velS){vx+=v[1];vz+=v[2]}vx/=dtv;vz/=dtv;const sp=Math.hypot(vx,vz);if(sp>1.5&&performance.now()-t1<60){const k=Math.min(1,cam.D*1.6/sp);camVel=[vx*k,vz*k]}}
   hold=null;lp=null;paint=null;lsel=null;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
   if(ptrs.size===1){const r=[...ptrs.values()][0];applyCam(0);anchor=toPlane(r.x,r.y);r.sx=-999;velS=[]}else anchor=null}
@@ -1423,6 +1526,8 @@ function inputTick(dt){
 function onTap(sx,sy){if(!started||gameOver)return;applyCam(0);
   if(place){moveGhostTo(sx,sy);return}
   const b=pickBuilding(sx,sy),now=performance.now();
+  if(b&&menu)closeMenu();
+  if(b&&isArmy(b.type)&&!(lastTap.b===b&&now-lastTap.t<360)){clearSel();addSel(b);lastTap={b,t:now};return}
   if(b){if(lastTap.b===b&&now-lastTap.t<360){addSel(b);repairSel();lastTap={b:null,t:0}}else{if(!addSel(b)){sel=b}lastTap={b,t:now};if(!ach.hint){ach.hint=1;toast('Hold: upgrade · Double-tap: repair · Long-press empty ground: select many')}}}
   else{clearSel();if(menu)closeMenu()}}
 const mini=$('mini'),mctx=mini.getContext('2d'),miniBase=document.createElement('canvas');
@@ -1450,7 +1555,7 @@ function needStr(c){const p=[];for(const k of['grain','wool','gold'])if(c[k]>res
 function shortCost(c){return['grain','wool','gold'].filter(k=>c[k]).map(k=>`<span class="${res[k]<c[k]?'bad':''}">${c[k]}${SHORT[k]}</span>`).join(' ')}
 function onPress(el,fn){el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();el.classList.add('press');fn(e)});const up=()=>el.classList.remove('press');
   for(const ev of['pointerup','pointercancel','pointerleave'])el.addEventListener(ev,up);el.addEventListener('click',e=>e.preventDefault());el.addEventListener('contextmenu',e=>e.preventDefault())}
-const MENU={def:['archer','cannon','barracks','wall'],eco:['wheat','sheep','mine'],army:['hall','workshop']},SHORTN={archer:'Archer',cannon:'Cannon',barracks:'Knights',wall:'Wall',wheat:'Wheat',sheep:'Sheep',mine:'Gold Mine',hall:'Barracks',workshop:'Workshop'};let menu=null;
+const MENU={def:['archer','cannon','barracks','wall'],eco:['wheat','sheep','mine'],army:['hall','workshop']},SHORTN={archer:'Archer',cannon:'Cannon',barracks:'Eagles',wall:'Wall',wheat:'Wheat',sheep:'Sheep',mine:'Gold Mine',hall:'Barracks',workshop:'Workshop'};let menu=null;
 const optEls=[...document.querySelectorAll('.tb.opt:not(#bSell)')];let sellArm=0;
 function setBtn(el,ic,lb,cls){const k=ic+lb+cls;if(el.dataset.k===k)return;el.dataset.k=k;el.innerHTML=`<span class="ic">${ic}</span><span class="lb">${lb}</span>`;el.classList.toggle('ok',cls==='ok');el.classList.toggle('cancel',cls==='cancel')}
 const AGET=[0,0,40,75];let ageRes=null;
@@ -1458,7 +1563,7 @@ function advanceAge(){if(age>=3){toast('Your realm stands in its final age');ret
   const c=AGEC[age+1];if(!afford(c)){toast(needStr(c));AU.deny();return}pay(c);ageRes={to:age+1,t:0,dur:AGET[age+1]};AU.place();toast(`Researching ${AGEN[age+1]}… keep the realm alive!`);renderAge()}
 function completeAge(){const to=ageRes.to;ageRes=null;age=to;ST.ages=(ST.ages||[]);ST.ages.push({t:time,age});AU.levelUp(age+1);shake=0.3;
   for(const b of buildings)fx(b.X,b.Y+0.5,b.Z,8,age===3?'#ffe27a':'#e8e0d0',1.8,0.09,1.3,-0.5,1,1.3);
-  showBanner(age===2?'AGE II · THE AGE OF STONE':'AGE III · THE JEWELED AGE',age===2?'Cannons, Knights and Stone-tier upgrades unlocked.':'Jeweled-tier upgrades unlocked. Gleam.');renderThumb();renderAge()}
+  showBanner(age===2?'AGE II · THE AGE OF STONE':'AGE III · THE JEWELED AGE',age===2?'Cannons, Eagles and Stone-tier upgrades unlocked.':'Jeweled-tier upgrades unlocked. Gleam.');renderThumb();renderAge()}
 function renderAge(){const el=$('bAge');if(!el)return;if(!started){el.style.display='none';return}el.style.display='';
   if(age>=3&&!ageRes){el.className='wood max';el.querySelector('.ic').textContent='👑';el.querySelector('.nm').textContent='Age III';el.querySelector('.cs').textContent='Final age';return}
   if(ageRes){const pr=ageRes.t/ageRes.dur;el.className='wood res';el.style.setProperty('--p',pr.toFixed(3));el.querySelector('.ic').textContent='⏳';el.querySelector('.nm').textContent=AGEN[ageRes.to];el.querySelector('.cs').textContent=Math.ceil(ageRes.dur-ageRes.t)+'s';return}
@@ -1515,7 +1620,7 @@ function confirmPlace(){if(!place)return;if(place.type==='wall'){setPlace(null);
   const cc=costOf(place.type);if(!afford(cc)){toast(needStr(cc));AU.deny();return}
   pay(cc);const type=place.type;const b=addBuilding(type,place.tx,place.ty);b.spent={...cc};computeFlow();AU.place();fx(b.X,b.Y+0.1,b.Z,16,'#cdbb94',2.2,0.35,1.1,0,0,0.25);
   if(b.type==='mine'&&!ach.mine){ach.mine=1;showBanner('STEADY GOLD','Your first gold mine. Gold now flows.')}
-  if(b.type==='barracks'&&!ach.bar){ach.bar=1;showBanner('KNIGHTS OF BLUE','Mounted knights now guard a wide zone.')}
+  if(b.type==='barracks'&&!ach.bar){ach.bar=1;showBanner('EAGLES OF BLUE','Five eagles now guard a wide zone — they fly over walls, trees and water.')}
   if(b.type==='cannon'&&!ach.can){ach.can=1;toast('First Cannon Tower — rams beware!')}
   if(isArmy(b.type)){b.ban=0;ensureBan(0);sel=b;selSet.clear();selSet.add(b);if(!ach.army){ach.army=1;showBanner('TO ARMS','Tap the building to train troops. Drag the 🚩 banner to send them.')}}
   setPlace(null)}
@@ -1605,7 +1710,7 @@ function renderWorld(rdt){const t=time;
   // units
   for(const k in rigs)rigs[k].n=0;const sm=Math.min(1,rdt*10);
   for(const e of enemies){e.mvb+=((e.mvT>0?1:0)-e.mvb)*Math.min(1,rdt*7);e.rAng=smoothAng(e.rAng,e.ang,sm);drawUnitInst(e.type,e,t,false)}
-  for(const k of knights){k.mvb+=((k.mvT>0?1:0)-k.mvb)*Math.min(1,rdt*7);k.rAng=smoothAng(k.rAng,k.ang,sm);drawUnitInst('knight'+k.tier,k,t,false)}
+  for(const k of knights){k.mvb+=((k.mvT>0?1:0)-k.mvb)*Math.min(1,rdt*7);k.rAng=smoothAng(k.rAng,k.ang,sm);const fl=(k.swing>0||(k.tgt&&k.tgt.hp>0&&dst(k.tgt.x,k.tgt.y,k.x,k.y)<44))?0.5:1.55+Math.sin(t*1.7+k.slot)*0.15;k.fly=(k.fly||1.5)+(fl-(k.fly||1.5))*Math.min(1,rdt*3.5);drawUnitInst('eagle'+k.tier,k,t,false)}
   for(const u of troops){u.mvb+=((u.mvT>0?1:0)-u.mvb)*Math.min(1,rdt*7);u.rAng=smoothAng(u.rAng,u.ang,sm);drawUnitInst('t_'+u.type+u.tier,u,t,false)}
   for(const c of corpses)drawUnitInst(c.kind,c,t,true);
   for(const k in rigs){const R=rigs[k];for(const m of R.meshes){m.count=R.n;m.visible=R.n>0;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}
@@ -1633,12 +1738,12 @@ function renderWorld(rdt){const t=time;
     if(!b.flame||b.flame.userData.v!==v){if(b.flame)scene.remove(b.flame);const g=new THREE.Group();const o=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.55,10).translate(0,0.27,0),new THREE.MeshBasicMaterial({color:VETC[v],transparent:true,opacity:0.92,depthWrite:false}));const c=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.32,8).translate(0,0.16,0),GLOWM(v===5?'#ffd8ff':'#fff2c0',0.9));const h=new THREE.Mesh(sph(0.3,10,8),GLOWM(VETC[v],0.22));h.position.y=0.18;g.add(o,c,h);g.userData={v,o,c,h};scene.add(g);b.flame=g}
     const g=b.flame;let X=b.X,Z=b.Z,Y=b.Y+b.barH-0.6;if(b.type==='cannon'){const a=b.raim||0;X+=Math.cos(a)*0.85;Z+=Math.sin(a)*0.85;Y=b.Y+b.top-0.15}g.position.set(X,Y,Z);const fl=0.85+0.3*Math.random(),k=FSC[v];g.scale.set(k*(0.9+0.15*Math.random()),k*fl,k*(0.9+0.15*Math.random()));g.userData.h.material.opacity=0.16+0.12*Math.random()}
   {let nk=0;const KC=VETC.map(c=>c?new THREE.Color(c):null),KS=[0,0.8,1,1.2,1.45,1.9];const tnow=performance.now()/1000;
-    for(const k of [...knights,...troops]){const v=k.b.vet||0;if(!v||nk>=240)continue;const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z),sc=rigs[k.troop?'t_'+k.type+k.tier:'knight'+k.tier].scale,pul=1+0.08*Math.sin(tnow*5+k.slot);
-      _M.compose(_av.set(X,Y+0.06,Z),_q.identity(),_s.set(KS[v]*pul*sc,1,KS[v]*pul*sc));kvAura.setMatrixAt(nk,_M);kvAura.setColorAt(nk,KC[v]);kvDisc.setMatrixAt(nk,_M);kvDisc.setColorAt(nk,KC[v]);
-      const a=k.rAng,sw=k.swing>0?0.25:0,fl=(0.85+0.3*Math.random())*KS[v];_M.compose(_av.set(X+Math.cos(a)*(0.36+sw)*sc,Y+0.78*sc,Z+Math.sin(a)*(0.36+sw)*sc),_q.identity(),_s.set(fl*0.9,fl,fl*0.9));kvFlame.setMatrixAt(nk,_M);kvFlame.setColorAt(nk,KC[v]);nk++}
+    for(const k of [...knights,...troops]){const v=k.b.vet||0;if(!v||nk>=240)continue;const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z),sc=rigs[k.troop?'t_'+k.type+k.tier:'eagle'+k.tier].scale,pul=1+0.08*Math.sin(tnow*5+k.slot);
+      const ek=k.eagle?0.6:1;_M.compose(_av.set(X,Y+0.06,Z),_q.identity(),_s.set(KS[v]*pul*sc*ek,1,KS[v]*pul*sc*ek));kvAura.setMatrixAt(nk,_M);kvAura.setColorAt(nk,KC[v]);kvDisc.setMatrixAt(nk,_M);kvDisc.setColorAt(nk,KC[v]);
+      const a=k.rAng,sw=k.swing>0?0.25:0,fl=(0.85+0.3*Math.random())*KS[v]*(k.eagle?0.7:1);_M.compose(_av.set(X+Math.cos(a)*(0.36+sw)*sc,Y+(k.eagle?k.fly+0.12:0.78*sc),Z+Math.sin(a)*(0.36+sw)*sc),_q.identity(),_s.set(fl*0.9,fl,fl*0.9));kvFlame.setMatrixAt(nk,_M);kvFlame.setColorAt(nk,KC[v]);nk++}
     for(const m of[kvAura,kvDisc,kvFlame]){m.count=nk;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}
-  for(const k of [...knights,...troops]){const v=k.b.vet||0;if(!v||Math.random()>FR[v]*0.7*frameDt)continue;const sc=rigs[k.troop?'t_'+k.type+k.tier:'knight'+k.tier].scale,a=k.rAng,sw=k.swing>0?0.25:0;
-    fx(k.x/TILE+Math.cos(a)*(0.38+sw)*sc,heightAt(k.x/TILE,k.y/TILE)+0.86*sc,k.y/TILE+Math.sin(a)*(0.38+sw)*sc,1,VETC[v],0.25,FS[v]*0.75,0.35,-1.4,1,1.3)}
+  for(const k of [...knights,...troops]){const v=k.b.vet||0;if(!v||Math.random()>FR[v]*0.7*frameDt)continue;const sc=rigs[k.troop?'t_'+k.type+k.tier:'eagle'+k.tier].scale,a=k.rAng,sw=k.swing>0?0.25:0;
+    fx(k.x/TILE+Math.cos(a)*(0.38+sw)*sc,heightAt(k.x/TILE,k.y/TILE)+(k.eagle?(k.fly||1.5)+0.1:0.86*sc),k.y/TILE+Math.sin(a)*(0.38+sw)*sc,1,VETC[v],0.25,FS[v]*0.75,0.35,-1.4,1,1.3)}
   for(const p of projs){if(!p.src||!(p.src.vet>0)||Math.random()>0.55)continue;let X,Y,Z;if(p.k==='arrow'){X=p.x/TILE;Z=p.y/TILE;const rem=Math.hypot(p.lx-p.x,p.ly-p.y)/p.d0;Y=lerp(heightAt(p.lx/TILE,p.ly/TILE)+0.4,p.h0,rem)+Math.sin((1-rem)*Math.PI)*p.d0/TILE*0.12}
     else if(p.k==='ball'){const k=p.time/p.dur;X=lerp(p.sx,p.tx,k)/TILE;Z=lerp(p.sy,p.ty,k)/TILE;Y=lerp(p.h0,heightAt(p.tx/TILE,p.ty/TILE),k)+Math.sin(k*Math.PI)*(1.2+p.dur*1.5)}else continue;
     fx(X,Y,Z,1,VETC[p.src.vet],0.15,FS[p.src.vet]*0.8,0.3,-0.4,1,0.5)}
@@ -1661,7 +1766,7 @@ function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H
   const bar=(X,Y,Z,w,f,col)=>{const s=scr(X,Y,Z);if(!s||s[0]<-20||s[0]>W+20||s[1]<-20||s[1]>H+20)return;octx.fillStyle='rgba(0,0,0,.6)';octx.fillRect(s[0]-w/2-1,s[1]-1,w+2,5);octx.fillStyle=col;octx.fillRect(s[0]-w/2,s[1],w*clamp(f,0,1),3)};
   const zf=clamp(34/cam.D,0.6,1.6);
   for(const e of enemies)if(e.hp<e.maxhp){const X=e.x/TILE,Z=e.y/TILE;const ht=e.type==='boss'?1.5:e.type==='cav'?1.25:e.type==='ram'?0.95:0.85;bar(X,heightAt(X,Z)+ht,Z,(e.type==='boss'?36:e.type==='ram'?26:16)*zf,e.hp/e.maxhp,'#ff5a40')}
-  for(const k of knights)if(k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE;bar(X,heightAt(X,Z)+1.3,Z,16*zf,k.hp/k.maxhp,'#6fa0ff')}
+  for(const k of knights)if(k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE;bar(X,heightAt(X,Z)+(k.fly||1.5)+0.45,Z,16*zf,k.hp/k.maxhp,'#6fa0ff')}
   for(const b of buildings){if(b.hp<b.maxhp)bar(b.X,b.Y+b.barH,b.Z,44*zf,b.hp/b.maxhp,b.hp/b.maxhp>0.4?'#5fd04a':'#e05a3a');
     if(b.type==='barracks'){const n=knights.reduce((a,k)=>a+(k.b===b),0);if(n<squadSize(b))bar(b.X,b.Y+b.barH+0.35,b.Z,34*zf,1-b.respawnT/respawnTime(b),'#8fb8ff')}}
   drawArmyOverlay(zf,bar);drawBadges(zf);
@@ -1720,20 +1825,20 @@ function serialize(){const bi=b=>buildings.indexOf(b);
   return{v:1,cfg:CFG,saved:Date.now(),res,wave,waveT,time,kills,ach,age,ageRes,diff,score,grpState,spawnQ,cam:{tx:cam.tx,tz:cam.tz,D:cam.D,yaw:cam.yawT},
     buildings:buildings.map(b=>({type:b.type,tx:b.tx,ty:b.ty,lvl:b.lvl,hp:b.hp,spent:b.spent,q:b.q||null,qT:b.qT||0,ban:b.ban||0,st:b.st?{n:b.st.n,kills:b.st.kills,dmg:b.st.dmg,taken:b.st.taken,born:b.st.born}:null,respawnT:b.respawnT})),
     knights:knights.map(k=>({bi:bi(k.b),slot:k.slot,tier:k.tier,x:k.x,y:k.y,hp:k.hp,maxhp:k.maxhp,dmg:k.dmg})),
-    enemies:enemies.map(e=>({type:e.type,side:e.side,x:e.x,y:e.y,hp:e.hp,maxhp:e.maxhp,dm:e.dm,home:!!e.home,hslot:e.hslot||0,g:e.g})),ST:stCopy,recs,
+    enemies:enemies.map(e=>({type:e.type,side:e.side,x:e.x,y:e.y,hp:e.hp,maxhp:e.maxhp,dm:e.dm,home:!!e.home,hslot:e.hslot||0,g:e.g,red1:e.red1||0,role:e.role,tier:e.tier,udmg:e.udmg,uspd:e.uspd})),ST:stCopy,recs,
     troops:troops.map(t=>({type:t.type,bi:bi(t.b),bt:t.b.type,ban:t.ban,tier:t.tier,x:t.x,y:t.y,hp:t.hp})),bans:bans.map(B=>({x:B.x,y:B.y,set:B.set,mode:B.mode,charge:B.charge,tbi:B.tb?rbi(B.tb):-1})),
-    rb:rbuildings.map(b=>({type:b.type,tx:b.tx,ty:b.ty,lvl:b.lvl,hp:b.hp,q:b.q,qT:b.qT})),RAI}}
+    rb:rbuildings.map(b=>({type:b.type,tx:b.tx,ty:b.ty,lvl:b.lvl,hp:b.hp,q:b.q,qT:b.qT})),RAI:RAI?{...RAI,army:{state:'idle',t:0,tb:null,stage:null,n0:0},raid:null}:null}}
 function saveGame(){if(!started||gameOver||!ST)return;try{localStorage.setItem(SAVEK,JSON.stringify(serialize()))}catch(e){}}
 function readSave(){try{const d=JSON.parse(localStorage.getItem(SAVEK)||'null');return d&&d.v===1&&d.buildings&&d.buildings.length?d:null}catch(e){return null}}
 function clearSave(){try{localStorage.removeItem(SAVEK)}catch(e){}}
 function loadGame(d){newGame(true);res=d.res;wave=d.wave;waveT=d.waveT;time=d.time;kills=d.kills;ach=d.ach||{};age=d.age||1;ageRes=d.ageRes||null;if(d.diff!=null)diff=d.diff;score=d.score||0;grpState=d.grpState||{};spawnQ=d.spawnQ||[];
   const made=[];for(const o of d.buildings){const b=addBuilding(o.type,o.tx,o.ty,true);b.lvl=o.lvl;b.maxhp=BT[o.type].hp*hpMulOf(b);b.hp=Math.min(o.hp,b.maxhp);b.spent=o.spent||b.spent;if(o.respawnT!=null)b.respawnT=o.respawnT;if(o.st&&b.st)Object.assign(b.st,o.st);if(o.q)b.q=o.q;b.qT=o.qT||0;b.ban=o.ban||0;if(b.lvl>1)makeVisual(b);made.push(b)}
   for(const b of made){if(b.type==='wall')makeVisual(b);if(VETK[b.type]&&b.st){let r=0;for(const t of VETK[b.type])if(b.st.kills>=t)r++;b.vet=r}}
-  for(const o of d.knights||[]){const b=made[o.bi];if(!b)continue;knights.push({b,slot:o.slot,tier:o.tier,x:o.x,y:o.y,hp:o.hp,maxhp:o.maxhp,dmg:o.dmg,cd:0,r:KN.r,ang:0,rAng:0,walk:0,swing:0,flash:0,mvT:0,mvb:0})}
-  for(const o of d.rb||[]){const b=addRB(o.type,o.tx,o.ty,o.lvl||1,true);b.hp=Math.min(o.hp,b.maxhp);b.q=o.q||[];b.qT=o.qT||0}if(d.RAI)RAI=d.RAI;
+  for(const o of d.knights||[]){const b=made[o.bi];if(!b)continue;knights.push({b,slot:o.slot,eagle:1,armor:KN.armor,fly:1.6,tier:o.tier,x:o.x,y:o.y,hp:o.hp,maxhp:o.maxhp,dmg:o.dmg,cd:0,r:KN.r,ang:0,rAng:0,walk:0,swing:0,flash:0,mvT:0,mvb:0})}
+  for(const o of d.rb||[]){const b=addRB(o.type,o.tx,o.ty,o.lvl||1,true);b.hp=Math.min(o.hp,b.maxhp);b.q=o.q||[];b.qT=o.qT||0}if(d.RAI){newRAI();const keep=RAI;RAI=Object.assign(keep,d.RAI,{army:{state:'idle',t:0,tb:null,stage:null,n0:0},raid:null});if(!RAI.mix)RAI.mix={spear:1,bowman:0.7,shield:0,cav:0,ram:1,catapult:0}}
   for(const o of d.troops||[]){if(!UT[o.type])continue;const b=made[o.bi]||{type:o.bt||'hall',lvl:o.tier,vet:0,ghost:1};spawnTroop(b,o.type,o)}
   if(d.bans)d.bans.forEach((o,i)=>{const B=bans[i];B.x=o.x;B.y=o.y;B.set=o.set;B.mode=o.mode||'hold';B.charge=!!o.charge;B.tb=o.tbi>=0?rbuildings[o.tbi]||null:null;if(B.mode==='atk'&&!B.tb)B.mode='hold'});
-  for(const o of d.enemies||[]){const T=ET[o.type];if(!T)continue;enemies.push({...o,cd:Math.random(),ang:-0.8,rAng:-0.8,r:T.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0})}
+  for(const o of d.enemies||[]){const T=ET[o.type];if(!T)continue;if(o.red1&&o.role!=='home')o.role='home';if(V1&&!o.red1&&UT[o.type]){o.red1=1;o.role='home';o.udmg=UT[o.type].dmg;o.uspd=UT[o.type].speed}enemies.push({...o,cd:Math.random(),ang:-0.8,rAng:-0.8,r:T.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0})}
   if(d.ST){const keepAll=[];for(const r of d.recs||[]){if(r.i>=0&&made[r.i]&&made[r.i].st)keepAll.push(made[r.i].st);else keepAll.push({n:r.n,kills:r.kills,dmg:r.dmg,taken:r.taken,born:r.born,died:r.died,sold:r.sold,b:{type:r.type,lvl:r.lvl}})}
     ST=Object.assign(ST,d.ST);ST.all=keepAll;ST.acc={a:0,c:0,k:0,taken:0,g:0,w:0,o:0};ST.sampT=0}
   if(d.cam){cam.tx=d.cam.tx;cam.tz=d.cam.tz;cam.D=d.cam.D;cam.yaw=cam.yawT=d.cam.yaw||0}computeFlow();renderThumb()}
@@ -1780,7 +1885,7 @@ const ACH=[
  {id:'theodosian',m:'🏰',n:'Theodosian Walls',d:'Have 20 Jeweled wall sections standing.',c:()=>cnt('wall',3)>=20},
  {id:'agincourt',m:'🏹',n:'Agincourt',d:'Archer towers defeat 400 enemies in one battle.',c:()=>ST.killsBy.archer>=400},
  {id:'orban',m:'💣',n:"Orban's Great Bombard",d:'A Cannon Tower reaches Veteran V.',c:()=>buildings.some(b=>b.type==='cannon'&&(b.vet||0)>=5)},
- {id:'templar',m:'⚔️',n:'Knights Templar',d:'A knight squad reaches Veteran V.',c:()=>buildings.some(b=>b.type==='barracks'&&(b.vet||0)>=5)},
+ {id:'templar',m:'🦅',n:'Aquila of Rome',d:'An eagle flight reaches Veteran V.',c:()=>buildings.some(b=>b.type==='barracks'&&(b.vet||0)>=5)},
  {id:'saladin',m:'🔥',n:"Saladin's Respect",d:'Command 3 legendary (purple-flame) defenders at once.',c:()=>legends()>=3},
  {id:'charlemagne',m:'⚜️',n:'Crown of Charlemagne',d:'Advance to Age III.',c:()=>age>=3},
  {id:'hastings',m:'🪓',n:'Hastings',d:'Slay a Warlord.',c:()=>ST.killsE.boss>=1},
@@ -1821,12 +1926,12 @@ const GI={
  twist:SV(FG(12,20)+FG(28,20)+'<path d="M12 9 A12 12 0 0 1 31 11" /><path d="M31 6 v5 h-5"/><path d="M28 31 A12 12 0 0 1 9 29"/><path d="M9 34 v-5 h5"/>'),
 };
 const HELP=[['GESTURES',[
- ['tap','Tap','Select a building or a knight squad.'],['dbl','Double-tap','Repair a building.'],['hold','Press and hold','Upgrade a building (keep holding to chain tiers).'],
+ ['tap','Tap','Select a building or an eagle flight.'],['dbl','Double-tap','Repair a building.'],['hold','Press and hold','Upgrade a building (keep holding to chain tiers).'],
  ['drag','Drag a new building','Move it before you confirm.'],['pan','Drag the map','Move the camera — even across your buildings.'],['swipe','Drag a 🚩 banner','Drop it on the map to gather troops, on a Red building to attack, or on the minimap.'],
  ['box','Long-press empty ground and drag','Box-select everything inside.'],['line','Drag with Wall','Draw a whole wall line.'],
  ['pinch','Pinch','Zoom in and out.'],['twist','Twist two fingers','Rotate the view.']]],
  ['BUTTONS',[
- ['🌾','Economy','Wheat field, sheep farm, gold mine.'],['🏹','Defense','Archer, cannon, knights, wall.'],['✓','BUILD','Confirm the building.'],['✕','Cancel','Drop the building you are placing.'],
+ ['🌾','Economy','Wheat field, sheep farm, gold mine.'],['🏹','Defense','Archer, cannon, eagles, wall.'],['✓','BUILD','Confirm the building.'],['✕','Cancel','Drop the building you are placing.'],
  ['⚜️','Age','Research the next age (bottom left).'],['🗑️','Sell','Appears when a building is selected. Tap twice.'],['⏯','Speed (bottom left)','− and + step from ¼× to 3×. Tap the number to stop or resume time.'],['❚❚','Pause','Menu, stats, achievements, language.'],
  ['♪','Music','Sound on or off.'],['⟲','Rotate','Turn the view a quarter turn.'],['⌂','Home','Fly the camera back to your base.'],['⏩','Wave bar','Tap it to call the next wave early.'],['⚔️','Army','Barracks and Siege Workshop.'],['🔨','Repair all','Appears when buildings are damaged.'],['🔥','Charge','Next to each banner: troops choose their own targets.'],['☄️','Unit circles','Tap a Barracks or Workshop: tap a circle to train one, or hold and slide up or down to set how many.']]],
  ['ON THE MAP',[
@@ -1883,17 +1988,17 @@ function showStats(mode){statsFrom=mode;setTimeout(renderHof,0);if(mode==='pause
   $('stMvp').innerHTML=mvp&&(mvp.kills||mvp.dmg)?`<h4>🏆 MVP</h4><div class="mvp"><span class="ic">${BT[mvp.b.type].ic}</span><div><b>${BT[mvp.b.type].name} #${mvp.n}</b> <span style="color:#b9a882;font-size:12px">· ${TIERN[mvp.b.lvl]}${mvp.died!=null?(mvp.sold?' · sold':' · fallen'):''}</span><p>${mvp.kills} kills · ${fmtN(mvp.dmg)} damage · ${tot?Math.round(mvp.dmg/tot*100):0}% of all damage</p><p>Stood for ${fmtT((mvp.died??time)-mvp.born)}</p></div></div>`:'<h4>🏆 MVP</h4><div style="font-size:12px;color:#b9a882">No kills yet — build some defenses!</div>';
   const top=recs.slice(0,8),mk=Math.max(1,...top.map(r=>r.kills));
   barRows($('stBoard'),top.map(r=>({ic:BT[r.b.type].ic,name:`${r.b.vet?'🔥'+VETN[r.b.vet]+' ':''}${BT[r.b.type].name.replace(' Tower','')} #${r.n} · ${TIERN[r.b.lvl][0]+TIERN[r.b.lvl].slice(1).toLowerCase()}${r.died!=null?(r.sold?' (sold)':' †'):''}`,val:`${r.kills} · ${fmtN(r.dmg)}`,n:r.kills,color:SC[r.b.type]})),mk);
-  legend($('lgDmg'),[['Archers',SC.archer],['Cannons',SC.cannon],['Knights',SC.barracks],['Army',SC.army]]);legend($('lgEco'),[['Grain',SC.grain],['Wool',SC.wool],['Gold',SC.gold]]);
+  legend($('lgDmg'),[['Archers',SC.archer],['Cannons',SC.cannon],['Eagles',SC.barracks],['Army',SC.army]]);legend($('lgEco'),[['Grain',SC.grain],['Wool',SC.wool],['Gold',SC.gold]]);
   $('statsOv').classList.remove('hidden');$('stFoot').innerHTML=mode==='over'||mode==='win'?'<button class="go wood" id="bRebuild">⟲ Rebuild</button>':'<button class="go wood" id="bStatsBack">▶ Back to battle</button>';
   if(mode==='over'||mode==='win')onPressSafe($('bRebuild'),()=>{$('statsOv').classList.add('hidden');if(CFG.map==='random'){beginGame(true);return}newGame();started=true;AU.init();showIntro()});else onPressSafe($('bStatsBack'),closeStats);
   requestAnimationFrame(()=>{
-    tsChart($('cDmg'),xs,[{name:'Archers',color:SC.archer,vals:smoothArr(sm.map(x=>x.a))},{name:'Cannons',color:SC.cannon,vals:smoothArr(sm.map(x=>x.c))},{name:'Knights',color:SC.barracks,vals:smoothArr(sm.map(x=>x.k))},{name:'Army',color:SC.army,vals:smoothArr(sm.map(x=>x.u||0))}],{stacked:true,marks:S.bosses});
+    tsChart($('cDmg'),xs,[{name:'Archers',color:SC.archer,vals:smoothArr(sm.map(x=>x.a))},{name:'Cannons',color:SC.cannon,vals:smoothArr(sm.map(x=>x.c))},{name:'Eagles',color:SC.barracks,vals:smoothArr(sm.map(x=>x.k))},{name:'Army',color:SC.army,vals:smoothArr(sm.map(x=>x.u||0))}],{stacked:true,marks:S.bosses});
     tsChart($('cEco'),xs,[{name:'Grain',color:SC.grain,vals:smoothArr(sm.map(x=>x.g))},{name:'Wool',color:SC.wool,vals:smoothArr(sm.map(x=>x.w))},{name:'Gold',color:SC.gold,vals:smoothArr(sm.map(x=>x.o))}],{});
     tsChart($('cEn'),xs,[{name:'Enemies',color:SC.enemy,vals:sm.map(x=>x.e)}],{area:true,marks:S.bosses,fmt:v=>Math.round(v)+''});
     tsChart($('cTaken'),xs,[{name:'Damage taken',color:SC.taken,vals:smoothArr(sm.map(x=>x.taken))}],{area:true,marks:S.bosses})});
   const EN={catapult:['☄️','Catapults'],spear:['🗡️','Spearmen'],bowman:['🏹','Bowmen'],shield:['🛡️','Shieldbearers'],sapper:['💥','Sappers'],ram:['🪵','Battering rams'],cav:['🐎','Cavalry'],boss:['👑','Warlords']};const ke=Object.entries(S.killsE).filter(([k,v])=>v>0),mke=Math.max(1,...ke.map(x=>x[1]));
   barRows($('stKills'),ke.map(([k,v])=>({ic:EN[k][0],name:EN[k][1],val:v,n:v,color:'#c3b38a'})),mke);
-  const kb=[['archer','Archer towers'],['cannon','Cannon towers'],['barracks','Knights'],['hall','Barracks troops'],['workshop','Siege engines']].map(([k,nm])=>({ic:BT[k].ic,name:nm,val:`${S.killsBy[k]} · ${tot?Math.round(S.dmgBy[k]/tot*100):0}% dmg`,n:S.killsBy[k],color:SC[k]})),mkb=Math.max(1,...kb.map(x=>x.n));
+  const kb=[['archer','Archer towers'],['cannon','Cannon towers'],['barracks','Eagles'],['hall','Barracks troops'],['workshop','Siege engines']].map(([k,nm])=>({ic:BT[k].ic,name:nm,val:`${S.killsBy[k]} · ${tot?Math.round(S.dmgBy[k]/tot*100):0}% dmg`,n:S.killsBy[k],color:SC[k]})),mkb=Math.max(1,...kb.map(x=>x.n));
   barRows($('stKillsBy'),kb,mkb);
   const longest=S.all.filter(r=>r.died==null).sort((a,b)=>a.born-b.born)[0];const tank=[...buildings,...[]].filter(b=>b.st).sort((a,b)=>b.st.taken-a.st.taken)[0];
   const sumC=c=>Math.round(c.grain)+'🌾 '+Math.round(c.wool)+'🐑 '+Math.round(c.gold)+'🪙';
@@ -1901,7 +2006,7 @@ function showStats(mode){statsFrom=mode;setTimeout(renderHof,0);if(mode==='pause
   $('stFacts').innerHTML=`<h4>Chronicle</h4><div class="facts">${ea.length?`Medals earned <b>${ea.map(a=>a.m+' '+a.n).join(' · ')}</b><br>`:''}
    Earned <b>${sumC(S.earned)}</b><br>Spent <b>${sumC(S.spent)}</b><br>
    Buildings raised <b>${S.built}</b> · lost <b>${S.lost}</b> · sold <b>${S.sold}</b><br>
-   Knights fallen in battle <b>${S.kLost}</b><br>
+   Eagles fallen in battle <b>${S.kLost}</b><br>
    Biggest horde <b>${S.peakE}</b> enemies at ${fmtT(S.peakT)}<br>
    ${tank&&tank.st.taken>0?`Toughest building: <b>${BT[tank.type].name} #${tank.st.n}</b> absorbed ${fmtN(tank.st.taken)} damage<br>`:''}
    ${longest?`Oldest standing defense: <b>${BT[longest.b.type].name} #${longest.n}</b> since ${fmtT(longest.born)}`:''}</div>`}
@@ -1970,7 +2075,7 @@ function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(f
   frameDt=dt;inputTick(dt);applyCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();renderProd();if(bans)renderBans();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 window.__G={setDiff:i=>setDiff(i),get score(){return score},get ageRes(){return ageRes},dbg:()=>({lt:lsel&&lsel.t,lp:lastPt,box:!!boxSel,moved,hold:!!hold,paint:!!paint,anchor:!!anchor,ptrs:ptrs.size}),ser:()=>serialize(),load:d=>loadGame(d),get age(){return age},set age(v){age=v},depos:DEPOS,startWave:n=>{wave=n;startWave(n)},get spawnQ(){return spawnQ},cost:t=>costOf(t),spawnAt(x,y){spawnEnemy('spear',1);const e=enemies[enemies.length-1];e.x=x*32+16;e.y=y*32+16;e.frozen=true;e.hp=e.maxhp=120;return e},terr:(x,y)=>terrain[x+y*GW],get kk(){return ST.killsBy.barracks},get sellArm(){return sellArm},get wallMode(){return wallMode},selSet:()=>selSet,upg:b=>{selSet.clear();selSet.add(b);return upgradeSel(b)},mk:buildModel,h:heightAt,place2:null,rebuildAll(){for(const b of buildings)makeVisual(b)},scene,ground,THREE,renderer,camera,get s(){return{res,buildings,enemies,knights,wave,corpses}},step(sec){for(let t=0;t<sec;t+=0.05)update(0.05)},render(){applyCam(0.016);renderWorld(0.016);renderer.render(scene,camera);drawOverlay()},cam,give(){res.grain+=9000;res.wool+=9000;res.gold+=9000},
-  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt)};
+  get pl(){return place},ghostScr(){return place?scr(place.vx,place.vy+0.5,place.vz):null},sel:()=>sel&&sel.id,place:(t,x,y)=>{const b=addBuilding(t,x,y,true);computeFlow();return b},canPlace,get fps(){return fpsA},info:()=>renderer.info.render,get army(){return{troops,rbuildings,bans,RAI,enemies,rSpot,rbCan,rCore,rWant,rCost}},enqueue,spawnTroop,dropBan,addRB,recallBan,setSpeed,get V1(){return V1},upd:dt=>update(dt)};
 </script>
 </body>
 </html>
