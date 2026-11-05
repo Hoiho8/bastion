@@ -451,7 +451,7 @@ Object.assign(TRD,{
 'Rifle Squad':'Piyade Timi','Sniper Pair':'Keskin Nişancı İkilisi','Sniper Team':'Keskin Nişancı Timi','Medic Pair':'Sıhhiyeci İkilisi','Tank':'Tank','APC':'Zırhlı Araç','Mortar Carrier':'Havan Aracı','Heavy Tank':'Ağır Tank','Assault Squad':'Hücum Timi','Combat Engineers':'Muharip İstihkâm','Enemy FPV Drone':'Düşman FPV Dronu',
 'Rifles':'Piyade','Snipers':'Nişancılar','Medics':'Sıhhiye',
 'Machine-gun nest. Shreds infantry, plinks off armor.':'Makineli tüfek yuvası. Piyadeyi biçer, zırhta seker.','Lobs shells over anything. Splash wrecks crowds.':'Her şeyin üstünden mermi atar. Kalabalıkları dağıtır.','Guided missiles. Deadly to armor, poor against infantry.':'Güdümlü füzeler. Zırha ölümcül, piyadeye zayıf.',
-'Five kamikaze drones hunt armor in a wide zone, then rebuild.':'Beş kamikaze dron geniş bir bölgede zırh avlar, sonra yenilenir.','Cover for your troops. Upgrade to razor wire, then concrete.':'Askerlerin için siper. Önce jiletli tele, sonra betona yükselt.','Drag to lay 3 hidden mines per square. Drag again to refill or upgrade.':'Her kareye 3 gizli mayın döşemek için sürükle. Yenilemek ya da yükseltmek için tekrar sürükle.',
+'Five kamikaze drones hunt armor in a wide zone, then rebuild.':'Beş kamikaze dron geniş bir bölgede zırh avlar, sonra yenilenir.','Cover for your troops. Upgrade to razor wire, then concrete.':'Askerlerin için siper. Önce jiletli tele, sonra betona yükselt.','Drag to lay 3 mines per square. Red learns where mines went off and defuses them — re-lay to hide them again.':'Her kareye 3 gizli mayın döşemek için sürükle. Yenilemek ya da yükseltmek için tekrar sürükle.',
 '+1.2 food / sec · neighbors merge for a bonus':'+1.2 gıda / sn · komşular birleşip bonus verir','+1.0 industry / sec · neighbors merge for a bonus':'+1.0 sanayi / sn · komşular birleşip bonus verir','+0.5 finance / sec · only on bank plots':'+0.5 finans / sn · sadece banka arsalarına',
 'Trains rifle squads, snipers and medics.':'Piyade timleri, nişancılar ve sıhhiyeciler yetiştirir.','Builds tanks, APCs and mortar carriers.':'Tank, zırhlı araç ve havan aracı üretir.',
 'Long range, inaccurate, dangerous. Tap it, then the map, to set a fire mission. Avoids your troops unless the target is big.':'Uzun menzilli, isabetsiz, tehlikeli. Önce ona, sonra haritaya dokunarak atış görevi ver. Hedef büyük değilse kendi askerlerinden kaçınır.',
@@ -641,7 +641,7 @@ const BT={
   ew:{name:'EW Station',ic:'📶',kind:'def',size:2,cost:{grain:180,wool:160,gold:90},hp:400,range:300,desc:'Jams drones, missiles and air strikes — the closer they get, the harder it hits.'},
   patriot:{name:'Patriot Battery',ic:'📡',kind:'def',size:2,cost:{grain:380,wool:300,gold:240},hp:480,range:720,ammo:4,reload:26,desc:'Shoots down air strikes, rockets and helicopters. 4 rounds, long reload.'},
   helipad:{name:'Helipad',ic:'🚁',kind:'def',size:3,cost:{grain:420,wool:320,gold:220},hp:620,squad:2,respawn:150,guard:700,desc:'Two attack helicopters guard a wide zone. They land here for repairs. Losing one takes a long time to replace.'},
-  minef:{name:'Minefield',ic:'☠️',kind:'def',size:1,cost:{grain:15,wool:15,gold:0},hp:1,desc:'Drag to lay 3 hidden mines per square. Drag again to refill or upgrade.'},
+  minef:{name:'Minefield',ic:'☠️',kind:'def',size:1,cost:{grain:45,wool:35,gold:5},hp:1,desc:'Drag to lay 3 mines per square. Red learns where mines went off and defuses them — re-lay to hide them again.'},
   wheat:{name:'Farm',ic:'🌾',kind:'eco',size:3,cost:{grain:50,wool:0,gold:0},hp:160,prod:{grain:1.2},desc:'+1.2 food / sec · neighbors merge for a bonus'},
   sheep:{name:'Factory',ic:'🏭',kind:'eco',size:3,cost:{grain:120,wool:0,gold:0},hp:200,prod:{wool:1.0},desc:'+1.0 industry / sec · neighbors merge for a bonus'},
   mine:{name:'Bank',ic:'🏦',kind:'eco',size:2,cost:{grain:180,wool:90,gold:0},hp:340,prod:{gold:0.5},desc:'+0.5 finance / sec · only on bank plots'},
@@ -1014,12 +1014,13 @@ const rigScale=u=>{const k=unitLook(u);return rigs[k.rig].scale*(k.big||1)};
 const FORM={4:[[0.28,-0.2],[0.24,0.26],[-0.24,-0.34],[-0.3,0.12]],2:[[0.1,-0.2],[-0.12,0.22]],1:[[0,0]]};
 const MEMB={x:0,y:0,rAng:0,walk:0,mvb:0,swing:0,flash:0,die:0,supp:0,ph:0,fly:0};
 function aliveN(u,n){return n<=1?1:clamp(Math.ceil(u.hp/u.maxhp*n-0.001),1,n)}
-function drawSquad(u,t){const L=unitLook(u),n=L.n,F=FORM[n];const a=u.rAng,ca=Math.cos(a),sa=Math.sin(a);const k=aliveN(u,n);
+function cullXZ(X,Z){if(FPV.on)return false;const dx=X-cam.tx,dz=Z-cam.tz,r=cam.D*1.25+4;return dx*dx+dz*dz>r*r}
+function drawSquad(u,t){if(cullXZ(u.x/TILE,u.y/TILE))return;const L=unitLook(u),n=L.n,F=FORM[n];const a=u.rAng,ca=Math.cos(a),sa=Math.sin(a);const k=aliveN(u,n);
   if(u.alive0==null)u.alive0=k;if(k<u.alive0){for(let i=k;i<u.alive0;i++){const o=F[i];const x=u.x+(o[0]*ca-o[1]*sa)*TILE,y=u.y+(o[0]*sa+o[1]*ca)*TILE;corpses.push({kind:L.rig,x,y,rAng:a+(Math.random()-.5),walk:0,die:0,mvb:0,swing:0,flash:0,sc:L.big});DEC.blood(x/TILE,y/TILE,0.18)}}u.alive0=k;
-  if(n===1){MEMB.ph=0;drawUnitInst(L.rig,u,t,false,L.big);return}
+  if(n===1){MEMB.ph=0;drawUnitInst(L.rig,u,t,false,L.big);return}const kk=cam.D>40||qLvl>=2?Math.min(k,2):k;
   // in cover: crouch & peek when a friendly trench is close
   let cov=0;const G=gridOf(u);if(G&&(u.mvb||0)<0.5){const tx=(u.x/TILE)|0,ty=(u.y/TILE)|0;for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++){const j=x+y*GW;if(j>=0&&j<G.length&&G[j]){cov=1;break}}}
-  for(let i=0;i<k;i++){const o=F[i],m=MEMB;m.x=u.x+(o[0]*ca-o[1]*sa)*TILE;m.y=u.y+(o[0]*sa+o[1]*ca)*TILE;m.rAng=a+(i%2?0.12:-0.1)*(1-(u.mvb||0));m.walk=u.walk+i*1.7;m.mvb=u.mvb;m.swing=u.swing;m.flash=u.flash;m.supp=u.supp||0;m.ph=i*1.37+(u.x*0.013%3);m.combat=(u.aimT||0)>0;m.heal=u.healing;m.cover=cov;m.die=0;
+  for(let i=0;i<kk;i++){const o=F[i],m=MEMB;m.x=u.x+(o[0]*ca-o[1]*sa)*TILE;m.y=u.y+(o[0]*sa+o[1]*ca)*TILE;m.rAng=a+(i%2?0.12:-0.1)*(1-(u.mvb||0));m.walk=u.walk+i*1.7;m.mvb=u.mvb;m.swing=u.swing;m.flash=u.flash;m.supp=u.supp||0;m.ph=i*1.37+(u.x*0.013%3);m.combat=(u.aimT||0)>0;m.heal=u.healing;m.cover=cov;m.die=0;
     drawUnitInst(L.rig,m,t,false,L.big)}}
 function killUnit(u){const L=unitLook(u),n=L.n,F=FORM[n],a=u.rAng,ca=Math.cos(a),sa=Math.sin(a),k=n===1?1:Math.max(1,u.alive0||1);
   for(let i=0;i<k;i++){const o=F[i];const x=u.x+(o[0]*ca-o[1]*sa)*TILE,y=u.y+(o[0]*sa+o[1]*ca)*TILE;corpses.push({kind:L.rig,x,y,rAng:a+(L.veh?0:(Math.random()-.5)),walk:0,die:0,mvb:0,swing:0,flash:0,veh:L.veh,air:L.air,sc:L.big,tA:u.tAng});if(!L.veh&&!L.air)DEC.blood(x/TILE,y/TILE,0.2)}
@@ -1137,6 +1138,7 @@ const tileAt=(x,y)=>{const tx=(x/TILE)|0,ty=(y/TILE)|0;return(x<0||y<0||tx>=GW||
 function walkable(x,y){const i=tileAt(x,y);return i>=0&&terrain[i]===0&&!occ[i]}
 function edgeDist(b,x,y){const x0=b.px,y0=b.py,x1=x0+b.s*TILE,y1=y0+b.s*TILE;return Math.hypot(Math.max(x0-x,0,x-x1),Math.max(y0-y,0,y-y1))}
 
+var qLvl=0;
 // ---------- the battlefield remembers: mud, craters, blood, tracks, worn paths ----------
 const DEC=(()=>{const N=1024,c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d');let tex=null,mesh=null,dirty=0,T=0;const S=()=>N/GW;
   function init(){g.clearRect(0,0,N,N);if(!mesh){tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;mesh=new THREE.Mesh(groundGeo,new THREE.MeshLambertMaterial({map:tex,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));mesh.renderOrder=1;mesh.receiveShadow=true;scene.add(mesh)}tex.needsUpdate=true}
@@ -1147,7 +1149,7 @@ const DEC=(()=>{const N=1024,c=document.createElement('canvas');c.width=c.height
     crater(X,Z,r){r=Math.max(0.15,r);blob(X,Z,r*1.9,'50,38,24',0.42);const s=S();g.fillStyle='rgba(28,22,16,0.62)';g.beginPath();g.arc(X*s,Z*s,r*0.62*s,0,7);g.fill();g.strokeStyle='rgba(96,78,54,0.45)';g.lineWidth=Math.max(1,r*0.25*s);g.beginPath();g.arc(X*s,Z*s,r*0.78*s,0,7);g.stroke();
       for(let i=0;i<5;i++){const a=Math.random()*6.28,d=r*(0.9+Math.random()*0.9);g.fillStyle='rgba(60,46,30,0.35)';g.beginPath();g.arc((X+Math.cos(a)*d)*s,(Z+Math.sin(a)*d)*s,r*0.18*s,0,7);g.fill()}dirty=1;grime(X,Z,r+0.8,0.05)},
     track(x0,z0,x1,z1,w){const s=S(),dx=x1-x0,dz=z1-z0,l=Math.hypot(dx,dz)||1,nx=-dz/l*w,nz=dx/l*w;g.strokeStyle='rgba(46,35,22,0.2)';g.lineWidth=Math.max(1.2,0.1*s);g.lineCap='round';g.beginPath();g.moveTo((x0+nx)*s,(z0+nz)*s);g.lineTo((x1+nx)*s,(z1+nz)*s);g.moveTo((x0-nx)*s,(z0-nz)*s);g.lineTo((x1-nx)*s,(z1-nz)*s);g.stroke();dirty=1},
-    tick(dt){T+=dt;if(dirty&&T>0.45){T=0;dirty=0;tex.needsUpdate=true}}}})();
+    tick(dt){T+=dt;if(dirty&&T>(qLvl>=1?0.9:0.6)){T=0;dirty=0;tex.needsUpdate=true}}}})();
 // footsteps & tracks — long-walked routes slowly churn into mud
 let stepT=0;function wearGround(dt){stepT+=dt;if(stepT<0.35)return;const k=stepT;stepT=0;
   for(const L of[enemies,troops])for(const u of L){if(!(u.mvT>0))continue;const X=u.x/TILE,Z=u.y/TILE;if(VEHT.has(u.type)){if(u.tkx!=null&&Math.hypot(X-u.tkx,Z-u.tkz)>0.12)DEC.track(u.tkx,u.tkz,X,Z,u.type==='cav'?0.17:0.21);u.tkx=X;u.tkz=Z;if(Math.random()<0.3)DEC.mud(X,Z,0.3,0.03)}else DEC.mud(X+(Math.random()-.5)*0.2,Z+(Math.random()-.5)*0.2,0.16,0.022*k*3)}}
@@ -1155,7 +1157,7 @@ let stepT=0;function wearGround(dt){stepT+=dt;if(stepT<0.35)return;const k=stepT
 function grime(X,Z,r,a){for(const L of[buildings,rbuildings])for(const b of L){if(b.type==='wall')continue;const d=Math.hypot(b.X-X,b.Z-Z)-b.s*0.5;if(d<r){b.dirt=Math.min(0.72,(b.dirt||0)+a*(1-Math.max(0,d)/r));applyDirt(b)}}}
 function applyDirt(b){const d=b.dirt||0;if(b.type==='mine'){const st=d>=0.6?3:d>=0.4?2:d>=0.2?1:0;if(st!==(b.gst||0)){b.gst=st;if(b.red)makeRVisual(b,false);else makeVisual(b,false);return}}if(Math.abs(d-(b.dirtA??0))<0.04&&b.dirtA!==-1)return;b.dirtA=d;if(!b.dirtM)b.dirtM=VM.clone();b.dirtM.color.setRGB(1-0.62*d,1-0.66*d,1-0.7*d);b.group.traverse(o=>{if(o.isMesh&&o.material===VM)o.material=b.dirtM})}
 // ---------- FX helpers (3D units) ----------
-function fx(X,Y,Z,n,col,spd,size,life,grav,kind,up=0.6){const c=new THREE.Color(col);for(let i=0;i<n;i++){if(parts.length>1100)return;parts.push({x:X,y:Y,z:Z,vx:(Math.random()-.5)*spd,vy:(Math.random()*up+0.1)*spd,vz:(Math.random()-.5)*spd,life:life*(0.7+Math.random()*0.5),max:life,s:size*(0.6+Math.random()*0.6),c,g:grav,k:kind})}}
+function fx(X,Y,Z,n,col,spd,size,life,grav,kind,up=0.6){if(cullXZ(X,Z))return;const c=new THREE.Color(col);const cap=qLvl>=2?450:qLvl>=1?750:1100;for(let i=0;i<n;i++){if(parts.length>cap)return;parts.push({x:X,y:Y,z:Z,vx:(Math.random()-.5)*spd,vy:(Math.random()*up+0.1)*spd,vz:(Math.random()-.5)*spd,life:life*(0.7+Math.random()*0.5),max:life,s:size*(0.6+Math.random()*0.6),c,g:grav,k:kind})}}
 const W3=(x,y)=>[x/TILE,heightAt(x/TILE,y/TILE),y/TILE];
 
 // =============== WAVES ===============
@@ -1328,8 +1330,8 @@ function updProj(p,dt){if(p.k==='strike'){updStrike(p,dt);return}if(p.k==='intc'
     AU.boom(0.8);shake=Math.max(shake,0.12)}}}
 // ---------- razor wire & minefields ----------
 let MINEB=new Uint8Array(1),MINEL=new Uint8Array(1),RMINEB=new Uint8Array(1);
-function mineInit(){MINEB=new Uint8Array(GW*GH);MINEL=new Uint8Array(GW*GH);RMINEB=new Uint8Array(GW*GH)}
-const MINE_DMG=[0,70,120,190];
+function mineInit(){MINEB=new Uint8Array(GW*GH);MINEL=new Uint8Array(GW*GH);RMINEB=new Uint8Array(GW*GH);MSPOT=new Uint8Array(GW*GH)}
+const MINE_DMG=[0,70,120,190];let MSPOT=new Uint8Array(1);
 function droneBlast(x,y,L,mul,victims,src,bldTg){for(const u of victims){if(u.hp<=0)continue;const d=dst(u.x,u.y,x,y);if(d<28){const dm=MINE_DMG[L]*mul*KM('mine',u)*(d<14?1:0.6);if(u.troop||u.eagle)hurtU(u,dm,x,y,'mortar');else hitEnemy(u,dm,src,x,y,'mortar')}}
   if(bldTg)hurtBuilding(bldTg,MINE_DMG[L]*mul*0.9);const[X,Y,Z]=W3(x,y);fx(X,Y+0.35,Z,14,'#ffae3a',2.8,0.24,0.38,0,1,0.85);fx(X,Y+0.3,Z,10,'#5a544c',1.6,0.42,1.5,-0.2,0,0.6);fx(X,Y+0.2,Z,8,'#3a3632',3,0.07,0.9,8,2,1.1);DEC.crater(x/TILE,y/TILE,0.4);lightFlash(X,Y,Z,1);AU.boom(0.7);shake=Math.max(shake,0.08)}
 function mineBlast(i,L,victims,src){const x=(i%GW+0.5)*TILE,y=((i/GW|0)+0.5)*TILE;for(const u of victims){const d=dst(u.x,u.y,x,y);if(d<26){const dm=MINE_DMG[L]*KM('mine',u)*(d<14?1:0.5);if(u.troop||u.eagle)hurtU(u,dm,x,y,'mortar');else{hitEnemy(u,dm,src,x,y,'mortar');if(ST)ST.dmgBy.minef+=dm}}}
@@ -1340,7 +1342,12 @@ function hazards(dt){
       if(w){const dm=(w===3?6:3.5)*dt*KM('wire',u);if(u.troop)hurtU(u,dm,null,null,'wire');else hitEnemy(u,dm,src);if(VEHT.has(u.type)||u.troop&&UT[u.type].veh)continue;u.slowT=0.6}}};
   wire(enemies.filter(e=>!e.red1||true),WG,null);wire(troops,RWG,null);
   // mines: hidden from the enemy, a few charges per square
-  for(const e of enemies){if(e.hp<=0)continue;const i=tileAt(e.x,e.y);if(i<0||!MINEB[i])continue;if(Math.random()<0.55){MINEB[i]--;mineBlast(i,MINEL[i],enemies,null);if(!MINEB[i])MINEL[i]=0;mineDirty=1}}
+  for(const e of enemies){if(e.hp<=0||e.fly)continue;const i=tileAt(e.x,e.y);
+    // engineers sweep a wide area; spotted fields get probed and defused instead of triggered
+    if(e.type==='sapper'){const tx=i%GW,ty=(i/GW)|0;for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++){const j=x+y*GW;if(j>=0&&j<GW*GH&&MINEB[j]&&Math.random()<0.5){MINEB[j]--;MSPOT[j]=1;mineDirty=1;if(!MINEB[j])MINEL[j]=0}}}
+    if(i<0||!MINEB[i])continue;const aware=MSPOT[i]?0.75:Math.min(0.35,(V1?0.1:0.04*Math.max(0,wave-3)));
+    if(Math.random()<aware){MINEB[i]--;if(!MINEB[i])MINEL[i]=0;mineDirty=1;e.slowT=1.2;if(Math.random()<0.3)texts.push({X:e.x/TILE,Y:heightAt(e.x/TILE,e.y/TILE)+1,Z:e.y/TILE,s:'mine defused',life:1,c:'#ffb09a'});continue}
+    if(Math.random()<0.55){MINEB[i]--;mineBlast(i,MINEL[i],enemies,null);if(!MINEB[i])MINEL[i]=0;mineDirty=1;const tx=i%GW,ty=(i/GW)|0;for(let y=ty-2;y<=ty+2;y++)for(let x=tx-2;x<=tx+2;x++){const j=x+y*GW;if(j>=0&&j<GW*GH)MSPOT[j]=1}}}
   for(const t of troops){const i=tileAt(t.x,t.y);if(i<0||!RMINEB[i])continue;if(Math.random()<0.55){RMINEB[i]--;mineBlast(i,2,[...troops,...knights],null)}}}
 let mineDirty=1;
 // ====================== RELEASE 2: artillery · air defense · air power · weather · night ======================
@@ -1355,9 +1362,14 @@ function updWeather(dt){WX.dayT=(time%(DAYL+NIGHTL));const p=WX.dayT;let n=0;if(
 const missOf=(drone)=>WX.fog*(drone?0.45:0.25)+WX.night*0.08;
 const spdW=u=>u.fly||u.eagle?1:1-0.22*WX.rain;
 // lights: hemisphere + sun live at module scope
-const HEMI=scene.children.find(o=>o.isHemisphereLight),DAYSKY=new THREE.Color('#a9cde0'),NIGHTSKY=new THREE.Color('#141c28'),RAINSKY=new THREE.Color('#8592a0'),FOGSKY=new THREE.Color('#c4ccd0'),_sky=new THREE.Color();
+const HEMI=scene.children.find(o=>o.isHemisphereLight),DAYSKY=new THREE.Color('#a9cde0'),NIGHTSKY=new THREE.Color('#1e2a3e'),RAINSKY=new THREE.Color('#8592a0'),FOGSKY=new THREE.Color('#c4ccd0'),_sky=new THREE.Color();
 const FLASHL=[0,1,2,3,4,5].map(()=>{const l=new THREE.PointLight('#ffb050',0,9,2);l.visible=true;l.position.set(-50,-50,-50);scene.add(l);return l});let flI=0;
-function lightFlash(X,Y,Z,pow,col){if(WX.night<0.15)return;const l=FLASHL[flI++%FLASHL.length];l.position.set(X,Y+0.8,Z);l.color.set(col||'#ffb050');l.intensity=pow*WX.night*6;l.userData.d=pow*WX.night*6}
+const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.25,'rgba(255,255,255,0.55)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+const glowMesh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:glowTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,vertexColors:false}),256);glowMesh.frustumCulled=false;glowMesh.count=0;glowMesh.renderOrder=7;for(let i=0;i<256;i++)glowMesh.setColorAt(i,WHITE);scene.add(glowMesh);
+let glows=[];const _gc=new THREE.Color();function glow(X,Y,Z,sz,col,life){if(glows.length>=256)glows.shift();glows.push({X,Y,Z,sz,c:_gc.set(col).clone(),life,max:life})}
+function renderGlows(rdt){let n=0;const nb=0.6+WX.night*0.8;for(const g of glows){g.life-=rdt;if(g.life<=0)continue;const k=g.life/g.max,sc=g.sz*(0.6+0.4*k)*(g.sz>1?1.25-0.25*k:1);_q.copy(camera.quaternion);_M.compose(_av.set(g.X,g.Y,g.Z),_q,_s.set(sc,sc,sc));glowMesh.setMatrixAt(n,_M);_c.copy(g.c).multiplyScalar(k*nb);glowMesh.setColorAt(n,_c);n++}glows=glows.filter(g=>g.life>0);glowMesh.count=n;glowMesh.instanceMatrix.needsUpdate=true;if(glowMesh.instanceColor)glowMesh.instanceColor.needsUpdate=true}
+const FS={X:0,Y:0,Z:0,i:0,col:new THREE.Color('#ffb050')};
+function lightFlash(X,Y,Z,pow,col){glow(X,Y+0.35,Z,1.2+pow*1.1,col||'#ffb050',0.22+pow*0.08);if(pow>=1&&WX.night>0.25&&pow>=FS.i*0.8){FS.X=X;FS.Y=Y;FS.Z=Z;FS.i=pow;FS.col.set(col||'#ffb050')}if(WX.night<0.15)return;const l=FLASHL[flI++%FLASHL.length];l.position.set(X,Y+0.8,Z);l.color.set(col||'#ffb050');l.intensity=pow*WX.night*6;l.userData.d=pow*WX.night*6}
 const rainMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(0.01,0.42,0.01),new THREE.MeshBasicMaterial({color:'#c8d8e8',transparent:true,opacity:0.45,depthWrite:false}),500);rainMesh.frustumCulled=false;rainMesh.count=0;scene.add(rainMesh);
 const RAIN=Array.from({length:500},()=>({x:Math.random()*40-20,y:Math.random()*12,z:Math.random()*40-20}));
 const fogTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(235,238,240,0.8)');gr.addColorStop(1,'rgba(235,238,240,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
@@ -1366,10 +1378,12 @@ const DUSKSKY=new THREE.Color('#f2a05a'),DAWNSKY=new THREE.Color('#e8b0a0'),SUND
 const SUN_DAY=new THREE.Vector3(-14,30,-6),SUN_DUSK=new THREE.Vector3(-7,9,32),SUN_DAWN=new THREE.Vector3(26,6,16);
 function dayPhase(){const p=time%(DAYL+NIGHTL);const g=p<DAYL-95?0:p<DAYL-25?smooth(DAYL-95,DAYL-25,p):p<DAYL?1:0;const dw=p<35?1-smooth(0,35,p):p>DAYL+NIGHTL-15?smooth(DAYL+NIGHTL-15,DAYL+NIGHTL,p):0;return{g,dw}}
 function renderWeather(rdt){const n=WX.night,{g,dw}=dayPhase();WX.golden=g;
-  _sky.copy(DAYSKY).lerp(DUSKSKY,g*0.85).lerp(DAWNSKY,dw*0.6).lerp(RAINSKY,WX.rain*0.7).lerp(FOGSKY,WX.fog*0.6).lerp(NIGHTSKY,n*0.92);scene.background.copy(_sky);scene.fog.color.copy(_sky);
+  _sky.copy(DAYSKY).lerp(DUSKSKY,g*0.85).lerp(DAWNSKY,dw*0.6).lerp(RAINSKY,WX.rain*0.7).lerp(FOGSKY,WX.fog*0.6).lerp(NIGHTSKY,n*0.85);scene.background.copy(_sky);scene.fog.color.copy(_sky);
   const sg=Math.max(g,dw*0.7);SUNOFF.copy(SUN_DAY).lerp(dw>g?SUN_DAWN:SUN_DUSK,sg);
-  _c1.copy(SUND).lerp(SUNG,sg).lerp(SUNN,n);sun.color.copy(_c1);sun.intensity=(2.4+1.5*g)*(1-0.88*n)*(1-0.45*WX.rain)*(1-0.3*WX.fog);
-  if(HEMI){_c2.copy(HEMD).lerp(HEMG,sg*0.8).lerp(HEMN,n);HEMI.color.copy(_c2);HEMI.groundColor.copy(GRD).lerp(GRG,sg*0.6);HEMI.intensity=1.25*(1-0.08*g)*(1-0.72*n)*(1-0.25*WX.rain)}
+  _c1.copy(SUND).lerp(SUNG,sg).lerp(SUNN,n);sun.color.copy(_c1);sun.intensity=(2.4+1.5*g)*(1-0.66*n)*(1-0.45*WX.rain)*(1-0.3*WX.fog);
+  if(HEMI){_c2.copy(HEMD).lerp(HEMG,sg*0.8).lerp(HEMN,n);HEMI.color.copy(_c2);HEMI.groundColor.copy(GRD).lerp(GRG,sg*0.6);HEMI.intensity=1.25*(1-0.08*g)*(1-0.45*n)*(1-0.25*WX.rain)}
+  if(FS.i>0.05&&WX.night>0.25){const dx=cam.tx-FS.X,dz=cam.tz-FS.Z,dl=Math.hypot(dx,dz)||1;sun.position.set(cam.tx-dx/dl*22,FS.Y+7,cam.tz-dz/dl*22);sun.target.position.set(cam.tx,0,cam.tz);sun.target.updateMatrixWorld();sun.color.lerp(FS.col,Math.min(1,FS.i*0.6));sun.intensity+=FS.i*1.6*WX.night}FS.i*=Math.pow(0.004,rdt);
+  renderGlows(rdt);
   for(const l of FLASHL)if(l.intensity>0){l.intensity*=Math.pow(0.02,rdt);if(l.intensity<0.05)l.intensity=0}
   let nr=0;if(WX.rain>0.05&&!FPV.on){const k=Math.round(500*WX.rain);for(let i=0;i<k;i++){const d=RAIN[i];d.y-=rdt*16;if(d.y<0){d.y=12;d.x=Math.random()*40-20;d.z=Math.random()*40-20}_M.makeTranslation(cam.tx+d.x,d.y,cam.tz+d.z);rainMesh.setMatrixAt(nr++,_M)}}rainMesh.count=nr;rainMesh.instanceMatrix.needsUpdate=true;
   for(const m of FOGP){const u=m.userData;u.ox+=rdt*u.s;if(u.ox>18)u.ox=-18;m.position.set(cam.tx+u.ox,0.5,cam.tz+u.oz);m.material.opacity=WX.fog*0.32}}
@@ -1390,7 +1404,7 @@ function updHowitzer(b,dt,red){b.cd-=dt;if(b.cd>0)return;const T=BT.howitzer,R=T
   else{let best=null,bs=0;for(const e of foes){const d=dst(e.x,e.y,b.x,b.y);if(d>R||d<100)continue;let n=0;for(const o of foes)if(dst(o.x,o.y,e.x,e.y)<80)n+=kindOf(o)==='veh'?2:1;let f=0;for(const o of fr)if(dst(o.x,o.y,e.x,e.y)<120)f++;
       const sc=f===0?n:(n>=6+f*4?n-f*3:-1);if(sc>bs){bs=sc;best=e}}
     if(!best){let bb=null,bd=1e9;for(const o of(red?buildings:rbuildings)){if(o.type==='wall')continue;const d=dst(o.x,o.y,b.x,b.y);if(d<R&&d<bd){bd=d;bb=o}}if(!bb){b.cd=0.6;return}tx=bb.x;ty=bb.y}else{tx=best.x;ty=best.y}}
-  const d=dst(tx,ty,b.x,b.y),sp=(70+d*0.22)/(0.8+b.lvl*0.2),a=Math.random()*6.28,r=sp*Math.sqrt(Math.random());const ax=tx+Math.cos(a)*r,ay=ty+Math.sin(a)*r;
+  const d=dst(tx,ty,b.x,b.y),sp=(16+144*Math.min(1,d/R))/(0.8+b.lvl*0.2),a=Math.random()*6.28,r=sp*Math.sqrt(Math.random());const ax=tx+Math.cos(a)*r,ay=ty+Math.sin(a)*r;
   const dmg=T.dmg*MUL[b.lvl-1]*VETM[vetOf(b)];projs.push({k:red?'rball':'ball',how:1,ff:1,cat:1,sx:b.x,sy:b.y,tx:ax,ty:ay,time:0,dur:2+d/420,dmg,splash:T.splash*[1,1.15,1.3][b.lvl-1],h0:b.Y+b.top,lv:b.lvl,src:red?null:b,bmul:red?1:0});
   b.cd=T.rate/CDM[b.lvl-1]/vetCD(b);b.aim=Math.atan2(ty-b.y,tx-b.x);b.recoil=1;const X=b.X+Math.cos(b.aim)*1.2,Z=b.Z+Math.sin(b.aim)*1.2;fx(X,b.Y+0.9,Z,10,'#ffc060',2,0.25,0.18,0,1,0.6);fx(X,b.Y+0.9,Z,14,'#b8b2a8',1.4,0.5,2.2,-0.15,0,0.5);lightFlash(X,b.Y,Z,1.4);AU.howitzer(b.X,b.Z);shake=Math.max(shake,0.05)}
 // ---------- HIMARS ----------
@@ -1673,7 +1687,7 @@ function dmgMul(u,ax,ay,cls){if(kindOf(u)!=='inf')return 1;if(cityAt(u.x,u.y))re
 function hurtU(u,d,ax,ay,cls){const m=dmgMul(u,ax,ay,cls);u.hp-=d*m*(u.armor||1);u.flash=0.1;u.supp=Math.min(3,(u.supp||0)+(cls==='mortar'||cls==='tank'?1.2:0.5));if(kindOf(u)==='inf'&&Math.random()<0.35)DEC.blood(u.x/TILE,u.y/TILE,0.12);else if(kindOf(u)==='veh')DEC.mud(u.x/TILE,u.y/TILE,0.3,0.05)}
 // sniper line of sight: trees and buildings block, trenches and water don't
 function shotLos(x0,y0,x1,y1){const d=Math.hypot(x1-x0,y1-y0);if(d<20)return true;const n=Math.ceil(d/10);for(let i=2;i<n-1;i++){const x=x0+(x1-x0)*i/n,y=y0+(y1-y0)*i/n,j=tileAt(x,y);if(j<0)continue;if(terrain[j]===1)return false;const o=occ[j];if(o&&!WG[j]&&!RWG[j]&&!MINEB[j]&&j!==tileAt(x1,y1))return false}return true}
-function muzzle(x,y,a,h,n,big,reach=0.22){const X=x/TILE,Z=y/TILE,Y=heightAt(X,Z)+h;for(let i=0;i<n;i++){const ox=(Math.random()-.5)*0.4,oz=(Math.random()-.5)*0.4;fx(X+Math.cos(a)*reach+ox,Y,Z+Math.sin(a)*reach+oz,1,big?'#ffd070':'#ffe9a0',0.2,big?0.16:0.07,0.06,0,1,0.2)}if(big)fx(X+Math.cos(a)*(reach+0.3),Y,Z+Math.sin(a)*(reach+0.3),4,'#b8b2a8',0.6,0.22,0.9,-0.1,0,0.4)}
+function muzzle(x,y,a,h,n,big,reach=0.22){const X=x/TILE,Z=y/TILE,Y=heightAt(X,Z)+h;if(!cullXZ(X,Z))glow(X+Math.cos(a)*reach,Y,Z+Math.sin(a)*reach,big?1.1:0.45,'#ffc860',big?0.12:0.06);if(big&&WX.night>0.3)lightFlash(X,Y,Z,0.6);for(let i=0;i<n;i++){const ox=(Math.random()-.5)*0.4,oz=(Math.random()-.5)*0.4;fx(X+Math.cos(a)*reach+ox,Y,Z+Math.sin(a)*reach+oz,1,big?'#ffd070':'#ffe9a0',0.2,big?0.16:0.07,0.06,0,1,0.2)}if(big)fx(X+Math.cos(a)*(reach+0.3),Y,Z+Math.sin(a)*(reach+0.3),4,'#b8b2a8',0.6,0.22,0.9,-0.1,0,0.4)}
 function counterMul(at,tg){const mounted=tg.eagle||tg.type==='cav';if(at==='spear'&&mounted)return 1.8;if(at==='cav'&&tg.type&&UT[tg.type]&&(UT[tg.type].ranged||UT[tg.type].siege))return 1.5;return 1}
 function redAttack(e,tg,isB){const U=UT[e.type],dmg=e.udmg||U.dmg;
   if(e.type==='catapult'){const d=dst(e.x,e.y,tg.x,tg.y);projs.push({k:'rball',sx:e.x,sy:e.y,tx:tg.x,ty:tg.y,time:0,dur:0.6+d/600,dmg,splash:U.splash,h0:heightAt(e.x/TILE,e.y/TILE)+0.7,bmul:1.25});muzzle(e.x,e.y,e.ang,0.4,2,1);AU.boom(0.3);return}
@@ -1898,11 +1912,11 @@ function commitWall(){if(place&&place.type==='minef')return commitMines();const 
 const mineCap=L=>2+L;
 function mineCost(x,y){const i=x+y*GW,c=BT.minef.cost,L=MINEL[i];if(L&&MINEB[i]>=mineCap(L))return{grain:c.grain*2,wool:c.wool*2,gold:10*L};return c}
 function commitMines(){const plan=wallPlan();let n=0,up=0;for(const p of plan){if(!p.can||!canPlace('minef',p.x,p.y))continue;const c=mineCost(p.x,p.y);if(!afford(c))continue;pay(c);const i=p.x+p.y*GW;
-    if(MINEL[i]&&MINEB[i]>=mineCap(MINEL[i])){MINEL[i]++;up++}else if(!MINEL[i])MINEL[i]=1;MINEB[i]=mineCap(MINEL[i]);n++;const[X,Y,Z]=W3((p.x+0.5)*TILE,(p.y+0.5)*TILE);fx(X,Y+0.05,Z,3,'#6a5a40',0.8,0.12,0.6,4,2,0.4)}
+    if(MINEL[i]&&MINEB[i]>=mineCap(MINEL[i])){MINEL[i]++;up++}else if(!MINEL[i])MINEL[i]=1;MINEB[i]=mineCap(MINEL[i]);MSPOT[i]=0;n++;const[X,Y,Z]=W3((p.x+0.5)*TILE,(p.y+0.5)*TILE);fx(X,Y+0.05,Z,3,'#6a5a40',0.8,0.12,0.6,4,2,0.4)}
   mineDirty=1;ST.minesLaid=(ST.minesLaid||0)+n*3;if(n){AU.place();toast(up?`⬆ ${up} minefield${up>1?'s':''} upgraded`:`💣 ${n} square${n>1?'s':''} mined — invisible to the enemy`)}else if(plan.length){toast(plan.some(p=>p.ok)?needStr(BT.minef.cost):'Can’t mine here');AU.deny()}wdraw=null}
-const mineMesh=new THREE.InstancedMesh(merge([P(cyl(0.05,0.058,0.025,9),'#55583f',0,0.012,0),P(cyl(0.016,0.016,0.016,6),'#9a8a50',0,0.03,0)]),VM,1600);mineMesh.frustumCulled=false;mineMesh.count=0;scene.add(mineMesh);
+const mineMesh=new THREE.InstancedMesh(merge([P(cyl(0.06,0.068,0.03,10),'#9a2a22',0,0.015,0),P(cyl(0.02,0.02,0.02,6),'#3a3a3a',0,0.038,0)]),VM,1600);const mineLED=new THREE.InstancedMesh(new THREE.SphereGeometry(0.03,6,4),new THREE.MeshBasicMaterial({color:'#ff2a1a',transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false}),1600);mineLED.frustumCulled=false;mineLED.count=0;scene.add(mineLED);let mineBeepT=0;mineMesh.frustumCulled=false;mineMesh.count=0;scene.add(mineMesh);
 const MOFF=[[-0.25,-0.2],[0.22,-0.12],[-0.05,0.25],[0.28,0.28],[-0.3,0.18]];
-function drawMines(){if(!mineDirty)return;mineDirty=0;let n=0;const m=new THREE.Matrix4();for(let i=0;i<GW*GH;i++){const c=MINEB[i];if(!c)continue;const x=i%GW,y=(i/GW)|0;for(let k=0;k<c&&k<5;k++){if(n>=1600)break;const X=x+0.5+MOFF[k][0],Z=y+0.5+MOFF[k][1];m.makeTranslation(X,heightAt(X,Z)-0.005,Z);mineMesh.setMatrixAt(n++,m)}}mineMesh.count=n;mineMesh.instanceMatrix.needsUpdate=true}
+function drawMines(){if(!mineDirty)return;mineDirty=0;let n=0;const m=new THREE.Matrix4();for(let i=0;i<GW*GH;i++){const c=MINEB[i];if(!c)continue;const x=i%GW,y=(i/GW)|0;for(let k=0;k<c&&k<5;k++){if(n>=1600)break;const X=x+0.5+MOFF[k][0],Z=y+0.5+MOFF[k][1];m.makeTranslation(X,heightAt(X,Z)-0.005,Z);mineMesh.setMatrixAt(n,m);m.makeTranslation(X,heightAt(X,Z)+0.05,Z);mineLED.setMatrixAt(n,m);n++}}mineMesh.count=n;mineLED.count=n;mineMesh.instanceMatrix.needsUpdate=true;mineLED.instanceMatrix.needsUpdate=true}
 function moveGhostTo(sx,sy){if(!place)return;const pt=pickGround(sx,sy);if(!pt)return;const s=BT[place.type].size,fx0=pt.x-s/2,fz0=pt.z-s/2;let tx=Math.round(fx0),ty=Math.round(fz0);
   const painting=false;
   if(place.type==='mine'){let bd=9,bt=null;for(const d of DEPOS){const dd=Math.hypot(d.tx-fx0,d.ty-fz0);if(dd<bd&&canPlace('mine',d.tx,d.ty)){bd=dd;bt=[d.tx,d.ty]}}if(bt){tx=bt[0];ty=bt[1]}else{tx=place.tx;ty=place.ty}}
@@ -2155,7 +2169,7 @@ function renderWorld(rdt){const t=time;
   for(const L of[enemies,troops])for(const e of L){e.mvb+=((e.mvT>0?1:0)-e.mvb)*Math.min(1,rdt*7);e.rAng=smoothAng(e.rAng,e.ang,sm);if(e.swing>0.2)e.aimT=2.2;if(e.aimT>0)e.aimT-=rdt;e.recoil=Math.max(0,(e.recoil||0)-rdt*2.5);e.tAng=smoothAng(e.tAng??e.rAng,e.aimT>0?(e.aimA??e.ang):e.rAng,Math.min(1,rdt*4));drawSquad(e,t)}
   for(const k of knights){k.mvb+=((k.mvT>0?1:0)-k.mvb)*Math.min(1,rdt*7);k.rAng=smoothAng(k.rAng,k.ang,sm);k.rot=(k.rot||0)+rdt*(k.landed&&k.fly<0.6?7:26);if(k.landed&&k.fly<0.6&&k.hp<k.maxhp){if(Math.random()<rdt*7){const[X,Y,Z]=W3(k.x+(Math.random()-.5)*24,k.y+(Math.random()-.5)*24);fx(X,Y+0.3+Math.random()*0.2,Z,2,Math.random()<0.5?'#ffd070':'#9fe8ff',0.9,0.04,0.35,3,1,0.7)}if(k.hp<k.maxhp*0.5&&Math.random()<rdt*3){const[X,Y,Z]=W3(k.x,k.y);fx(X-0.2,Y+0.5,Z,1,'#4a4644',0.3,0.25,1.6,-0.15,0,0.4)}const a=k.ang||0;for(let j=0;j<2;j++){const m=MEMB,s2=j?1:-1;m.x=k.x+(Math.cos(a+1.57)*s2*0.45+Math.cos(a)*0.15)*TILE*1.85;m.y=k.y+(Math.sin(a+1.57)*s2*0.45+Math.sin(a)*0.15)*TILE*1.85;m.rAng=a-1.57*s2;m.walk=0;m.mvb=0;m.swing=0;m.flash=0;m.supp=0;m.ph=j*2+t;m.combat=false;m.heal=1;m.cover=0;m.die=0;m.fly=0;drawUnitInst('b_medic1',m,t,false)}}
     const fl=k.heli?(k.landed&&dst(k.x,k.y,...heliPadPos(k))<6?0.12:2.3+Math.sin(t*1.1+k.slot)*0.12):(k.swing>0||(k.tgt&&k.tgt.hp>0&&dst(k.tgt.x,k.tgt.y,k.x,k.y)<44))?0.5:1.55+Math.sin(t*1.7+k.slot)*0.15;k.fly=(k.fly||1.5)+(fl-(k.fly||1.5))*Math.min(1,rdt*3.5);drawUnitInst(unitLook(k).rig,k,t,false)}
-  for(const c of corpses)drawUnitInst(c.kind,c,t,true);drawMines();
+  for(const c of corpses)if(!cullXZ(c.x/TILE,c.y/TILE))drawUnitInst(c.kind,c,t,true);drawMines();{const bl=(performance.now()%1200)<180;mineLED.material.opacity=bl?1:0.12;mineBeepT-=rdt;if(bl&&mineBeepT<=0&&mineLED.count){mineBeepT=2.4;let near=false;for(let dy=-8;dy<=8&&!near;dy++)for(let dx=-8;dx<=8;dx++){const j=Math.round(cam.tx)+dx+(Math.round(cam.tz)+dy)*GW;if(j>=0&&j<GW*GH&&MINEB[j]){near=true;break}}if(near&&cam.D<40)AU.beep()}}
   for(const k in rigs){const R=rigs[k];for(const m of R.meshes){m.count=R.n;m.visible=R.n>0;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}
   // projectiles
   let na=0,nb=0,ng=0;for(const p of projs){if(p.k==='intc')continue;if(p.k==='strike'){const g=strikePos(p);if(!g||ng>=200)continue;const g2=strikePos({...p,time:Math.min(p.dur,p.time+0.05)})||g;const X=g.x/TILE,Z=g.y/TILE,Y=heightAt(X,Z)+g.h;_v.set(g2.x/TILE-X,heightAt(g2.x/TILE,g2.y/TILE)+g2.h-Y,g2.y/TILE-Z).normalize();_q.setFromUnitVectors(XA,_v);const sc=p.st==='roc'?1.2:2.4;_s.set(sc,sc,sc);_M.compose(_av.set(X,Y,Z),_q,_s);arrowGlow.setMatrixAt(ng++,_M);if(na<1400)arrowMesh.setMatrixAt(na++,_M);continue}
@@ -2530,6 +2544,7 @@ const AU={ctx:null,on:true,int:0,boss:false,last:{},
   noiseHit(t,type,freq,peak,dur){const c=this.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=this.noise;f.type=type;f.frequency.value=freq;s.connect(f);f.connect(g);g.connect(this.sfx);this.env(g,t,0.003,peak,0,dur);s.start(t,Math.random()*0.5);s.stop(t+dur+0.1)},
   arrow(){if(!this.ok('a',0.12))return;this.noiseHit(this.ctx.currentTime,'highpass',3000,0.12,0.07)},
   crack(t,f,pk,d){const c=this.ctx,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();s.buffer=this.noise;fl.type='bandpass';fl.frequency.value=f;fl.Q.value=0.9;s.connect(fl);fl.connect(g);g.connect(this.sfx);this.env(g,t,0.001,pk,0,d);s.start(t,Math.random()*0.5);s.stop(t+d+0.05);return g},
+  beep(){if(!this.ok('bp',1))return;const c=this.ctx,t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.value=1900;o.connect(g);g.connect(this.sfx);this.env(g,t,0.002,0.025,0.04,0.03);o.start(t);o.stop(t+0.1)},
   mg(){if(!this.ok('mg',0.22))return;const t=this.ctx.currentTime;for(let i=0;i<4;i++)this.crack(t+i*0.065,900+Math.random()*500,0.16,0.06)},
   rifle(){if(!this.ok('rf',0.09))return;const t=this.ctx.currentTime;this.crack(t,1400+Math.random()*900,0.07+Math.random()*0.05,0.05)},
   snipe(){if(!this.ok('sn',0.3))return;const t=this.ctx.currentTime;const g=this.crack(t,2600,0.32,0.09);g.connect(this.dl);this.crack(t+0.01,420,0.25,0.3)},
@@ -2565,9 +2580,9 @@ $('bStart').onclick=()=>{if(readSave()&&!confirmNew())return;beginGame()};
 {const auto=localStorage.getItem('b4_auto');if(auto){localStorage.removeItem('b4_auto');if(auto==='new')startNow();else if(auto==='cont'){const d=readSave();if(d)continueGame(d)}}}
 
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!paused&&!gameOver)setPaused(true)});
-let last=performance.now(),fpsA=60,qT=0,qLvl=0;
+let last=performance.now(),fpsA=60,qT=0;qLvl=0;
 function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;fpsA=lerp(fpsA,1/Math.max(dt,0.001),0.05);
-  if(started&&!document.hidden){qT+=dt;if(qT>4&&fpsA<38&&qLvl<2){qLvl++;qT=0;renderer.setPixelRatio(qLvl===1?Math.min(1.5,DPR):1);renderer.setSize(W,H,false);if(qLvl===2){sun.shadow.mapSize.set(1024,1024);sun.shadow.map&&sun.shadow.map.dispose();sun.shadow.map=null}}}
+  if(started&&!document.hidden){qT+=dt;if(qT>4&&fpsA<38&&qLvl<2){qLvl++;qT=0;renderer.setPixelRatio(qLvl===1?Math.min(1.5,DPR):1);renderer.setSize(W,H,false);if(qLvl===2){sun.shadow.mapSize.set(1024,1024);sun.shadow.map&&sun.shadow.map.dispose();sun.shadow.map=null;for(const k in rigs)if(/_(rifle|sniper|medic)/.test(k))for(const m of rigs[k].meshes)m.castShadow=false}}}
   const run=started&&!paused&&!gameOver&&!introOpen;if(run){if(speed>=1)for(let i=0;i<speed;i++)update(dt);else if(speed>0)update(dt*speed)}
   frameDt=dt;inputTick(dt);applyCam(dt);if(FPV.on)fpvCam(dt);renderWorld(run?dt*speed:(started?0:dt));renderer.render(scene,camera);drawOverlay();renderProd();if(bans)renderBans();hud(dt);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
