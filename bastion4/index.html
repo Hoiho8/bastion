@@ -666,7 +666,7 @@ const vetOf=b=>b.vet||0,vetCD=b=>vetOf(b)>=3?1.15:1;
 function checkVet(b){const th=VETK[b.type];if(!th||!b.st)return;let r=0;for(const t of th)if(b.st.kills>=t)r++;if(r>(b.vet||0)){b.vet=r;const c=VETC[r];texts.push({X:b.X,Y:b.Y+b.barH+0.5,Z:b.Z,s:`🔥 VETERAN ${VETN[r]}`,life:2,c,big:1});
   fx(b.X,b.Y+b.top,b.Z,18+r*6,c,2.4,0.14+r*0.03,0.9,-1.5,1,1.4);AU.levelUp(Math.min(3,r));if(r===5)showBanner('LEGENDARY',`${BT[b.type].name} #${b.st.n} burns with the purple flame.`)}}
 const mulOf=b=>MUL[b.lvl-1],hpMulOf=b=>HPM[b.lvl-1],rangeOf=b=>(BT[b.type].range||0)*RNGN()*RNG[b.lvl-1]*((b.vet||0)>=2?1.05:1),squadSize=b=>b.type==='helipad'?(b.lvl>=3?3:2):SQ[b.lvl-1],zoneR=b=>ZONE[b.lvl-1]*(b.type==='helipad'?1.25:1),respawnTime=b=>(BT[b.type].respawn||5)/[1,1.4,1.9][b.lvl-1];
-function upCost(b){const c=BT[b.type].cost;if(b.lvl===1)return{grain:Math.round((c.grain+60)*3),wool:Math.round((c.wool+40)*3),gold:Math.round((c.gold+40)*2)};return{grain:Math.round((c.grain+60)*9),wool:Math.round((c.wool+40)*9),gold:Math.round((c.gold+60)*8)}}
+function upCost(b){const c=BT[b.type].cost;if(b.type==='wall')return b.lvl===1?{grain:40,wool:20,gold:5}:{grain:90,wool:50,gold:15};if(b.lvl===1)return{grain:Math.round((c.grain+60)*3),wool:Math.round((c.wool+40)*3),gold:Math.round((c.gold+40)*2)};return{grain:Math.round((c.grain+60)*9),wool:Math.round((c.wool+40)*9),gold:Math.round((c.gold+60)*8)}}
 function repCost(b){const m=b.maxhp-b.hp,k=b.type==='wall'?0.12:0.4;return{grain:Math.ceil(m*k),wool:Math.ceil(m*k*0.25),gold:0}}
 const costSum=c=>c.grain+c.wool*1.5+c.gold*3;
 const AGEC=[null,null,{grain:450,wool:300,gold:150},{grain:1500,wool:1100,gold:800}],AGEN=['','Military Police Action','Special Military Operation','Full-Scale War'],AGEREQ={cannon:2,barracks:2,howitzer:2,ew:2,himars:3,patriot:3,helipad:3},POPC=[0,20,45,1e9];
@@ -809,10 +809,9 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     if(n.ring){// part of a 4x4 loop: follow the circle through this square
       const[cx,cz,r]=n.ring,runs=[];let cur=[];const B=0.56;for(let k=0;k<=240;k++){const t=k/240*Math.PI*2,x=cx+Math.cos(t)*r,z=cz+Math.sin(t)*r;if(Math.abs(x)<=B&&Math.abs(z)<=B)cur.push([x,z]);else if(cur.length){runs.push(cur);cur=[]}}if(cur.length)runs.push(cur);
       if(runs.length>1&&Math.hypot(runs[0][0][0]-runs[runs.length-1].at(-1)[0],runs[0][0][1]-runs[runs.length-1].at(-1)[1])<0.1){const last=runs.pop();runs[0]=last.concat(runs[0])}for(const r2 of runs)if(r2.length>1)path(r2)}
-    else{const arms=[[0,-1,'n'],[1,0,'e'],[0,1,'s'],[-1,0,'w']].filter(a=>n[a[2]]);
-      if(arms.length===2&&arms[0][0]!==-arms[1][0]&&arms[0][1]!==-arms[1][1]){// rounded elbow: quarter circle between the two edge midpoints
-        const A=[arms[0][0]*0.5,arms[0][1]*0.5],Bm=[arms[1][0]*0.5,arms[1][1]*0.5],C=[A[0]+Bm[0],A[1]+Bm[1]],a0=Math.atan2(A[1]-C[1],A[0]-C[0]);let a1=Math.atan2(Bm[1]-C[1],Bm[0]-C[0]);let da=a1-a0;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
-        const pts=[];for(let k=0;k<=8;k++){const t=a0+da*k/8;pts.push([C[0]+Math.cos(t)*0.5,C[1]+Math.sin(t)*0.5])}path(pts)}
+    else{const arms=[[0,-1,'n'],[1,0,'e'],[0,1,'s'],[-1,0,'w'],[1,-1,'ne'],[1,1,'se'],[-1,1,'sw'],[-1,-1,'nw']].filter(a=>n[a[2]]);
+      if(arms.length===2&&!(arms[0][0]===-arms[1][0]&&arms[0][1]===-arms[1][1])){// smooth bend between the two exits
+        const A=[arms[0][0]*0.52,arms[0][1]*0.52],Bm=[arms[1][0]*0.52,arms[1][1]*0.52],pts=[];for(let k=0;k<=10;k++){const t=k/10,u=1-t;pts.push([u*u*A[0]+t*t*Bm[0],u*u*A[1]+t*t*Bm[1]])}path(pts)}
       else if(arms.length){for(const[dx,dz]of arms)path([[0,0],[dx*0.52,dz*0.52]]);if(arms.length>=3)parts.push(P(cyl(w*0.62,w*0.62,0.03,10),'#33281b',0,0.012,0))}
       else path([[-0.36,0],[0.36,0]])}
     if(L===3&&!n.ring&&(kk%2===0))metal.push(P(cone(0.11,0.2,4),'#9a978d',0.36,0.1,0.36,0,Math.PI/4),P(cone(0.11,0.2,4),'#9a978d',-0.36,0.1,-0.36,0,Math.PI/4))}
@@ -1099,7 +1098,7 @@ const discTex=(()=>{const c=document.createElement('canvas');c.width=c.height=12
 const discMat=new THREE.MeshBasicMaterial({map:discTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true});
 let oldG=[],waves=[];
 const bAt=(x,y)=>{if(x<0||y<0||x>=GW||y>=GH)return null;const id=occ[x+y*GW];return id?buildings.find(b=>b.id===id):null};
-function wallNb(b){const w=(x,y)=>{if(x<0||y<0||x>=GW||y>=GH)return false;const o=bAt(x,y);return!!(o&&o.type==='wall')};const r={n:w(b.tx,b.ty-1),e:w(b.tx+1,b.ty),s:w(b.tx,b.ty+1),w:w(b.tx-1,b.ty)};
+function wallNb(b){const w=(x,y)=>{if(x<0||y<0||x>=GW||y>=GH)return false;const o=bAt(x,y);return!!(o&&o.type==='wall')};const r={n:w(b.tx,b.ty-1),e:w(b.tx+1,b.ty),s:w(b.tx,b.ty+1),w:w(b.tx-1,b.ty)};for(const[k,dx,dy]of[['ne',1,-1],['se',1,1],['sw',-1,1],['nw',-1,-1]])r[k]=w(b.tx+dx,b.ty+dy)&&!w(b.tx+dx,b.ty)&&!w(b.tx,b.ty+dy);
   for(let oy=b.ty-3;oy<=b.ty&&!r.ring;oy++)for(let ox=b.tx-3;ox<=b.tx;ox++){const onP=(b.tx===ox||b.tx===ox+3||b.ty===oy||b.ty===oy+3);if(!onP)continue;let ok=true;for(let k=0;k<4&&ok;k++)if(!w(ox+k,oy)||!w(ox+k,oy+3)||!w(ox,oy+k)||!w(ox+3,oy+k))ok=false;if(ok){r.ring=[ox+2-(b.tx+0.5),oy+2-(b.ty+0.5),1.55];break}}return r}
 function mergeNb(b){const L=b.red?rbuildings:buildings,out={n:false,e:false,s:false,w:false};
   for(const o of L){if(o===b||o.type!==b.type)continue;
@@ -1383,7 +1382,7 @@ function renderWeather(rdt){const n=WX.night,{g,dw}=dayPhase();WX.golden=g;
   _c1.copy(SUND).lerp(SUNG,sg).lerp(SUNN,n);sun.color.copy(_c1);sun.intensity=(2.4+1.5*g)*(1-0.66*n)*(1-0.45*WX.rain)*(1-0.3*WX.fog);
   if(HEMI){_c2.copy(HEMD).lerp(HEMG,sg*0.8).lerp(HEMN,n);HEMI.color.copy(_c2);HEMI.groundColor.copy(GRD).lerp(GRG,sg*0.6);HEMI.intensity=1.25*(1-0.08*g)*(1-0.45*n)*(1-0.25*WX.rain)}
   if(FS.i>0.05&&WX.night>0.25){const dx=cam.tx-FS.X,dz=cam.tz-FS.Z,dl=Math.hypot(dx,dz)||1;sun.position.set(cam.tx-dx/dl*22,FS.Y+7,cam.tz-dz/dl*22);sun.target.position.set(cam.tx,0,cam.tz);sun.target.updateMatrixWorld();sun.color.lerp(FS.col,Math.min(1,FS.i*0.6));sun.intensity+=FS.i*1.6*WX.night}FS.i*=Math.pow(0.004,rdt);
-  renderGlows(rdt);
+  renderGlows(rdt>0?rdt:(started?frameDt:0));
   for(const l of FLASHL)if(l.intensity>0){l.intensity*=Math.pow(0.02,rdt);if(l.intensity<0.05)l.intensity=0}
   let nr=0;if(WX.rain>0.05&&!FPV.on){const k=Math.round(500*WX.rain);for(let i=0;i<k;i++){const d=RAIN[i];d.y-=rdt*16;if(d.y<0){d.y=12;d.x=Math.random()*40-20;d.z=Math.random()*40-20}_M.makeTranslation(cam.tx+d.x,d.y,cam.tz+d.z);rainMesh.setMatrixAt(nr++,_M)}}rainMesh.count=nr;rainMesh.instanceMatrix.needsUpdate=true;
   for(const m of FOGP){const u=m.userData;u.ox+=rdt*u.s;if(u.ox>18)u.ox=-18;m.position.set(cam.tx+u.ox,0.5,cam.tz+u.oz);m.material.opacity=WX.fog*0.32}}
@@ -2181,7 +2180,7 @@ function renderWorld(rdt){const t=time;
       _M.makeTranslation(X,Y,Z);ballMesh.setMatrixAt(nb++,_M);if(Math.random()<0.4)fx(X,Y,Z,1,'#8a8580',0.1,0.07,0.5,-0.05,0,0.1)}}
   arrowMesh.count=na;ballMesh.count=nb;arrowGlow.count=ng;arrowGlow.instanceMatrix.needsUpdate=true;arrowMesh.instanceMatrix.needsUpdate=ballMesh.instanceMatrix.needsUpdate=true;
   // particles
-  let ns=0,nf=0,nd=0;for(const p of parts){p.life-=rdt;p.x+=p.vx*rdt;p.y+=p.vy*rdt;p.z+=p.vz*rdt;p.vy-=p.g*rdt;if(p.k===0){p.vx*=0.98;p.vz*=0.98}
+  const prd=rdt>0?rdt:(started?frameDt:0);let ns=0,nf=0,nd=0;for(const p of parts){p.life-=prd;p.x+=p.vx*prd;p.y+=p.vy*prd;p.z+=p.vz*prd;p.vy-=p.g*prd;if(p.k===0){p.vx*=0.98;p.vz*=0.98}
     if(p.k===2){const gy=heightAt(p.x,p.z);if(p.y<gy){p.y=gy;p.vy*=-0.3;p.vx*=0.6;p.vz*=0.6}}
     const f=Math.max(0,p.life/p.max);let sc=p.k===0?p.s*(1.6-f*0.6)*Math.sqrt(f):p.k===1?p.s*f:p.s*Math.min(1,f*3);
     _q.setFromEuler(_e.set(p.x*7,p.z*5,p.life*2));_v.set(p.x,p.y,p.z);_s.set(sc,sc,sc);_M.compose(_v,_q,_s);
