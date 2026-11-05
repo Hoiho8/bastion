@@ -1262,16 +1262,22 @@ function redStr(list){let H=0,D=0;for(const e of list){H+=e.hp;D+=rUnitDps(e)}re
 function blueStrNear(x,y,R,towers=true){let H=0,D=0;for(const t of troops)if(dst(t.x,t.y,x,y)<R){const U=UT[t.type];H+=t.hp;D+=U.bldOnly?0.5:t.dmg/U.rate}
   for(const k of knights)if(dst(k.x,k.y,x,y)<R){H+=k.hp/(k.armor||1);D+=k.dmg/KN.rate}
   if(towers)for(const b of buildings){if(b.type!=='archer'&&b.type!=='cannon')continue;if(dst(b.x,b.y,x,y)<rangeOf(b)+R*0.35){H+=b.hp*0.7;D+=towerAtk(b)*3}}return H*D}
+function eagleResp(x,y){let H=0,D=0;for(const k of knights){if(dst(k.b.x,k.b.y,x,y)<zoneR(k.b)+120){H+=k.hp/(k.armor||1);D+=k.dmg/KN.rate}}return{H,D}}
 function rSiegeEst(list,tb){let bd=0,H=0;for(const e of list){const U=UT[e.type],dps=(e.udmg||U.dmg)/U.rate;bd+=U.siege?dps*(e.type==='catapult'?1.25:1):U.ranged?dps*0.35:dps*0.4;H+=e.hp}
   const t=tb.hp/Math.max(1,bd)+4;let tdps=0;for(const b of buildings)if((b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,tb.x,tb.y)<rangeOf(b)+tb.s*TILE*0.5+20)tdps+=towerAtk(b)*3;
   for(const o of troops)if(dst(o.x,o.y,tb.x,tb.y)<350)tdps+=o.dmg/UT[o.type].rate;for(const k of knights)if(dst(k.x,k.y,tb.x,tb.y)<450)tdps+=k.dmg/KN.rate;return{t,loss:tdps*t/Math.max(1,H)}}
 function centroid(L){let x=0,y=0;for(const e of L){x+=e.x;y+=e.y}return L.length?[x/L.length,y/L.length]:[0,0]}
+function rRoute(tb){const R=RAI;if(!danger||diff<2)computeDanger();const f=costFlow(id=>id===tb.id,danger,R.fieldBuf||(R.fieldBuf=new Int32Array(GW*GH)));
+  const[rx,ry]=R.rally||[R.cx,R.cy];let i=tileAt(rx,ry);if(i<0||f[i]>=1e9)return{f:null,path:[],risk:0};const path=[i];let risk=0;
+  for(let n=0;n<400;n++){const x=i%GW,y=(i/GW)|0;let bi=-1,bv=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<bv){bv=f[j];bi=j}}if(bi<0||bv===0)break;i=bi;path.push(i);risk+=danger[i]}
+  return{f,path,risk}}
+function routeStage(route,tb){if(!route.path.length)return stagePoint(tb);let k=route.path.findIndex(i=>{if(danger[i]>0)return true;const x=(i%GW)*TILE+16,y=((i/GW)|0)*TILE+16;for(const kk of knights)if(dst(kk.b.x,kk.b.y,x,y)<zoneR(kk.b)+40)return true;return false});if(k<0)k=route.path.length-1;k=Math.max(0,k-4);const i=route.path[k];return snapWalk((i%GW)*TILE+16,((i/GW)|0)*TILE+16)}
 function stagePoint(tb){const R=RAI;let maxR=0;for(const b of buildings)if((b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,tb.x,tb.y)<rangeOf(b)+TILE*3)maxR=Math.max(maxR,rangeOf(b)-dst(b.x,b.y,tb.x,tb.y)+tb.s*TILE*0.5);
   const dx=R.cx-tb.x,dy=R.cy-tb.y,dl=Math.hypot(dx,dy)||1,d=Math.max(150,maxR+110);return snapWalk(tb.x+dx/dl*d,tb.y+dy/dl*d)}
 function rChooseTarget(list,raid){const R=RAI,rs=redStr(list),siege=list.filter(e=>UT[e.type].siege).length;let best=null,bs=-1e9;
   let bx=0,by=0,bn=0;for(const t of troops){bx+=t.x;by+=t.y;bn++}
   for(const b of buildings){if(b.type==='wall')continue;const T=BT[b.type];let val=T.kind==='eco'?(b.type==='mine'?4:3)*b.lvl:isArmy(b.type)?4.5:b.type==='barracks'?3.5:(siege?3.2:1.2);if(raid&&T.kind!=='eco')continue;
-    const def=blueStrNear(b.x,b.y,330),est=rSiegeEst(list,b);let sc=val*(rs/(rs+def*1.3+1))/(1+est.loss*2.5)-dst(b.x,b.y,R.cx,R.cy)/TILE/45;if(raid&&bn&&dst(b.x,b.y,bx/bn,by/bn)<520)sc-=4;if(sc>bs){bs=sc;best=b}}return best}
+    const def=blueStrNear(b.x,b.y,330),est=rSiegeEst(list,b);let sc=val*(rs/(rs+def*1.3+1))/(1+est.loss*2.5)-dst(b.x,b.y,R.cx,R.cy)/TILE/45;if(RFc.smart&&!raid&&best&&sc>bs-1.5){const rt=rRoute(b);sc-=rt.risk/(30+list.length*2)}if(raid&&bn&&dst(b.x,b.y,bx/bn,by/bn)<520)sc-=4;if(sc>bs){bs=sc;best=b}}return best}
 function rNextTarget(list){const c=centroid(list),siege=list.some(e=>UT[e.type].siege);let best=null,bs=-1e9;
   for(const b of buildings){if(b.type==='wall')continue;const d=dst(b.x,b.y,c[0],c[1]);if(d>520)continue;const tower=b.type==='archer'||b.type==='cannon';const sc=-d/TILE+(tower?(siege?6:3):0)+(BT[b.type].kind==='eco'?2:0);if(sc>bs){bs=sc;best=b}}return best||(RFc.smart?rChooseTarget(list):null)}
 function counterMul(at,tg){const mounted=tg.eagle||tg.type==='cav';if(at==='spear'&&mounted)return 1.8;if(at==='cav'&&tg.type&&UT[tg.type]&&(UT[tg.type].ranged||UT[tg.type].siege))return 1.5;return 1}
@@ -1312,7 +1318,7 @@ function updRedUnit(e,dt){const U=UT[e.type],R=RAI,F=RFc||(RFc=RF());
   // no target: follow orders
   let gx,gy,sp=spd;const A=R.army;
   if(role==='army'&&A.state==='stage'&&A.stage){const[ox,oy]=slotOff(e.slot||0);gx=A.stage[0]+ox;gy=A.stage[1]+oy}
-  else if(role==='army'&&A.state==='attack'&&A.tb){gx=A.tb.x;gy=A.tb.y;const arm=A.list||[];if(arm.length>2){const c=centroid(arm),dg=dst(e.x,e.y,gx,gy),dc=dst(c[0],c[1],gx,gy);if(dg<dc-140)sp*=0.35}}
+  else if(role==='army'&&A.state==='attack'&&A.tb){gx=A.tb.x;gy=A.tb.y;const f=A.route&&A.route.f;const i=tileAt(e.x,e.y);if(f&&i>=0&&f[i]<1e9&&f[i]>0){const x=i%GW,y=(i/GW)|0;let bi=-1,bv=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<bv){bv=f[j];bi=j}}if(bi>=0){let j=bi;for(let s2=0;s2<2;s2++){const x2=j%GW,y2=(j/GW)|0;let b2=-1,v2=f[j];for(const[dx,dy]of D8){const nx=x2+dx,ny=y2+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const q=nx+ny*GW;if(f[q]<v2){v2=f[q];b2=q}}if(b2<0)break;j=b2}gx=(j%GW)*TILE+16;gy=((j/GW)|0)*TILE+16}}const arm=A.list||[];if(arm.length>2){const c=centroid(arm),dg=dst(e.x,e.y,gx,gy),dc=dst(c[0],c[1],gx,gy);if(dg<dc-140)sp*=0.35}}
   else if(role==='raid'&&R.raid&&R.raid.tb){gx=R.raid.tb.x;gy=R.raid.tb.y}
   else{const a=(e.hslot||0)*Math.PI*2,rr=24+(e.hslot||0)*80;gx=R.rally[0]+Math.cos(a)*rr;gy=R.rally[1]+Math.sin(a)*rr;sp*=0.8}
   if(dst(gx,gy,e.x,e.y)>8){e.wantMove=true;knightMove(e,gx,gy,sp,dt)}else{e.vx=0;e.vy=0}}
@@ -1320,20 +1326,25 @@ function nearestBlueMelee(x,y,R){let b=null,bd=R;for(const t of troops){const U=
 function rWant(){const R=RAI,n=k=>rbuildings.filter(b=>b.type===k).length,md=DEPOS.filter(d=>d.red).length,list=[];const want=(k,c)=>{if(n(k)<c&&!list.includes(k))list.push(k)};
   const w=n('wheat'),sh=n('sheep'),mi=n('mine'),eco=w+sh+mi,tow=n('archer')+n('cannon');
   if(R.threat>0&&tow<2)want('archer',tow+1);
+  if(R.res.grain>1200&&R.res.wool>450&&n('hall')<6)want('hall',n('hall')+1);if(R.res.grain>1500&&R.res.wool>700&&R.age>=2&&n('workshop')<3)want('workshop',n('workshop')+1);
+  if(R.bottle==='gold'&&mi<md)want('mine',mi+1);if(R.bottle==='wool'&&sh<14)want('sheep',sh+1);
   if(R.res.grain>450&&R.res.wool<150&&sh<14)want("sheep",sh+1);if(R.res.grain>450&&R.res.gold<60&&mi<md)want('mine',mi+1);
   want('wheat',6);want('sheep',2);want('wheat',7);if(R.t>100||R.threat>0||n('mine')>0)want('hall',1);want('mine',1);want('wheat',6);want('sheep',3);want('mine',1);want('archer',1);
-  if(R.needSiege||eco>=12)want('workshop',1);
+  if(R.res.grain>900&&R.res.wool>500&&n('hall')<5)want('hall',n('hall')+1);if(R.age>=2&&R.res.gold>300&&n('workshop')<2)want('workshop',n('workshop')+1);if(eco>=12)want('hall',2);if(eco>=18)want('hall',3);if(R.needSiege||eco>=12)want('workshop',1);
   // steady growth at roughly 2 wheat : 1 sheep : 1 mine
-  if(mi<md&&mi*2<w)want('mine',mi+1);if(sh*2<w+2)want('sheep',sh+1);if(w<12)want('wheat',w+1);if(sh<7)want('sheep',sh+1);if(mi<md)want('mine',mi+1);
-  want('archer',Math.min(5,1+Math.floor(eco/6)));if(R.age>=2)want('cannon',Math.min(3,Math.floor((eco-8)/5)));if(eco>=14)want('hall',2);if(eco>=22)want('hall',3);if(eco>=20&&R.age>=2)want('workshop',2);return list}
-function rThreat(){const R=RAI;const[cx,cz]=rCore();R.cx=cx*TILE;R.cy=cz*TILE;let x=0,y=0,n=0;const L=[];for(const G of[troops,knights])for(const o of G){let near=dst(o.x,o.y,R.cx,R.cy)<560;if(!near)for(const b of rbuildings)if(edgeDist(b,o.x,o.y)<230){near=true;break}if(near){L.push(o);x+=o.x;y+=o.y;n++}}
+  if(mi<md&&mi*2<w)want('mine',mi+1);if(sh*2<w+2)want('sheep',sh+1);if(w<16)want('wheat',w+1);if(sh<12)want('sheep',sh+1);if(mi<md)want('mine',mi+1);
+  want('archer',Math.min(5,1+Math.floor(eco/6)));if(R.age>=2)want('cannon',Math.min(3,Math.floor((eco-8)/5)));if(eco>=12)want('hall',2);if(eco>=18)want('hall',3);if(eco>=26&&diff>=2)want('hall',4);if(eco>=18&&R.age>=2)want('workshop',2);return list}
+function rThreat(){const R=RAI;const[cx,cz]=rCore();R.cx=cx*TILE;R.cy=cz*TILE;let x=0,y=0,n=0;const L=[];for(const G of[troops,knights])for(const o of G){if(o.eagle&&dst(o.x,o.y,o.b.x,o.b.y)<zoneR(o.b)+40)continue;let near=dst(o.x,o.y,R.cx,R.cy)<520;if(!near)for(const b of rbuildings)if(edgeDist(b,o.x,o.y)<160){near=true;break}if(near){L.push(o);x+=o.x;y+=o.y;n++}}
   R.threat=n?blueStrNear(x/n,y/n,400,false):0;R.threatPos=n?[x/n,y/n]:null;return L}
 function rEconomy(threat){const R=RAI,F=RFc;
   // age up as soon as the economy can carry it
-  let saveAge=null;if(!R.ageT&&R.age<3){const eco=rbuildings.filter(b=>BT[b.type].kind==='eco').length,c=AGEC[R.age+1];if(eco>=(R.age===1?8:14)&&rbuildings.filter(b=>b.type==='mine').length>=R.age&&rbuildings.some(b=>isArmy(b.type))){if(rAfford(c)&&!threat){rPay(c);R.ageT={to:R.age+1,t:0,dur:AGET[R.age+1]}}else if(!threat)saveAge=c}}R.saving=saveAge;
+  let saveAge=null;if(!R.ageT&&R.age<3){const eco=rbuildings.filter(b=>BT[b.type].kind==='eco').length,c=AGEC[R.age+1];if(eco>=(R.age===1?8:14)&&rbuildings.filter(b=>b.type==='mine').length>=R.age&&rbuildings.some(b=>isArmy(b.type))){if(rAfford(c)&&!threat){rPay(c);R.ageT={to:R.age+1,t:0,dur:AGET[R.age+1]}}else if(!threat){const inc={grain:0,wool:0,gold:0};for(const b of rbuildings){const P2=BT[b.type].prod;if(P2)for(const k in P2)inc[k]+=P2[k]*MUL[b.lvl-1]*F.eco}let tt=0,bott=null;for(const k in inc){const w=(c[k]-R.res[k])/Math.max(0.01,inc[k]);if(w>tt){tt=w;bott=k}}R.bottle=bott;if(tt<80)saveAge=c}}}R.saving=saveAge;R.saveT=saveAge?(R.saveT||0)+RFc.tick:0;
+  if(F.upg&&!threat){const ab=rbuildings.filter(b=>isArmy(b.type)&&b.lvl<R.age).sort((a,b)=>a.lvl-b.lvl)[0];if(ab){const c=upCost(ab),eco=rbuildings.filter(o=>BT[o.type].kind==='eco').length;if(eco>=10&&rAfford(c)){rPay(c);ab.lvl++;ab.maxhp=BT[ab.type].hp*HPM[ab.lvl-1];ab.hp=ab.maxhp;makeRVisual(ab,true);for(const e of enemies)if(e.red1&&e.srcB===ab){}}}}
+  // grow income through upgrades once ages allow (sheep and mines first: wool and gold are the bottlenecks)
+  if(F.upg&&!threat&&R.age>=2){const ord={sheep:0,mine:1,wheat:2};const eb=(R.saving||rbuildings.filter(b=>b.type==='hall').length<Math.min(4,1+Math.floor(rbuildings.filter(o=>BT[o.type].kind==='eco').length/8)))?null:rbuildings.filter(b=>BT[b.type].kind==='eco'&&b.lvl<R.age).sort((a,b)=>a.lvl-b.lvl||ord[a.type]-ord[b.type])[0];if(eb&&eb.length!==undefined)0;if(eb){const c=upCost(eb);if(R.res.grain>=c.grain+150&&R.res.wool>=c.wool+60&&R.res.gold>=c.gold+40){rPay(c);eb.lvl++;eb.maxhp=BT[eb.type].hp*HPM[eb.lvl-1];eb.hp=eb.maxhp;makeRVisual(eb,true)}}}
   const wl=rWant();R.next=null;
   for(const k of wl){if((AGEREQ[k]||1)>R.age)continue;const c=rCost(k),eco=BT[k].kind==='eco';if(threat&&eco&&R.res.grain<c.grain+120)break;
-    if(saveAge&&!eco&&!(R.res.grain>=c.grain+saveAge.grain&&R.res.wool>=c.wool+saveAge.wool))continue;
+    if(saveAge&&!(R.res.grain-c.grain>=saveAge.grain*0.85&&R.res.wool-c.wool>=saveAge.wool*0.85&&R.res.gold-c.gold>=saveAge.gold*0.85)&&!(eco&&k==='sheep'&&R.res.wool<saveAge.wool*0.5)&&!(isArmy(k)&&R.res.grain-c.grain>=saveAge.grain*0.5&&R.res.wool-c.wool>=saveAge.wool*0.4))continue;
     if(!rAfford(c)){if(!R.next){R.next=c;R.nextEco=eco}if(eco)break;continue}const sp=rSpot(k);if(!sp)continue;rPay(c);addRB(k,sp[0],sp[1]);break}
   // emergency tower towards an attack (Lord+)
   if(threat&&F.smart&&R.threatPos&&rAfford(rCost('archer'))){const near=rbuildings.some(b=>(b.type==='archer'||b.type==='cannon')&&dst(b.x,b.y,R.threatPos[0],R.threatPos[1])<rangeOf(b)+40);if(!near&&Math.random()<0.5){const sp=rSpot('archer');if(sp){rPay(rCost('archer'));addRB('archer',sp[0],sp[1])}}}
@@ -1345,28 +1356,31 @@ function rMix(){const R=RAI,F=RFc;R.mixT-=RFc.tick;if(R.mixT>0)return;R.mixT=10;
   if(!F.counter){R.mix={spear:1,bowman:0.6,shield:a2?0.4:0,cav:a2?0.35:0,ram:1,catapult:a2?0.8:0};return}
   let cav=knights.length,bow=0,inf=0,sie=0;for(const t of troops){if(t.type==='cav')cav++;else if(t.type==='bowman')bow++;else if(t.type==='spear'||t.type==='shield')inf++;else sie++}
   let tow=0;for(const b of buildings)if(b.type==='archer'||b.type==='cannon')tow+=b.lvl;const walls=buildings.filter(b=>b.type==='wall').length;
-  const ns=R.needSiege?2.5:1;R.mix={spear:0.8+cav*0.35,bowman:0.5+inf*0.18+sie*0.25,shield:a2?0.3+bow*0.3+tow*0.06:0,cav:a2?0.3+bow*0.25+sie*0.35:0,ram:(0.5+tow*0.06+walls*0.03)*ns,catapult:a2?(0.6+tow*0.15+walls*0.02)*ns:0}}
+  const ns=R.needSiege?2.5:1;const eg=knights.reduce((a,k)=>a+k.tier,0);R.mix={spear:0.8+cav*0.35+eg*0.25,bowman:0.5+inf*0.18+sie*0.25,shield:a2?0.3+bow*0.3+tow*0.06:0,cav:a2?0.3+bow*0.25+sie*0.35:0,ram:(0.5+tow*0.06+walls*0.03)*ns,catapult:a2?(0.6+tow*0.15+walls*0.02)*ns:0}}
 function rTrain(threat){const R=RAI,F=RFc;const nx=R.next;
   for(const b of rbuildings){if(!isArmy(b.type)||b.q.length>=F.q)continue;const opts=RUNIT[b.type].filter(k=>(UT[k].age||1)<=R.age);let tot=0;for(const k of opts)tot+=R.mix[k]||0.01;let r=Math.random()*tot,pick=opts[0];for(const k of opts){r-=R.mix[k]||0.01;if(r<=0){pick=k;break}}
     if(R.res.wool<60&&R.res.grain>300&&b.type==='hall')pick='spear';const c=UT[pick].cost;if(!rAfford(c))continue;
     // balance: grow the economy, but never fall behind on soldiers
-    if(!threat&&R.t<(diff>=2?140:110))continue;const desire=(diff>=3?4:3)+R.t/(diff>=3?28:36),behind=enemies.length<desire,ecoN=rbuildings.filter(o=>BT[o.type].kind==='eco').length,ecoLow=ecoN<Math.min(20,6+R.t/45);const k2=enemies.length<3?0:ecoLow&&R.nextEco?0.9:behind?0.35:(R.nextEco?1:0.5);if(!threat&&R.saving&&enemies.length>=desire*0.7&&!(R.res.wool-c.wool>=R.saving.wool&&R.res.grain-c.grain>=R.saving.grain*0.6))continue;if(!threat&&nx&&!(R.res.grain-c.grain>=nx.grain*k2&&R.res.wool-c.wool>=nx.wool*k2&&R.res.gold-c.gold>=nx.gold*k2))continue;rPay(c);b.q.push(pick)}}
-function rLaunch(list,tb,state){const R=RAI,A=R.army;for(const e of list){e.role='army';e.tg=null}A.tb=tb;A.stage=state==='stage'?stagePoint(tb):null;A.state=state;A.t=0;A.n0=list.length;A.list=list;R.attacks=(R.attacks||0)+1;list.forEach((e,i)=>e.slot=i);showBanner('RED ATTACKS',`${list.length} Red soldiers march on your realm.`)}
+    if(!threat&&R.t<(diff>=2?140:110))continue;const desire=(diff>=3?4:3)+R.t/(diff>=3?20:30),behind=enemies.length<desire,ecoN=rbuildings.filter(o=>BT[o.type].kind==='eco').length,ecoLow=ecoN<Math.min(20,6+R.t/45);const k2=enemies.length<3?0:ecoLow&&R.nextEco?0.9:behind?0.35:(R.nextEco?1:0.5);if(enemies.length>=140)continue;if(!threat&&R.saving&&(R.saveT<90||enemies.length>=desire*1.4)&&enemies.length>=desire&&!(R.res.wool-c.wool>=R.saving.wool&&R.res.grain-c.grain>=R.saving.grain*0.6))continue;if(!threat&&nx&&!(R.res.grain-c.grain>=nx.grain*k2&&R.res.wool-c.wool>=nx.wool*k2&&R.res.gold-c.gold>=nx.gold*k2))continue;rPay(c);b.q.push(pick)}}
+function rLaunch(list,tb,state){const R=RAI,A=R.army;for(const e of list){e.role='army';e.tg=null}A.tb=tb;A.route=RFc.smart?rRoute(tb):null;A.routeT=0;A.stage=state==='stage'?(A.route&&A.route.f?routeStage(A.route,tb):stagePoint(tb)):null;A.state=state;A.t=0;A.n0=list.length;A.list=list;R.attacks=(R.attacks||0)+1;list.forEach((e,i)=>e.slot=i);showBanner('RED ATTACKS',`${list.length} Red soldiers march on your realm.`)}
 function rArmy(threatList){const R=RAI,F=RFc,A=R.army;A.t+=F.tick;const home=enemies.filter(e=>(e.role||'home')==='home'),army=enemies.filter(e=>e.role==='army');A.list=army;
   if(A.state==='idle'){if(R.threat>0)return;const minT=[320,230,180,150][diff];if(R.t<minT||home.length<4)return;
     if(!F.smart){const goal=Math.min(30,(5+R.t/50)*[0.7,0.9,1,1][diff]);if(home.length>=goal||R.t>=R.nextAtk){const tb=nearestBuilding(R.cx,R.cy)[0];if(tb){rLaunch(home,tb,F.stage?'stage':'attack');R.nextAtk=R.t+[220,180,150,130][diff]}}return}
     // keep a small guard of ranged units at home if the player has an army
     const guardN=troops.length?Math.min(3,Math.floor(home.length*0.2)):0;const guard=home.filter(e=>e.type==="bowman").slice(0,guardN),go=home.filter(e=>!guard.includes(e));
-    const tb=rChooseTarget(go);if(!tb)return;let need=blueStrNear(tb.x,tb.y,380);let bx=0,by=0,bn=0;for(const t of troops){bx+=t.x;by+=t.y;bn++}if(bn&&dst(bx/bn,by/bn,tb.x,tb.y)<900)need+=blueStrNear(bx/bn,by/bn,300,false)*0.6;
-    const have=redStr(go),mult=diff>=3?1.3:1.6,est=rSiegeEst(go,tb),lossOk=est.loss<(diff>=3?0.45:0.6);R.needSiege=!lossOk;
-    if(go.length>=5&&lossOk&&(have>=need*mult||(go.length>=26&&have>=need*0.8))){rLaunch(go,tb,'stage');A.peak=go.length}return}
-  if(!army.length){A.state='idle';A.tb=null;R.lastAtk=R.t;return}
+    const tb=rChooseTarget(go);if(!tb)return;let need=blueStrNear(tb.x,tb.y,380);{const er=eagleResp(tb.x,tb.y);if(er.H){let H=0,D=0;for(const k of knights)if(dst(k.x,k.y,tb.x,tb.y)<380){H+=k.hp/(k.armor||1);D+=k.dmg/KN.rate}need+= (er.H*er.D)-(H*D)+2*Math.sqrt(need*er.H*er.D)}}let bx=0,by=0,bn=0;for(const t of troops){bx+=t.x;by+=t.y;bn++}if(bn&&dst(bx/bn,by/bn,tb.x,tb.y)<900)need+=blueStrNear(bx/bn,by/bn,300,false)*0.6;
+    const fm=R.failMul||1,have=redStr(go),mult=(diff>=3?1.3:1.6)*fm,est=rSiegeEst(go,tb),lossOk=est.loss<(diff>=3?0.45:0.6);R.needSiege=!lossOk;
+    const bigArmy=go.length>=Math.min(70,Math.round((diff>=3?36:44)*Math.sqrt(fm)))||(go.length>=20&&R.t-(R.lastAtk||0)>(diff>=3?300:420)&&R.t>540);
+    const minN=Math.min(45,Math.round(((diff>=3?8:6)+Math.floor(R.t/75))*Math.sqrt(fm)));if(go.length>=minN&&((lossOk&&(have>=need*mult||(go.length>=26&&have>=need*0.8)))||(bigArmy&&have>=need*0.55)||go.length>=(diff>=3?60:75))){rLaunch(go,tb,'stage');A.peak=go.length;R.lastAtk=R.t}return}
+  if(!army.length){if(A.state==='attack'||A.state==='stage'){R.failMul=Math.min(4,(R.failMul||1)*(A.razed?1.1:1.4))}A.state='idle';A.tb=null;A.razed=0;R.lastAtk=R.t;return}
   if(A.state==='stage'){const near=army.filter(e=>dst(e.x,e.y,A.stage[0],A.stage[1])<150).length;if(near>=army.length*0.8||A.t>(diff>=3?24:32)){A.state='attack';A.t=0;for(const e of army)e.tg=null}return}
-  if(A.state==='attack'){if(!A.tb||!buildings.includes(A.tb)){A.tb=rNextTarget(army);if(!A.tb){A.state='retreat';for(const e of army)e.role='retreat';return}}
+  if(A.state==='attack'){A.routeT=(A.routeT||0)+F.tick;if(A.tb&&RFc.smart&&A.routeT>6){A.route=rRoute(A.tb);A.routeT=0}
+    if(A.tb&&!buildings.includes(A.tb)){A.razed=(A.razed||0)+1;R.failMul=Math.max(1,(R.failMul||1)*0.85)}
+    if(!A.tb||!buildings.includes(A.tb)){A.tb=rNextTarget(army);if(A.tb&&RFc.smart)A.route=rRoute(A.tb);if(!A.tb){A.state='retreat';for(const e of army)e.role='retreat';return}}
     // recall to defend a serious attack on home (Emperor)
     if(F.recall&&R.threat>redStr(home)*0.8&&R.threat>0){A.state='retreat';for(const e of army)e.role='retreat';toast('Red pulls its army back to defend');return}
     A.peak=Math.max(A.peak||0,army.length);
-    if(F.retreat){const c=centroid(army),rs=redStr(army),bs=blueStrNear(c[0],c[1],360),prog=A.tb?A.tb.hp/A.tb.maxhp:0;if((army.length<A.peak*0.55&&prog>0.45)||(rs<bs*(diff>=3?0.6:0.4)&&army.length<A.peak*0.8)){A.state='retreat';for(const e of army)e.role='retreat';toast('Red retreats to regroup');return}}
+    if(F.retreat){const c=centroid(army),rs=redStr(army),bs=blueStrNear(c[0],c[1],360),prog=A.tb?A.tb.hp/A.tb.maxhp:0;if((army.length<A.peak*0.55&&prog>0.45)||(rs<bs*(diff>=3?0.6:0.4)&&army.length<A.peak*0.8)){A.state='retreat';for(const e of army)e.role='retreat';R.failMul=Math.min(4,(R.failMul||1)*(A.razed?1.1:1.3));toast('Red retreats to regroup');return}}
     // send fresh troops as one group, only into a push that is winning
     if(F.reinforce&&A.tb&&home.length>=3){if(redStr(army)>blueStrNear(A.tb.x,A.tb.y,380)*1.5){for(const e of home){e.role='army';e.tg=null}A.peak+=home.length}}return}
   if(A.state==='retreat'){if(!enemies.some(e=>e.role==='retreat'))A.state='idle'}}
@@ -1381,7 +1395,7 @@ function redAI(dt){const R=RAI;RFc=RF();const F=RFc;R.t+=dt;
     if(b.type==='archer'||b.type==='cannon')updRTower(b,dt)}
   if(R.ageT){R.ageT.t+=dt;if(R.ageT.t>=R.ageT.dur){R.age=R.ageT.to;R.ageT=null;(R.ages||(R.ages=[])).push([Math.round(R.t),R.age]);toast(`⚠ Red has reached ${AGEN[R.age]}`)}}
   R.tick-=dt;if(R.tick>0)return;R.tick=F.tick;R.peakB=Math.max(R.peakB||0,rbuildings.length);
-  const tl=rThreat(),threat=R.threat>0;rMix();rEconomy(threat);rTrain(threat);rArmy(tl);rRaid();rResignCheck()}
+  const tl=rThreat(),threat=R.threat>redStr(enemies.filter(e=>(e.role||'home')==='home'))*0.12;rMix();rEconomy(threat);rTrain(threat);rArmy(tl);rRaid();rResignCheck()}
 function spawnRedUnit(b,type){(RAI.trained||(RAI.trained={}))[type]=(RAI.trained[type]||0)+1;const U=UT[type],L=b.lvl-1;const a=Math.atan2(BASE.ty+1-b.Z,BASE.tx+1-b.X),r=b.s*TILE*0.5+18;const[x,y]=snapWalk(b.x+Math.cos(a)*r,b.y+Math.sin(a)*r);const hp=U.hp*TROOP_HP[L];
   enemies.push({type,red1:1,role:'home',side:0,sm:1,g:-1,hslot:Math.random(),tier:b.lvl,x,y,hp,maxhp:hp,udmg:U.dmg*TROOP_DM[L],uspd:U.speed*TROOP_SP[L],dm:TROOP_DM[L],cd:Math.random(),ang:a,rAng:a,r:U.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0,vx:0,vy:0})}
 // resignation: Red gives up when it judges the game unrecoverable
