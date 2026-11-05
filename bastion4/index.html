@@ -916,7 +916,7 @@ function droneRig(team){const band=TEAMC[team];const body=[P(box(0.1,0.04,0.07),
 function heliRig(){const c='#4f5838',d='#3a412a';const body=[P(box(0.62,0.17,0.17),c,0,0,0),P(box(0.22,0.14,0.15),'#2a2e32',0.33,0.02,0),P(box(0.1,0.08,0.13),'#7fb8d8',0.42,0.05,0),P(box(0.55,0.06,0.06),c,-0.55,0.03,0),P(box(0.08,0.16,0.02),d,-0.82,0.1,0),P(box(0.3,0.03,0.03),d,0,-0.14,0.11),P(box(0.3,0.03,0.03),d,0,-0.14,-0.11),P(box(0.03,0.1,0.03),d,0.08,-0.09,0.11),P(box(0.03,0.1,0.03),d,0.08,-0.09,-0.11),P(box(0.18,0.03,0.38),d,0.05,-0.02,0),P(box(0.14,0.05,0.05),'#33382a',0.06,-0.05,0.2),P(box(0.14,0.05,0.05),'#33382a',0.06,-0.05,-0.2),P(box(0.16,0.04,0.005),'#2a7fff',-0.1,0.02,0.087),P(box(0.16,0.04,0.005),'#2a7fff',-0.1,0.02,-0.087)];
   const rot=merge([P(box(1.3,0.006,0.05),'#222',0,0,0),P(box(0.05,0.006,1.3),'#222',0,0,0),P(cyl(0.03,0.03,0.08,6),'#222',0,-0.04,0)]);const tr=merge([P(box(0.006,0.26,0.03),'#222',0,0,0),P(box(0.006,0.03,0.26),'#222',0,0,0)]);
   return[{geo:merge(body),pivot:[0,0,0]},{geo:rot,pivot:[0,0.13,0]},{geo:tr,pivot:[-0.82,0.1,0.02]}]}
-function buildRigs(){makeRig('b_heli',heliRig(),12,1.15);for(const tm of['blue','red']){const T=tm[0];for(const L of[1,2,3]){const rb=tm==='blue';makeRig(T+'_rifle'+L,soldier(tm,'rifle',L),rb?700:[0,1800,1200,700][L],0.74);makeRig(T+'_sniper'+L,soldier(tm,'sniper',L),rb?160:[0,400,260,160][L],0.74);makeRig(T+'_medic'+L,soldier(tm,'medic',L),160,0.74);makeRig(T+'_tank'+L,tankRig(tm,L),rb?90:[0,140,90,60][L],0.98+L*0.03)}
+function buildRigs(){makeRig('b_heli',heliRig(),12,0.95);for(const tm of['blue','red']){const T=tm[0];for(const L of[1,2,3]){const rb=tm==='blue';makeRig(T+'_rifle'+L,soldier(tm,'rifle',L),rb?700:[0,1800,1200,700][L],0.74);makeRig(T+'_sniper'+L,soldier(tm,'sniper',L),rb?160:[0,400,260,160][L],0.74);makeRig(T+'_medic'+L,soldier(tm,'medic',L),160,0.74);makeRig(T+'_tank'+L,tankRig(tm,L),rb?90:[0,140,90,60][L],0.98+L*0.03)}
     makeRig(T+'_apc',apcRig(tm),tm==='blue'?80:160,0.95);makeRig(T+'_drone',droneRig(tm),120,1.25)}}
 
 // ---------- who looks like what: squads of soldiers or single vehicles ----------
@@ -1175,14 +1175,14 @@ function spawnKnight(b){const used=new Set(knights.filter(k=>k.b===b).map(k=>k.s
   const H=b.type==='helipad';knights.push({b,slot,eagle:1,heli:H?1:0,armor:KN.armor,fly:2.2,tier:b.lvl,x,y,hp:(H?900:KN.hp)*hpMulOf(b),maxhp:(H?900:KN.hp)*hpMulOf(b),dmg:(H?22:KN.dmg)*mulOf(b),cd:0,r:H?13:KN.r,ang:b.formAng,rAng:b.formAng,walk:0,swing:0,flash:0,mvT:0,mvb:0});
   const[X,Y,Z]=W3(x,y);fx(X,Y+0.2,Z,8,b.lvl===3?'#ffe27a':'#c9c0a8',1,0.2,0.8,0,b.lvl===3?1:0)}
 function updBarracks(b,dt){b.navAge=(b.navAge||0)+dt;const mine=knights.filter(k=>k.b===b);
-  if(mine.length<squadSize(b)){b.respawnT-=dt;if(b.respawnT<=0){spawnKnight(b);b.respawnT=respawnTime(b)}}
+  if(mine.length<squadSize(b)){b.respawnT-=dt;if(b.respawnT<=0){spawnKnight(b);if(mine.length+1>=squadSize(b))b.filled=1;b.respawnT=b.filled?respawnTime(b):3}}
   const R=zoneR(b),sq=b.sq||(b.sq={state:'home',hold:0,x:b.x,y:b.y,inZ:[]});sq.inZ=enemies.filter(e=>dst(e.x,e.y,b.x,b.y)<R);
   if(sq.inZ.length){sq.state='engage';let cx=b.x,cy=b.y;if(mine.length){cx=0;cy=0;for(const k of mine){cx+=k.x;cy+=k.y}cx/=mine.length;cy/=mine.length;sq.x=cx;sq.y=cy}
     let f=null,fd=1e9;for(const e of sq.inZ){const d=dst(e.x,e.y,cx,cy);if(d<fd){fd=d;f=e}}sq.focus=f}
   else if(sq.state==='engage'){sq.state='hold';sq.hold=5}
   else if(sq.state==='hold'){sq.hold-=dt;if(sq.hold<=0)sq.state='return'}
   else if(sq.state==='return'){if(mine.every(k=>{const p=slotPos(b,k.slot);return dst(p[0],p[1],k.x,k.y)<10}))sq.state='home'}}
-function pickTarget(k,sq){let t=null,bs=1e9;for(const e of sq.inZ){if(e.hp<=0||(e.fly&&!k.heli))continue;const d=dst(e.x,e.y,k.x,k.y);let sc=d+(e.tgtBy||0)*34;
+function pickTarget(k,sq){let t=null,bs=1e9;for(const e of sq.inZ){if(e.hp<=0||(e.fly&&!k.heli))continue;const d=dst(e.x,e.y,k.x,k.y);let sc=d+(e.tgtBy||0)*34;if(k.heli){const veh=kindOf(e)==='veh';sc+=(k.slot%2===0?(veh?-160:60):(veh?60:-120));for(const o of knights)if(o!==k&&o.heli&&o.tgt===e)sc+=320;if(e.fly)sc+=40}
     if(e.type==='ram')sc-=70;if(e.type==='boss')sc-=90;const fi=tileAt(e.x,e.y);if(fi>=0&&flow[fi]<=2)sc-=55;if(!k.eagle&&!los(k.x,k.y,e.x,e.y,k.r*0.7))sc+=40;if(e===k.tgt)sc-=45;if(e===k.badTgt)sc+=400;if(sc<bs){bs=sc;t=e}}return t}
 function updKnight(k,dt){const b=k.b,sq=b.sq;if(k.cd>0)k.cd-=dt;if(k.swing>0)k.swing-=dt;if(k.flash>0)k.flash-=dt;if(k.mvT>0)k.mvT-=dt;if(!sq)return;
   // stuck watchdog
@@ -1940,7 +1940,7 @@ function doUpgrade(b){ST.upgrades++;const uc=upCost(b);pay(uc);for(const k in uc
   else{fx(b.X,b.Y+0.5,b.Z,26,'#9a958a',3.2,0.12,1.3,7,2,1.4);fx(b.X,b.Y+0.3,b.Z,18,'#d8d0c0',2.2,0.4,1.5,-0.2,0,0.6)}
   texts.push({X:b.X,Y:b.Y+b.barH+0.4,Z:b.Z,s:gold?'★ TIER III ★':'TIER II',life:1.9,c:gold?'#bfe4ff':'#e8e8f0',big:1});AU.levelUp(L);shake=Math.max(shake,gold?0.22:0.14);
   if(isArmy(b.type))for(const t of troops)if(t.b===b){t.tier=L;troopStats(t);t.hp=t.maxhp}
-  if(isAirB(b.type))for(const k of knights)if(k.b===b){k.tier=L;k.maxhp=(k.heli?900:KN.hp)*hpMulOf(b);k.hp=k.maxhp;k.dmg=(k.heli?22:KN.dmg)*mulOf(b)}
+  if(isAirB(b.type))b.filled=0;if(isAirB(b.type))for(const k of knights)if(k.b===b){k.tier=L;k.maxhp=(k.heli?900:KN.hp)*hpMulOf(b);k.hp=k.maxhp;k.dmg=(k.heli?22:KN.dmg)*mulOf(b)}
   if(b.type==='wall')refreshWalls(b.tx,b.ty)}
 function upgradeSel(held){const all=[...selSet].filter(b=>buildings.includes(b)&&b.lvl<MAXLVL),list=all.filter(b=>b.lvl<age).sort((a,b)=>costSum(upCost(a))-costSum(upCost(b)));
   if(!all.length){toast('★ Max tier');return false}if(!list.length){toast(`${TIERN[age+1]} tier needs ${AGEN[age+1]} — advance from the Economy menu`);AU.deny();return false}let n=0;for(const b of list)if(afford(upCost(b))){doUpgrade(b);n++}
@@ -2091,7 +2091,7 @@ function drawOverlay(){octx.setTransform(DPR,0,0,DPR,0,0);octx.clearRect(0,0,W,H
   const bar=(X,Y,Z,w,f,col)=>{const s=scr(X,Y,Z);if(!s||s[0]<-20||s[0]>W+20||s[1]<-20||s[1]>H+20)return;octx.fillStyle='rgba(0,0,0,.6)';octx.fillRect(s[0]-w/2-1,s[1]-1,w+2,5);octx.fillStyle=col;octx.fillRect(s[0]-w/2,s[1],w*clamp(f,0,1),3)};
   const zf=clamp(34/cam.D,0.6,1.6);
   for(const e of enemies)if(e.hp<e.maxhp){const X=e.x/TILE,Z=e.y/TILE;const ht=e.type==='boss'?1.5:e.type==='cav'?1.25:e.type==='ram'?0.95:0.85;bar(X,heightAt(X,Z)+ht,Z,(e.type==='boss'?36:e.type==='ram'?26:16)*zf,e.hp/e.maxhp,'#ff5a40')}
-  for(const k of knights)if(k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE;bar(X,heightAt(X,Z)+(k.fly||1.5)+0.45,Z,16*zf,k.hp/k.maxhp,'#6fa0ff')}
+  for(const k of knights)if(k.heli||k.hp<k.maxhp){const X=k.x/TILE,Z=k.y/TILE,Y=heightAt(X,Z)+(k.fly||1.5)+0.45;bar(X,Y,Z,(k.heli?26:16)*zf,k.hp/k.maxhp,'#6fa0ff');if(k.heli){const sp=scr(X,Y+0.18,Z);if(sp){octx.font='bold 10px Helvetica, Arial';octx.textAlign='center';octx.fillStyle='#cfe4ff';octx.fillText('🚁'+(k.slot+1)+(k.tgt&&k.tgt.hp>0?(kindOf(k.tgt)==='veh'?' ▸ armor':' ▸ troops'):''),sp[0],sp[1])}}}
   for(const b of buildings){if(b.hp<b.maxhp)bar(b.X,b.Y+b.barH,b.Z,44*zf,b.hp/b.maxhp,b.hp/b.maxhp>0.4?'#5fd04a':'#e05a3a');
     if(isAirB(b.type)){const n=knights.reduce((a,k)=>a+(k.b===b),0);if(n<squadSize(b))bar(b.X,b.Y+b.barH+0.35,b.Z,34*zf,1-b.respawnT/respawnTime(b),'#8fb8ff')}}
   drawArmyOverlay(zf,bar);drawBadges(zf);
