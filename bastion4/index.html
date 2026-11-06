@@ -124,8 +124,8 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .pban b{color:#ffe9a8;font-size:12px}
 #aimBar{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);z-index:8;display:flex;gap:6px;align-items:center;padding:6px 8px;font-size:13px;color:#ffe9a8;white-space:nowrap}#aimBar button{font-family:inherit;font-size:13px;font-weight:bold;color:#ffe9a8;background:#2e3426;border:1.5px solid #7d8a5e;border-radius:8px;padding:6px 10px}#aimBar #aimX{border-color:#d0604a;color:#ffb09a}
 #strk{position:fixed;left:calc(env(safe-area-inset-left) + 8px);top:calc(env(safe-area-inset-top) + 112px);z-index:6;display:flex;gap:5px}#strk .sk{width:62px;height:76px;padding:0;color:#ffe9a8;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:12px!important}#strk .sk .i{font-size:20px;line-height:1}#strk .sk .c{font-size:8.5px;margin-top:2px}#strk .sk .p{display:flex;flex-direction:column;font-size:8px;line-height:1.15;margin-top:2px}#strk .sk .p b{font-weight:600;color:#e8e2cc}#strk .sk .p b.lo{color:#ff8a7a}#strk .sk.no{opacity:.5}#strk .sk.on{border-color:#ff6a4a;box-shadow:0 0 12px #ff6a4a}#strk .sk .cd{position:absolute;left:0;bottom:0;width:100%;background:rgba(0,0,0,.55)}#bFpv.on{border-color:#7fd8ff;box-shadow:0 0 10px #7fd8ff}
-#limoP{position:fixed;left:calc(env(safe-area-inset-left) + 6px);top:calc(50% + 112px);z-index:6;background:rgba(30,26,18,.88);border:2px solid #a9823f;border-radius:8px;padding:5px 6px;color:#f3e7c4;font-size:11px;width:150px}#limoP .lt{font-weight:700;color:#ffcc33}#limoP .lb{height:6px;background:#3a2a1a;border-radius:3px;overflow:hidden;margin:3px 0}#limoP .lb i{display:block;height:100%;background:#ffcc33}#limoP .lh{font-size:10px;opacity:.85}#limoP .lbt{display:flex;gap:4px;margin-top:4px}#limoP .lbt button{flex:1;font-size:10px;line-height:1.15;padding:3px 2px;color:#ffe08a;font-family:inherit}#limoP .lbt button[disabled]{opacity:.45}
-#bans{position:fixed;left:calc(env(safe-area-inset-left) + 6px);top:calc(50% - 100px);z-index:6;display:flex;flex-direction:column;gap:6px}
+#limoP{position:fixed;left:calc(env(safe-area-inset-left) + 6px);top:calc(50% + 150px);z-index:6;background:rgba(30,26,18,.88);border:2px solid #a9823f;border-radius:8px;padding:5px 6px;color:#f3e7c4;font-size:11px;width:150px}#limoP .lt{font-weight:700;color:#ffcc33}#limoP .lb{height:6px;background:#3a2a1a;border-radius:3px;overflow:hidden;margin:3px 0}#limoP .lb i{display:block;height:100%;background:#ffcc33}#limoP .lh{font-size:10px;opacity:.85}#limoP .lbt{display:flex;gap:4px;margin-top:4px}#limoP .lbt button{flex:1;font-size:10px;line-height:1.15;padding:3px 2px;color:#ffe08a;font-family:inherit}#limoP .lbt button[disabled]{opacity:.45}
+#bans{position:fixed;left:calc(env(safe-area-inset-left) + 6px);top:calc(50% - 150px);z-index:6;display:flex;flex-direction:column;gap:6px}
 .banrow{display:flex;gap:4px;align-items:center}
 .banb{width:62px;height:44px;border-radius:12px!important;display:flex;align-items:center;justify-content:center;gap:4px;color:#ffe9a8;font-family:inherit;padding:0 4px;touch-action:none;user-select:none;-webkit-user-select:none;border-color:var(--bc)!important;box-shadow:0 0 0 1px var(--bc),0 2px 8px rgba(0,0,0,.5)}
 .banb .pen{width:18px;height:16px}.banb b{font-size:12px}.banb .n{font-size:13px;font-weight:bold;min-width:14px}
@@ -478,7 +478,7 @@ TRR.push([/^⚠ Incoming (.+)!$/,(m,a)=>'⚠ '+trc(a)+' geliyor!'],[/^(.+) inbou
 // =============== WORLD DATA ===============
 const CFG=(()=>{let c={};try{c=JSON.parse(localStorage.getItem('b4_cfg')||'{}')}catch(e){}const maps=['highlands','lakes','random'];
   return{mode:['1v1','marathon'].includes(c.mode)?c.mode:'wave',map:maps.includes(c.map)?c.map:'highlands',seed:c.seed||0,tpl:c.tpl==='lakes'?'lakes':'highlands'}})();
-const V1=CFG.mode==='1v1',MAR=CFG.mode==='marathon',NBAN=MAR?4:3;
+const V1=CFG.mode==='1v1',MAR=CFG.mode==='marathon',NBAN=MAR?6:5,STARB=MAR?5:-1;
 const TILE=32,GW=MAR?40:80,GH=MAR?96:80;
 const BASE=MAR?{tx:19,ty:8}:{tx:54,ty:26},RBASE={tx:24,ty:52};
 const SPAWN=V1?{tx:RBASE.tx+1,ty:RBASE.ty+1}:{tx:14,ty:66},SPAWN2=V1?{tx:RBASE.tx+1,ty:RBASE.ty+1}:{tx:6,ty:30};
@@ -1476,10 +1476,10 @@ renderMarFog.t=0;renderMarFog.dirty=true;
 
 function marStart(){Object.assign(MARS,{fogZ:BASE.ty+30,next:BASE.ty+22,nextFort:BASE.ty+150,posts:[],best:0,dist:0,waveT:80,pid:0,aggT:8});for(const c of MARS.caches)scene.remove(c.m);MARS.caches=[];
   res={grain:600,wool:350,gold:150};addBuilding('wheat',BASE.tx-6,BASE.ty-4,true);
-  const fb={type:'hall',x:BASE.tx*TILE,y:BASE.ty*TILE,s:1,lvl:1,ban:3,st:{kills:0,dmg:0},vet:0},a=Math.PI/2;
-  const lt={troop:1,type:'limo',b:fb,ban:3,tier:1,x:(BASE.tx+0.5)*TILE,y:(BASE.ty+0.5)*TILE,cd:0,r:UT.limo.r,ang:a,rAng:a,walk:0,swing:0,flash:0,mvT:0,mvb:0,slot:0,vx:0,vy:0};troopStats(lt);lt.hp=lt.maxhp;troops.push(lt);
-  for(let i=0;i<4;i++)spawnTroop(fb,'spear',{x:(BASE.tx-1.5+i)*TILE,y:(BASE.ty+2.5)*TILE,ban:i<2?0:3,tier:1,hp:1e9});
-  for(const i of[0,3]){const B=bans[i];B.x=(BASE.tx+0.5)*TILE;B.y=(BASE.ty+(i?0.5:3.5))*TILE;B.set=true;B.fa=a}
+  const fb={type:'hall',x:BASE.tx*TILE,y:BASE.ty*TILE,s:1,lvl:1,ban:STARB,st:{kills:0,dmg:0},vet:0},a=Math.PI/2;
+  const lt={troop:1,type:'limo',b:fb,ban:STARB,tier:1,x:(BASE.tx+0.5)*TILE,y:(BASE.ty+0.5)*TILE,cd:0,r:UT.limo.r,ang:a,rAng:a,walk:0,swing:0,flash:0,mvT:0,mvb:0,slot:0,vx:0,vy:0};troopStats(lt);lt.hp=lt.maxhp;troops.push(lt);
+  for(let i=0;i<4;i++)spawnTroop(fb,'spear',{x:(BASE.tx-1.5+i)*TILE,y:(BASE.ty+2.5)*TILE,ban:i<2?0:STARB,tier:1,hp:1e9});
+  for(const i of[0,STARB]){const B=bans[i];B.x=(BASE.tx+0.5)*TILE;B.y=(BASE.ty+(i?0.5:3.5))*TILE;B.set=true;B.fa=a}
   RAI.res={grain:1e9,wool:1e9,gold:1e9};marReach();marPostsUpTo(GH-2);paintGround();if(groundTex)groundTex.needsUpdate=true;buildForest();buildMiniBase();wallGrids();computeFlow();cam.tx=BASE.tx+0.5;cam.tz=BASE.ty+4}
 function marLose(){if(gameOver)return;gameOver=true;clearSave();lastRec=recordPlay('loss');showBanner('THE LIMO IS LOST',`It made it ${MARS.best} squares south.`);setTimeout(()=>{showStats('over');renderHof()},2400)}
 
@@ -1930,13 +1930,13 @@ const UT={
 };
 const UTS={limo:'Limo',how:'155mm',atk:'AT',spear:'Rifles',bowman:'Snipers',shield:'Medics',cav:'APC',ram:'Tank',catapult:'Mortar'};
 const TROOP_HP=[1,1.7,2.6],TROOP_DM=[1,1.5,2.2],TROOP_SP=[1,1.05,1.1],PROD_SP=[1,0.85,0.7];
-const BANC=['#4f8bff','#ffd34a','#3fd07a','#ffb000'],BANN=['I','II','III','★'];
+const BANC=['#4f8bff','#ffd34a','#3fd07a','#b77cff','#39d3d3','#ffb000'],BANN=['I','II','III','IV','V','★'];
 let troops=[],bans=null,rbuildings=[],RAI=null,nextRid=-1;
 const isArmy=t=>t==='hall'||t==='workshop';
 const unitsOf=b=>Object.keys(UT).filter(k=>UT[k].from===b.type);
 function newBans(){bans=[...Array(NBAN).keys()].map(()=>({x:0,y:0,set:false,mode:'hold',tb:null,charge:false}))}
 function snapWalk(x,y){if(walkable(x,y))return[x,y];for(let r=1;r<=8;r++)for(let k=0;k<12;k++){const a=k/12*Math.PI*2,nx=x+Math.cos(a)*r*TILE*0.5,ny=y+Math.sin(a)*r*TILE*0.5;if(walkable(nx,ny))return[nx,ny]}return[x,y]}
-function banHome(i){if(MAR&&i===3){const L=marLimo();return L?[L.x,L.y]:null}const fb=buildings.find(b=>isArmy(b.type)&&b.ban===i)||buildings.find(b=>isArmy(b.type));if(!fb)return null;const a=Math.atan2(SPY-fb.y,SPX-fb.x),r=fb.s*TILE*0.5+80;return snapWalk(fb.x+Math.cos(a)*r,fb.y+Math.sin(a)*r)}
+function banHome(i){if(MAR&&i===STARB){const L=marLimo();return L?[L.x,L.y]:null}const fb=buildings.find(b=>isArmy(b.type)&&b.ban===i)||buildings.find(b=>isArmy(b.type));if(!fb)return null;const a=Math.atan2(SPY-fb.y,SPX-fb.x),r=fb.s*TILE*0.5+80;return snapWalk(fb.x+Math.cos(a)*r,fb.y+Math.sin(a)*r)}
 function ensureBan(i){const B=bans[i];if(B.set)return;const h=banHome(i);if(h){B.x=h[0];B.y=h[1];B.set=true}}
 function banCount(i){let n=0;for(const t of troops)if(t.ban===i)n++;return n}
 function banCenter(i){let x=0,y=0,n=0;for(const t of troops)if(t.ban===i){x+=t.x;y+=t.y;n++}return n?[x/n,y/n]:(bans[i].set?[bans[i].x,bans[i].y]:null)}
@@ -2266,7 +2266,7 @@ function renderBans(force){const el=$('bans');if(!el)return;if(!started||gameOve
   if(!el.children.length){el.innerHTML=[...Array(NBAN).keys()].map(i=>`<div class="banrow" data-i="${i}"><button class="banb wood" style="--bc:${BANC[i]}"><span class="pen"></span><b>${BANN[i]}</b><span class="n"></span></button><button class="banc wood" title="Charge">🔥</button></div>`).join('');
     el.querySelectorAll('.banrow').forEach(row=>{const i=+row.dataset.i;const bb=row.querySelector('.banb');bb.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();startBanDrag(i,e,false)});bb.addEventListener('contextmenu',e=>e.preventDefault());
       onPress(row.querySelector('.banc'),()=>{const B=bans[i];B.charge=!B.charge;if(B.charge&&ST)ST.charges=(ST.charges||0)+1;if(B.charge){B.mode='hold';B.tb=null}for(const t of troops)if(t.ban===i){t.tg=null;t.tgT=0}toast(B.charge?`🔥 ${BANN[i]} charges — they pick their own targets`:`🚩 ${BANN[i]} holds the banner`);renderBans(true)})})}
-  el.querySelectorAll('.banrow').forEach(row=>{const i=+row.dataset.i,n=banCount(i),feed=buildings.some(b=>isArmy(b.type)&&b.ban===i);row.style.display=(n||feed||i===0||(MAR&&i===3))?'':'none';row.querySelector('.n').textContent=n;
+  el.querySelectorAll('.banrow').forEach(row=>{const i=+row.dataset.i,n=banCount(i),feed=buildings.some(b=>isArmy(b.type)&&b.ban===i);row.style.display=(n||feed||i===0||(MAR&&i===STARB))?'':'none';row.querySelector('.n').textContent=n;
     row.querySelector('.banc').classList.toggle('on',bans[i].charge);row.querySelector('.banb').classList.toggle('atk',bans[i].mode==='atk')})}
 // ---------- production circles over a selected Barracks / Workshop ----------
 let prodB=null,prodDrag=null;
