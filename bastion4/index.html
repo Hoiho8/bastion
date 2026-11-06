@@ -557,7 +557,7 @@ const box=(w,h,d)=>new THREE.BoxGeometry(w,h,d), cyl=(a,b,h,s)=>new THREE.Cylind
   sph=(r,w=7,h=5)=>new THREE.SphereGeometry(r,w,h), ico=(r,d=0)=>new THREE.IcosahedronGeometry(r,d), dod=(r)=>new THREE.DodecahedronGeometry(r,0), oct=(r)=>new THREE.OctahedronGeometry(r,0),
   prism=(r,len)=>new THREE.CylinderGeometry(r,r,len,3).rotateZ(Math.PI/2).rotateX(-Math.PI/2);
 // posed, full-detail soldier for building crews (cached per pose)
-const MANC={};function manGeo(kneel,x,z,ry){const key=kneel?'k':'s';if(!MANC[key]){const ps=soldier('blue','rifle',3),lo=kneel?0.22:0,M=new THREE.Matrix4(),E=new THREE.Euler(),out=[];
+const MANC={};function manGeo(kneel,x,z,ry,team='blue'){const key=(kneel?'k':'s')+team;if(!MANC[key]){const ps=soldier(team,'rifle',team==='blue'?3:2),lo=kneel?0.22:0,M=new THREE.Matrix4(),E=new THREE.Euler(),out=[];
     const pose=kneel?[[0,0.52-lo,0.072,0,0,1.45],[0,0.52-lo,-0.072,0,0,-0.15],[0.268,0.267,0.072,0,0,0],[-0.04,0.033,-0.072,0,0,-1.5]]:[[0,0.52,0.072,0,0,0.05],[0,0.52,-0.072,0,0,-0.05],[0,0.27,0.072,0,0,0],[0,0.27,-0.072,0,0,0]];
     pose.push([0,0.5-lo,0,0,0,0],[0,0.88-lo,0,0,0,0],[0,0.82-lo,-0.17,0,0,1.3],[0.02,0.82-lo,0.17,0.45,0,1.1]);
     ps.forEach((pt,i)=>{const q=pose[i];E.set(q[3],q[4],q[5],'XYZ');M.makeRotationFromEuler(E);M.setPosition(q[0],q[1],q[2]);const g=pt.geo.clone();g.applyMatrix4(M);out.push(g)});MANC[key]=merge(out)}
@@ -797,28 +797,20 @@ function buildModel(type,L,nb){const group=new THREE.Group(),anims=[],parts=[],m
     else{top=1.7;barH=3.0;parts.push(P(box(2.9,0.08,2.9),'#7e7b72',0,0,0),P(box(2.6,1.3,1.6),'#8e8b82',0,0.65,-0.55),P(box(2.66,0.1,1.66),'#6e6b63',0,1.32,-0.55),P(box(1.3,0.9,0.02),'#3a3e42',0,0.45,0.26));
       metal.push(P(box(0.1,1.8,0.1),'#d0a020',1.25,0.9,0.9),P(box(1.2,0.1,0.1),'#d0a020',0.7,1.8,0.9),P(box(0.02,0.5,0.02),'#888',0.2,1.5,0.9));tankShell(parts,-0.2,0.85,OLVD);glow.push(P(box(0.3,0.04,0.005),'#ffd98a',0,0.95,0.27));flag(-1.25,1.2,1.7,BLUE)}}
   // ---------------- TRENCH (wall) ----------------
-  else if(type==='wall'){// fire trench at rifleman scale: a man-deep channel, a raised earth parapet facing the enemy, a low parados behind. It grows with each level.
-    const w=[0,0.36,0.44,0.52][L],PH=[0,0.2,0.27,0.35][L],PW=[0,0.34,0.42,0.52][L];top=0.4;barH=L===1?0.75:L===2?1.0:1.2;
-    const BERM=['#7a6446','#76603f','#7c6647','#786244','#73603f'],n=nb||{},FX=n.fx||1,FZ=n.fz||0;let kk=0;
-    const path=pts=>{for(let i=0;i<pts.length-1;i++){const[x0,z0]=pts[i],[x1,z1]=pts[i+1],dx=x1-x0,dz=z1-z0,len=Math.hypot(dx,dz);if(len<1e-3)continue;const ux=dx/len,uz=dz/len,nx=-uz,nz=ux,a=Math.atan2(dz,dx);
-      const dot=nx*FX+nz*FZ,fs=Math.abs(dot)<0.3?0:Math.sign(dot);// which side faces the enemy
-      parts.push(P(box(len+0.06,0.02,w),'#2b2117',(x0+x1)/2,0.008,(z0+z1)/2,0,-a,0));// dark floor
-      for(const sg of[1,-1])parts.push(P(box(len+0.06,0.06,0.025),L===3?'#5a5048':'#4a3a26',(x0+x1)/2+nx*sg*w/2,0.03,(z0+z1)/2+nz*sg*w/2,0,-a,0));// revetment walls
-      const nn=Math.max(1,Math.round(len/0.09));
-      for(let k=0;k<nn;k++){const f=(k+0.5)/nn,px=x0+dx*f,pz=z0+dz*f;kk++;
-        for(const sg of[1,-1]){const front=fs===0||sg===fs,h=front?PH:PH*0.38,wd=front?PW:PW*0.6,o=w/2+wd*0.42;// parapet vs parados
-          parts.push(P(sph(0.5,7,5),BERM[(kk*3+(sg>0?0:2))%5],px+nx*o*sg,0,pz+nz*o*sg,0,-a+((kk%3)-1)*0.1,0,0.27,h*2,wd*0.95));
-          if(front&&kk%2===0)parts.push(P(ico(0.05,0),BERM[(kk+1)%5],px+nx*(o+wd*0.2)*sg,h*0.7,pz+nz*(o+wd*0.2)*sg,0,kk,0,1.2,0.6,1.2))}
-        if(kk%2===0)parts.push(P(box(0.035,0.014,w*0.8),'#6b5434',px,0.024,pz,0,-a,0));// duckboards
-        if(L>=2&&kk%3===0){const sgf=fs||1,o=w/2+0.04;for(let r=0;r<(L===3?2:1);r++)parts.push(P(box(0.11,0.05,0.065),r?'#9a8a64':'#8a7a56',px+nx*o*sgf,PH*0.9+0.03+r*0.045,pz+nz*o*sgf,0,-a+(kk%2)*0.2,0))}// sandbag firing step
-        if(L===3&&kk%4===0)parts.push(P(box(0.035,0.2,0.035),'#5a4a30',px+nx*(w/2)*(fs||1),0.1,pz+nz*(w/2)*(fs||1)))}// timber posts
-      if(L>=2){const sgf=fs||1,o=w/2+PW+0.12;wire(parts,x0+nx*o*sgf,z0+nz*o*sgf,x1+nx*o*sgf,z1+nz*o*sgf,L===3?0.13:0.1)}}};
+  else if(type==='wall'){// Jersey-style barrier line: joins its neighbours like a wall. I = packed earth brown · II = + razor wire · III = concrete + razor wire
+    top=0.4;barH=L===1?0.75:L===2?0.95:1.1;const n=nb||{},H=L===3?0.34:0.32,C=L===3?['#aaa69c','#a39f95','#b0aca2']:['#7a5c3c','#71553a','#80623f'],SEAM=L===3?'#7e7a72':'#4e3a26';let kk=0;
+    const prof=new THREE.Shape([[-0.14,0],[0.14,0],[0.14,0.045],[0.065,0.12],[0.048,H],[-0.048,H],[-0.065,0.12],[-0.14,0.045]].map(([x,y])=>new THREE.Vector2(x,y)));
+    const block=(x0,z0,x1,z1)=>{const dx=x1-x0,dz=z1-z0,len=Math.hypot(dx,dz);if(len<0.02)return;const g=new THREE.ExtrudeGeometry(prof,{depth:len,bevelEnabled:false});g.translate(0,0,-len/2);
+      const th=Math.atan2(dx,dz),cx=(x0+x1)/2,cz=(z0+z1)/2;parts.push(P(g,C[(kk++)%3],cx,0,cz,0,th,0));
+      parts.push(P(box(0.05,0.03,0.29),'#2a241e',cx,0.015,cz,0,th+Math.PI/2,0));// drain slot
+      if(L>=2){const nl=Math.max(2,Math.round(len/0.07));for(let k=0;k<=nl;k++){const f=k/nl;parts.push(P(new THREE.TorusGeometry(0.06,0.006,3,9),'#9aa0a6',x0+dx*f,H+0.055,z0+dz*f,0,th+Math.PI/2,0))}
+        for(const sg of[1,-1])parts.push(P(box(0.008,0.008,len),'#8a9096',cx+Math.cos(th)*0.05*sg,H+0.11,cz-Math.sin(th)*0.05*sg,0,th,0))}};
     const arms=[[0,-1,'n'],[1,0,'e'],[0,1,'s'],[-1,0,'w']].filter(a=>n[a[2]]);
-    if(arms.length===2&&!(arms[0][0]===-arms[1][0]&&arms[0][1]===-arms[1][1])){// rounded elbow
-      const A=[arms[0][0]*0.52,arms[0][1]*0.52],Bm=[arms[1][0]*0.52,arms[1][1]*0.52],pts=[];for(let k=0;k<=10;k++){const t=k/10,u=1-t;pts.push([u*u*A[0]+t*t*Bm[0],u*u*A[1]+t*t*Bm[1]])}path(pts)}
-    else if(arms.length){for(const[dx,dz]of arms)path([[0,0],[dx*0.52,dz*0.52]]);if(arms.length>=3)parts.push(P(cyl(w*0.62,w*0.62,0.02,10),'#2b2117',0,0.008,0))}
-    else{// lone foxhole: ring parapet
-      parts.push(P(cyl(w*0.6,w*0.6,0.02,12),'#2b2117',0,0.008,0));for(let k=0;k<14;k++){const t=k/14*6.283;parts.push(P(sph(0.5,7,5),BERM[k%5],Math.cos(t)*(w*0.6+PW*0.35),0,Math.sin(t)*(w*0.6+PW*0.35),0,-t,0,PW*0.8,PH*1.8,0.2))}}}
+    if(!arms.length)block(-0.42,0,0.42,0);
+    else{const straight=arms.length===2&&arms[0][0]===-arms[1][0]&&arms[0][1]===-arms[1][1];
+      if(straight){const[dx,dz]=arms[0];block(-dx*0.5,-dz*0.5,dx*0.5,dz*0.5)}else for(const[dx,dz]of arms)block(-dx*0.07,-dz*0.07,dx*0.5,dz*0.5);
+      if(arms.length===1){const[dx,dz]=arms[0];block(-dx*0.32,-dz*0.32,-dx*0.06,-dz*0.06)}// stub end
+      for(const[dx,dz]of arms)parts.push(P(box(dx?0.006:0.1,0.004,dz?0.006:0.1),SEAM,dx*0.5,H+0.002,dz*0.5))}}
   // ---------------- FARM (wheat) — merges with neighbours ----------------
   else if(type==='wheat'){top=0.4;barH=L===1?1.0:1.3;const n=nb||{},full=s=>n[s]&&n[s].gap===0&&n[s].a<=-1.49&&n[s].b>=1.49,ex=s=>full(s)?1.5:1.38;const x0=-ex('w'),x1=ex('e'),z0=-ex('n'),z1=ex('s');
     const soil=L===1?'#6b5236':'#5e4a30';parts.push(P(box(x1-x0,0.03,z1-z0),soil,(x0+x1)/2,0.01,(z0+z1)/2));
@@ -1085,6 +1077,28 @@ function apcRig(team,mortar){const band=TEAMC[team],hc='#5b6342';const hull=[P(b
   const tur=[P(cyl(0.09,0.1,0.08,8),hc,0,0.05,0),P(box(0.04,0.04,0.04),'#2a2e32',0.05,0.07,0.05)];const bar=merge([P(cyl(0.012,0.012,0.3,6),'#222',0.17,0,0,0,0,Math.PI/2)]);
   if(mortar){hull.push(P(box(0.36,0.03,0.3),'#3e4430',-0.12,0.33,0),P(cyl(0.05,0.055,0.42,10),'#2e3229',-0.1,0.48,0,0,0,-0.7),P(cyl(0.06,0.06,0.05,10),'#1e1e1e',0.04,0.62,0,0,0,-0.7),P(box(0.1,0.04,0.12),'#3e4430',-0.22,0.36,0));for(let i=0;i<4;i++)hull.push(P(cyl(0.025,0.025,0.12,6),'#8a7a40',-0.36+i*0.04,0.38,0.14,0,0,0.1))}
   return[{geo:merge(hull),pivot:[0,0,0]},{geo:merge(tur),pivot:[0.05,0.32,0]},{geo:bar,pivot:[0.05,0.38,0]}]}
+// towed 155 mm howitzer (M198 class) at true scale beside its crew; built in world units (rig scale 1).
+// Parts: 0 carriage · 1 barrel (elevates/recoils) · 2-3 split trails (spread when emplaced) · 4 gun crew (emplaced) · 5 prime-mover truck (travel)
+function howRig(team){const RED=team==='red',band=TEAMC[team],O=RED?'#5e6247':'#5b6342',OD=RED?'#474a36':'#454c33',OL=RED?'#6e7254':'#6b7450',blk='#1c1c1c';
+  const car=[P(box(0.62,0.18,0.62),O,0,0.3,0),P(box(0.5,0.12,0.32),OD,-0.04,0.43,0),P(cyl(0.3,0.3,0.03,14),OD,0.25,0.015,0)];
+  for(const sd of[1,-1]){car.push(P(cyl(0.23,0.23,0.15,16),blk,0,0.23,sd*0.41,Math.PI/2),P(cyl(0.12,0.12,0.16,12),OL,0,0.23,sd*0.41,Math.PI/2),P(cyl(0.045,0.045,0.17,8),'#333',0,0.23,sd*0.41,Math.PI/2));
+    for(let k=0;k<10;k++)car.push(P(box(0.035,0.04,0.152),'#141414',Math.cos(k*0.628)*0.225,0.23+Math.sin(k*0.628)*0.225,sd*0.41,0,0,k*0.628));// tread lugs
+    car.push(P(box(0.95,0.38,0.04),O,0.05,0.52,sd*0.17),P(box(0.2,0.12,0.05),OD,0.42,0.64,sd*0.17),P(cyl(0.03,0.03,0.5,8),'#7a7e72',0.12,0.5,sd*0.25,0,0,0.95),P(cyl(0.045,0.045,0.2,8),OD,0.26,0.38,sd*0.25,0,0,0.95),
+      P(new THREE.TorusGeometry(0.07,0.01,4,12),'#2a2a2a',-0.18,0.5,sd*0.215,0,Math.PI/2,0),P(box(0.03,0.004,0.01),'#2a2a2a',-0.18,0.5,sd*0.215))}
+  car.push(P(box(0.12,0.12,0.06),'#24282a',-0.2,0.72,-0.24),P(cyl(0.02,0.02,0.08,6),blk,-0.2,0.8,-0.24,0,0,Math.PI/2),P(box(0.3,0.06,0.005),band,0.05,0.42,0.193),P(box(0.3,0.06,0.005),band,0.05,0.42,-0.193));
+  const bar=merge([P(box(0.34,0.2,0.2),OD,-0.36,0,0),P(box(0.08,0.16,0.22),'#2e3326',-0.55,0,0),P(cyl(0.02,0.02,0.1,6),'#888',-0.6,0.05,0.12,Math.PI/2),// breech + block + handle
+    P(cyl(0.1,0.1,0.95,12),O,0.12,0,0,0,0,Math.PI/2),P(cyl(0.048,0.048,1.15,10),OL,0.15,0.13,0.075,0,0,Math.PI/2),P(cyl(0.048,0.048,1.15,10),OL,0.15,0.13,-0.075,0,0,Math.PI/2),// cradle sleeve + recuperators
+    P(cyl(0.062,0.055,1.65,12),'#4a5040',1.42,0,0,0,0,Math.PI/2),P(cyl(0.07,0.07,0.06,12),OD,0.62,0,0,0,0,Math.PI/2),// tube
+    P(cyl(0.09,0.085,0.18,12),O,2.3,0,0,0,0,Math.PI/2),P(box(0.1,0.1,0.21),OD,2.3,0,0),P(cyl(0.05,0.05,0.01,10),'#050505',2.395,0,0,0,0,Math.PI/2)]);// twin-baffle muzzle brake
+  const trail=sd=>merge([P(box(2.0,0.13,0.12),O,-1.0,-0.12,0,0,0,0.12),P(box(1.9,0.03,0.13),OD,-1.0,-0.04,0,0,0,0.12),P(box(0.07,0.24,0.34),OD,-2.02,-0.3,sd*0.05),P(box(0.25,0.03,0.36),'#3a3e2e',-1.95,-0.41,sd*0.05),
+    P(cyl(0.012,0.012,1.6,4),blk,-0.9,-0.02,sd*0.07,0,0,Math.PI/2+0.12),P(box(0.14,0.06,0.16),OD,-0.3,0.0,0)]);
+  const crew=merge([manGeo(false,-0.75,0.32,0,team),manGeo(true,-1.05,-0.38,0.4,team),manGeo(true,-2.0,0.85,-0.6,team),manGeo(false,0.15,0.72,Math.PI/2,team),manGeo(false,-0.3,-0.55,0.2,team),
+    ...Array.from({length:8},(_,i)=>P(cyl(0.05,0.05,0.26,9),'#8a7a40',-1.3+(i%4)*0.11,0.13,-0.95+((i/4)|0)*0.11,Math.PI/2)),P(box(0.5,0.04,0.3),'#6a5a3a',-1.15,0.02,-0.9)]);
+  const cab=O,canv=RED?'#55583f':'#5f6646',truck=[P(box(2.0,0.12,0.8),'#2a2a26',-3.5,0.33,0),P(box(1.7,0.5,0.86),canv,-3.15,0.72,0),P(box(1.72,0.04,0.88),OD,-3.15,0.98,0),// chassis, canvas bed
+    P(box(0.75,0.62,0.84),cab,-4.45,0.68,0),P(box(0.3,0.36,0.84),cab,-4.95,0.55,0),P(box(0.02,0.24,0.7),'#7fa6bd',-4.83,0.82,0,0,0,0.12),P(box(0.03,0.08,0.7),'#2a2a26',-5.1,0.38,0),P(box(0.06,0.06,0.06),'#ffe8a0',-5.11,0.5,0.3),P(box(0.06,0.06,0.06),'#ffe8a0',-5.11,0.5,-0.3),
+    P(box(0.3,0.06,0.005),band,-4.45,0.8,0.423),P(box(0.3,0.06,0.005),band,-4.45,0.8,-0.423),P(cyl(0.03,0.03,0.3,6),'#333',-2.42,0.32,0,0,0,Math.PI/2)];// cab, windscreen, lights, hitch
+  for(const x of[-2.85,-3.45,-4.75])for(const sd of[1,-1])truck.push(P(cyl(0.21,0.21,0.14,14),blk,x,0.21,sd*0.38,Math.PI/2),P(cyl(0.1,0.1,0.15,10),OL,x,0.21,sd*0.38,Math.PI/2));
+  return[{geo:merge(car),pivot:[0,0,0]},{geo:bar,pivot:[0.05,0.62,0]},{geo:trail(1),pivot:[-0.25,0.3,0.1]},{geo:trail(-1),pivot:[-0.25,0.3,-0.1]},{geo:crew,pivot:[0,0,0]},{geo:merge(truck),pivot:[0,0,0]}]}
 function spgRig(team){const band=TEAMC[team],hc=team==='blue'?'#556040':'#5a5e44',hd='#3e4430',trk='#2a2a28';
   const hull=[P(box(1.05,0.17,0.5),hc,0,0.2,0),P(box(0.22,0.1,0.48),hc,0.56,0.17,0,0,0,-0.45),P(box(1.09,0.13,0.11),trk,0,0.08,0.28),P(box(1.09,0.13,0.11),trk,0,0.08,-0.28),P(box(1.0,0.03,0.6),hd,0,0.29,0),
     P(box(0.3,0.06,0.005),band,0.25,0.22,0.253),P(box(0.3,0.06,0.005),band,0.25,0.22,-0.253),P(box(0.1,0.08,0.12),'#2a2e24',0.42,0.33,0.16)];
@@ -1118,11 +1132,11 @@ function heliRig(){const c='#4a5141',c2='#3c4235',d='#2e3229',gl='#6f93ab',blk='
   const rotor=(y)=>{const g=[P(cyl(0.05,0.05,0.04,10),d,0,0,0)];for(let i=0;i<3;i++){const a=i/3*Math.PI*2;g.push(P(box(0.92,0.008,0.055),blk,Math.cos(a)*0.47,0,Math.sin(a)*0.47,0,-a,0))}return merge(g)};
   return[{geo:merge(p),pivot:[0,0,0]},{geo:rotor(),pivot:[0.05,0.43,0]},{geo:rotor(),pivot:[0.05,0.33,0]}]}
 function buildRigs(){makeRig('b_heli',heliRig(),12,2.8);for(const tm of['blue','red']){const T=tm[0];for(const L of[1,2,3]){const rb=tm==='blue';makeRig(T+'_rifle'+L,soldier(tm,'rifle',L),rb?700:[0,1800,1200,700][L],0.66);makeRig(T+'_sniper'+L,soldier(tm,'sniper',L),rb?160:[0,400,260,160][L],0.66);makeRig(T+'_medic'+L,soldier(tm,'medic',L),160,0.66);makeRig(T+'_at'+L,soldier(tm,'at',L),rb?140:[0,200,160,120][L],0.66);makeRig(T+'_tank'+L,tankRig(tm,L),rb?90:[0,140,90,60][L],2.4+L*0.08)}
-    makeRig(T+'_apc',apcRig(tm),tm==='blue'?80:160,2.5);makeRig(T+'_mc',apcRig(tm,1),tm==='blue'?40:80,2.5);makeRig(T+'_spg',spgRig(tm),tm==='blue'?30:40,2.5);makeRig(T+'_drone',droneRig(tm),120,1.6)}}
+    makeRig(T+'_apc',apcRig(tm),tm==='blue'?80:160,2.5);makeRig(T+'_mc',apcRig(tm,1),tm==='blue'?40:80,2.5);makeRig(T+'_how',howRig(tm),tm==='blue'?24:30,1);makeRig(T+'_drone',droneRig(tm),120,1.6)}}
 
 // ---------- who looks like what: squads of soldiers or single vehicles ----------
 function unitLook(u){const T=u.troop?'b':'r',L=u.tier||1,ty=u.type;if(u.eagle)return{rig:u.heli?'b_heli':'b_drone',n:1,air:1};if(u.type==='edrone')return{rig:'r_drone',n:1,air:1};
-  if(u.troop||u.red1){if(ty==='spear')return{rig:T+'_rifle'+L,n:4};if(ty==='bowman')return{rig:T+'_sniper'+L,n:2};if(ty==='shield')return{rig:T+'_medic'+L,n:2};if(ty==='atk')return{rig:T+'_at'+L,n:2};if(ty==='ram')return{rig:T+'_tank'+L,n:1,veh:1};if(ty==='how')return{rig:T+'_spg',n:1,veh:1};if(ty==='catapult')return{rig:T+'_mc',n:1,veh:1};return{rig:T+'_apc',n:1,veh:1}}
+  if(u.troop||u.red1){if(ty==='spear')return{rig:T+'_rifle'+L,n:4};if(ty==='bowman')return{rig:T+'_sniper'+L,n:2};if(ty==='shield')return{rig:T+'_medic'+L,n:2};if(ty==='atk')return{rig:T+'_at'+L,n:2};if(ty==='ram')return{rig:T+'_tank'+L,n:1,veh:1};if(ty==='how')return{rig:T+'_how',n:1,veh:1};if(ty==='catapult')return{rig:T+'_mc',n:1,veh:1};return{rig:T+'_apc',n:1,veh:1}}
   const w=u.wl||1;switch(ty){case'spear':return{rig:'r_rifle'+w,n:4};case'shield':return{rig:'r_rifle'+Math.min(3,w+1),n:4};case'bowman':return{rig:'r_sniper'+w,n:2};case'sapper':return{rig:'r_rifle1',n:2};case'ram':return{rig:'r_tank'+w,n:1,veh:1};case'boss':return{rig:'r_tank3',n:1,veh:1,big:1.4};default:return{rig:'r_apc',n:1,veh:1}}}
 const rigScale=u=>{const k=unitLook(u);return rigs[k.rig].scale*(k.big||1)};
 const FORM={4:[[0.28,-0.2],[0.24,0.26],[-0.24,-0.34],[-0.3,0.12]],2:[[0.1,-0.2],[-0.12,0.22]],1:[[0,0]]};
@@ -1158,6 +1172,8 @@ function poseOf(kind,u,t){const o=POSE;for(const p of o)p.fill(0);const role=kin
     leg(0,2,tl,kl);leg(1,3,tr,kr);
     for(const i of[4,5,6,7])o[i][1]=-drop+bob;o[4][5]=lean;o[4][0]=tox;o[5][5]=hz+lean*0.5;o[5][4]=hy;o[5][0]=tox+Math.sin(lean)*0.38;o[6][0]=tox+Math.sin(lean)*0.32;o[7][0]=tox+Math.sin(lean)*0.32;
     o[6][5]=ar;o[6][3]=arx;o[7][5]=al;o[7][3]=alx;o[6][0]-=fire*0.025}
+  else if(role==='how'){const dp=u.dep||0,rec=u.recoil||0,emp=dp>0.02;o[1][5]=0.05+dp*0.5;o[1][0]=-rec*0.18;o[2][4]=dp*0.45;o[3][4]=-dp*0.45;if(emp)o[5][1]=-40;else o[4][1]=-40;
+    if(!emp){const P0=rigs[kind].parts;for(let i=0;i<6;i++){const pv=P0[i].pivot,x=pv[0]+o[i][0],z=pv[2]+o[i][2];o[i][0]=-x-pv[0];o[i][2]=-z-pv[2];o[i][4]+=Math.PI}}}// in travel the gun is towed trail-first behind its truck
   else if(role==='spg'){const rel=-(angDiff(u.tAng??u.rAng,u.rAng)),rec=u.recoil||0,dp=u.dep||0;o[1][4]=rel;o[2][4]=rel;o[2][5]=dp*0.62;o[2][0]=-rec*0.12*Math.cos(rel);o[2][2]=rec*0.12*Math.sin(rel);o[3][5]=-dp*1.25;o[0][5]=-rec*0.03;o[1][5]=o[0][5]}
   else if(role==='tank'||role==='apc'||role==='mc'){const rel=-(angDiff(u.tAng??u.rAng,u.rAng)),rec=u.recoil||0;o[1][4]=rel;o[2][4]=rel;o[2][0]=-rec*0.1*Math.cos(rel);o[2][2]=rec*0.1*Math.sin(rel);o[0][5]=-rec*0.04+Math.sin(u.walk*3)*0.008*m;o[1][5]=o[0][5];o[2][5]=o[0][5]}
   else if(role==='heli'){const rr=u.rot??t*26;o[1][4]=rr;o[2][4]=-rr;o[0][5]=-0.18*m+Math.sin(t*1.3)*0.02;o[1][5]=o[0][5];o[2][5]=o[0][5]}
@@ -1555,7 +1571,7 @@ function updHowUnit(u,dt,red){const U=UT.how,L=u.tier||1,Rg=U.range*(1+0.1*(L-1)
     for(const e of foes){const d=dst(e.x,e.y,u.x,u.y);if(d>Rg||d<110)continue;let n=0;for(const o of foes)if(dst(o.x,o.y,e.x,e.y)<80)n+=kindOf(o)==='veh'?2:1;let f=0;for(const o of fr)if(dst(o.x,o.y,e.x,e.y)<110)f++;const sc=f===0?n:(n>=5+f*4?n-f*3:-1);if(sc>bs){bs=sc;best=e}}
     if(!best){let bd=1e9;for(const o of(red?buildings:rbuildings)){if(o.type==='wall')continue;const d=dst(o.x,o.y,u.x,u.y);if(d<Rg&&d<bd){bd=d;best=o}}}u.htg=best}
   const tg=u.htg;if(!tg)return false;
-  u.dep=Math.min(1,u.dep+dt/6);u.tAng=Math.atan2(tg.y-u.y,tg.x-u.x);u.vx=(u.vx||0)*0.5;u.vy=(u.vy||0)*0.5;
+  u.tAng=Math.atan2(tg.y-u.y,tg.x-u.x);u.ang=u.tAng;if(Math.abs(angDiff(u.rAng??u.ang,u.tAng))<0.25)u.dep=Math.min(1,u.dep+dt/6);u.vx=(u.vx||0)*0.5;u.vy=(u.vy||0)*0.5;
   if(u.dep>=1){u.hcd-=dt;if(u.hcd<=0){const d=dst(tg.x,tg.y,u.x,u.y),sp=(16+144*Math.min(1,d/Rg))/(0.8+L*0.2),a=Math.random()*6.28,r=sp*Math.sqrt(Math.random());
       const dmg=U.dmg*(red?(u.dm||1):TROOP_DM[L]);projs.push({k:red?'rball':'ball',how:1,ff:1,cat:1,sx:u.x,sy:u.y,tx:tg.x+Math.cos(a)*r,ty:tg.y+Math.sin(a)*r,time:0,dur:2+d/420,dmg,splash:U.splash*[1,1.12,1.25][L-1],h0:heightAt(u.x/TILE,u.y/TILE)+1.1,lv:L,src:null,bmul:red?1:0});
       u.hcd=U.rate*(L===3?0.85:1);u.recoil=1;const X=u.x/TILE+Math.cos(u.tAng)*4,Z=u.y/TILE+Math.sin(u.tAng)*4,Y=heightAt(X,Z)+1.6;fx(X,Y,Z,12,'#ffc060',2.4,0.3,0.2,0,1,0.6);fx(X,Y,Z,10,'#b8b2a8',1.3,0.38,2.2,-0.15,0,0.5);lightFlash(X,Y,Z,1.5);AU.howitzer(X,Z);shake=Math.max(shake,0.05)}}
