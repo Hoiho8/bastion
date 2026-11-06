@@ -1420,7 +1420,7 @@ function ciwsEngage(b,R,dt,red,mul){let tg=null,td=1e9,TX,TY,TZ,isP=false;
   else{const d=95*dt*mul;if(red){tg.hp-=d;tg.jam=0.2}else hitEnemy(tg,d,null);if(tg.hp<=0)airKill(TX,TY,TZ,false)}return true}
 function updCIWS(b,dt,red){if(b.build<1)return;ciwsEngage(b,rangeOf(b),dt,red,[1,1.3,1.7][b.lvl-1])}
 // ---------- the window slides south ----------
-function marShift(S){const dy=S*TILE;MARS.row0+=S;FPV.on&&fpvOff();
+function marShift(S){const dy=S*TILE;MARS.row0+=S;MARS.fogZ-=S;FPV.on&&fpvOff();
   const drop=(b,red)=>{if(red){destroyRB(b);return}const c=b.spent||BT[b.type].cost;for(const k in c)res[k]+=Math.round((c[k]||0)*0.3);destroyBuilding(b,true)};
   for(const b of[...buildings])if(b.ty<S)drop(b,false);for(const b of[...rbuildings])if(b.ty<S)drop(b,true);
   terrain.copyWithin(0,S*GW);marRows(GH-S,GH);
@@ -1444,7 +1444,8 @@ function marReach(){const L=marLimo();const sx=L?Math.floor(L.x/TILE):BASE.tx,sy
 function marAI(dt){const L=marLimo();
   for(const b of rbuildings){if(b.type==='archer'||b.type==='cannon'||b.type==='atnest')updRTower(b,dt);else if(b.type==='howitzer')updHowitzer(b,dt,true);else if(b.type==='himars')updHimars(b,dt,true);else if(b.type==='ew')updEW(b,dt,true);else if(b.type==='patriot')updPatriot(b,dt,true);else if(b.type==='ciws')updCIWS(b,dt,true)}
   if(!L)return;const lr=L.y/TILE,gr=lr+MARS.row0,dist=Math.max(0,Math.floor(gr-MARS.startRow));if(dist>MARS.best){addScore((dist-MARS.best)*20);MARS.best=dist}MARS.dist=dist;
-  MARS.fogZ=lr+30;if(lr>62)marShift(16);
+  {let far=lr;for(const G of[troops,knights])for(const u of G)if(u.hp>0&&u.y/TILE>far)far=u.y/TILE;MARS.fogZ=Math.max(MARS.fogZ,far+30)}// fog lifts 30 squares past your furthest unit and stays lifted
+  if(lr>62)marShift(16);
   // bases keep training (no economy) up to a cap
   MARS.prodT-=dt;if(MARS.prodT<=0){MARS.prodT=1;for(const P of MARS.posts){if(P.cleared)continue;const pb=P.bs.filter(b=>b.mprod&&rbuildings.includes(b));if(!pb.length)continue;P.spawnT-=1;if(P.spawnT>0)continue;
       const n=enemies.filter(e=>e.post===P).length;if(n>=P.cap)continue;P.spawnT=Math.max(7,16-P.gy/40);const b=pb[(Math.random()*pb.length)|0],L2=marLv(P.gy);let ty=b.type==='workshop'?(Math.random()<0.5?'ram':Math.random()<0.6?'cav':P.gy>200?'how':'catapult'):(Math.random()<0.6?'spear':Math.random()<0.5?'atk':'bowman');marUnit(P,ty,L2,b.x,b.y+b.s*TILE*0.6)}}
@@ -1473,7 +1474,7 @@ function renderMarFog(){if(!MAR)return;if(!FOGM)marFogBuild();for(const b of rbu
   for(let i=0;i<p.count;i++){const z=gp.getZ(i),a=smooth(MARS.fogZ-1,MARS.fogZ+3.5,z);p.setY(i,gp.getY(i)+0.04+a*2.6);c.setXYZW(i,col.r,col.g,col.b,a*0.94)}p.needsUpdate=true;c.needsUpdate=true}
 renderMarFog.t=0;renderMarFog.dirty=true;
 
-function marStart(){Object.assign(MARS,{next:BASE.ty+22,nextFort:BASE.ty+150,posts:[],best:0,dist:0,waveT:80,pid:0,aggT:8});for(const c of MARS.caches)scene.remove(c.m);MARS.caches=[];
+function marStart(){Object.assign(MARS,{fogZ:BASE.ty+30,next:BASE.ty+22,nextFort:BASE.ty+150,posts:[],best:0,dist:0,waveT:80,pid:0,aggT:8});for(const c of MARS.caches)scene.remove(c.m);MARS.caches=[];
   res={grain:600,wool:350,gold:150};addBuilding('wheat',BASE.tx-6,BASE.ty-4,true);
   const fb={type:'hall',x:BASE.tx*TILE,y:BASE.ty*TILE,s:1,lvl:1,ban:3,st:{kills:0,dmg:0},vet:0},a=Math.PI/2;
   const lt={troop:1,type:'limo',b:fb,ban:3,tier:1,x:(BASE.tx+0.5)*TILE,y:(BASE.ty+0.5)*TILE,cd:0,r:UT.limo.r,ang:a,rAng:a,walk:0,swing:0,flash:0,mvT:0,mvb:0,slot:0,vx:0,vy:0};troopStats(lt);lt.hp=lt.maxhp;troops.push(lt);
