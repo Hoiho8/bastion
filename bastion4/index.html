@@ -1521,6 +1521,17 @@ function mslSplash(p,red){const R=40,x=p.lx,y=p.ly;if(red){for(const t of troops
 function motorFx(X,Y,Z,dx,dy,dz,big){const l=Math.hypot(dx,dy,dz)||1,tx=X-dx/l*0.35,ty=Y-dy/l*0.35,tz=Z-dz/l*0.35;glow(tx,ty,tz,big?2.2:1.3,'#ffd890',0.05);glow(tx,ty,tz,big?0.9:0.55,'#ffffff',0.04);
   if(Math.random()<(qLvl>=2?0.45:0.9))fx(tx,ty,tz,1,qLvl>=2?'#cfcac2':'#e2ded6',0.06,big?0.42:0.3,big?4.5:3.2,-0.015,0,0.04)}
 let glows=[];const _gc=new THREE.Color();function glow(X,Y,Z,sz,col,life){if(glows.length>=256)glows.shift();glows.push({X,Y,Z,sz,c:_gc.set(col).clone(),life,max:life})}
+// ---------- EW visuals: crackling arcs from the mast, sparks and smoke on whatever it is frying ----------
+const ARCN=12,ARCS=[];{const m=new THREE.LineBasicMaterial({color:'#9ef0ff',transparent:true,opacity:0.95,blending:THREE.AdditiveBlending,depthWrite:false});
+  for(let i=0;i<ARCN;i++){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(10*3),3));const l=new THREE.Line(g,m);l.frustumCulled=false;l.visible=false;scene.add(l);ARCS.push({l,life:0})}}
+function ewZap(b,X,Y,Z,hard){if(cullXZ(X,Z)&&cullXZ(b.X,b.Z))return;b.zapT=(b.zapT||0);
+  if(Math.random()<(hard?0.5:0.28)){const a=ARCS.find(o=>o.life<=0)||ARCS[(Math.random()*ARCN)|0],p=a.l.geometry.attributes.position,x0=b.X,y0=b.Y+(b.s>1?1.7:1.2),z0=b.Z;
+    for(let i=0;i<10;i++){const t=i/9,j=(i&&i<9)?0.35*Math.sin(t*Math.PI):0;p.setXYZ(i,x0+(X-x0)*t+(Math.random()-.5)*j,y0+(Y-y0)*t+(Math.random()-.5)*j,z0+(Z-z0)*t+(Math.random()-.5)*j)}p.needsUpdate=true;a.life=0.07+Math.random()*0.06;a.l.visible=true}
+  if(Math.random()<0.5){fx(X,Y,Z,hard?3:2,'#cff6ff',1.8,0.07,0.18,0.4,1,0.5);glow(X,Y,Z,hard?0.9:0.55,'#7fe0ff',0.07)}}
+function updArcs(dt){for(const a of ARCS)if(a.life>0){a.life-=dt;if(a.life<=0)a.l.visible=false}}
+// red fireball for a kill in the air
+function airKill(X,Y,Z,big){fx(X,Y,Z,big?26:16,'#ff3a1a',big?3.2:2.4,big?0.42:0.3,0.45,0,1,0.6);fx(X,Y,Z,big?16:10,'#ff9a3a',2,0.3,0.3,0,1,0.6);fx(X,Y,Z,big?16:10,'#2e2622',1.4,big?0.6:0.45,2.2,-0.12,0,0.4);
+  glow(X,Y,Z,big?4.5:3,'#ff2a10',0.35);glow(X,Y,Z,big?2:1.4,'#ffd0a0',0.15);lightFlash(X,Y,Z,big?2.2:1.4,'#ff4020');for(let i=0;i<(big?5:3);i++)fx(X,Y,Z,1,'#ffb040',3.5,0.12,1.2,1.4,1,0.8)}
 function renderGlows(rdt){let n=0;const nb=0.6+WX.night*0.8;for(const g of glows){g.life-=rdt;if(g.life<=0)continue;const k=g.life/g.max,sc=g.sz*(0.6+0.4*k)*(g.sz>1?1.25-0.25*k:1);_q.copy(camera.quaternion);_M.compose(_av.set(g.X,g.Y,g.Z),_q,_s.set(sc,sc,sc));glowMesh.setMatrixAt(n,_M);_c.copy(g.c).multiplyScalar(k*nb);glowMesh.setColorAt(n,_c);n++}glows=glows.filter(g=>g.life>0);glowMesh.count=n;glowMesh.instanceMatrix.needsUpdate=true;if(glowMesh.instanceColor)glowMesh.instanceColor.needsUpdate=true}
 const FS={X:0,Y:0,Z:0,i:0,col:new THREE.Color('#ffb050'),n:0};
 const FSL=new THREE.SpotLight('#ffb050',0,12,1.25,0.9,1.4);FSL.castShadow=true;FSL.shadow.mapSize.set(512,512);FSL.shadow.bias=-0.002;FSL.shadow.normalBias=0.05;FSL.shadow.camera.near=1.5;FSL.shadow.camera.far=12;FSL.shadow.autoUpdate=false;FSL.position.set(-50,-40,-50);FSL.target.position.set(-50,-50,-50);scene.add(FSL,FSL.target);
@@ -1550,7 +1561,7 @@ function renderWeather(rdt){const n=WX.night,{g,dw}=dayPhase();WX.golden=g;
   if(FS.i>0.05&&WX.night>0.25){FSL.color.copy(FS.col);FSL.intensity=Math.min(1.6,FS.i)*WX.night*6*(0.65+0.35*Math.random());// flickers with every shot
     FS.n++;if(qLvl===0||FS.n%(qLvl+1)===0)FSL.shadow.needsUpdate=true}else if(FSL.intensity){FSL.intensity=0}
   FS.i*=Math.pow(0.004,rdt>0?rdt:frameDt);
-  renderGlows(rdt>0?rdt:(started?frameDt:0));
+  renderGlows(rdt>0?rdt:(started?frameDt:0));updArcs(started?frameDt:0);
   for(const l of FLASHL)if(l.intensity>0){l.intensity*=Math.pow(0.008,rdt>0?rdt:frameDt);if(l.intensity<0.05)l.intensity=0}
   let nr=0;if(WX.rain>0.05&&!FPV.on){const k=Math.round(500*WX.rain);for(let i=0;i<k;i++){const d=RAIN[i];d.y-=rdt*16;if(d.y<0){d.y=12;d.x=Math.random()*40-20;d.z=Math.random()*40-20}_M.makeTranslation(cam.tx+d.x,d.y,cam.tz+d.z);rainMesh.setMatrixAt(nr++,_M)}}rainMesh.count=nr;rainMesh.instanceMatrix.needsUpdate=true;
   {const on=WX.fog>0.02,fr=rdt>0?rdt:frameDt;for(const m of FOGP){m.visible=on;if(!on)continue;const u=m.userData;u.x+=FOGW.x*u.s*fr*0.35;u.z+=FOGW.z*u.s*fr*0.35;if(u.x>GW+12)u.x=-12;if(u.z>GH+12)u.z=-12;m.rotation.y+=u.rs*fr;m.position.set(u.x,u.h+Math.sin(time*0.2+u.ph)*0.1,u.z);m.material.opacity=WX.fog*0.62*u.o*(0.8+0.2*Math.sin(time*0.13+u.ph));m.material.color.copy(_sky).lerp(FOGW.c,0.45-0.3*n)}}}
@@ -1599,8 +1610,9 @@ function adList(red){return(red?rbuildings:buildings).filter(o=>o.type==='ew'||o
 const EWR=[180,250,330],ewR=b=>EWR[(b.lvl||1)-1];// small bubble, upgrades push it out
 function updEW(b,dt,red){const R=ewR(b);b.aim=(b.aim||0)+dt;
   const hit=(u,d)=>{const k=(1-d/R);return(75*k*k+12)*MUL[b.lvl-1]*dt};
-  if(red){for(const k of knights){if(k.heli)continue;const d=dst(k.x,k.y,b.x,b.y);if(d<R){k.hp-=hit(k,d);k.jam=0.3}}}
-  else for(const e of enemies){if(!e.fly)continue;const d=dst(e.x,e.y,b.x,b.y);if(d<R){hitEnemy(e,hit(e,d),b);e.jam=0.3}}}
+  const zap=(u,d)=>{const X=u.x/TILE,Z=u.y/TILE,Y=heightAt(X,Z)+(u.fly||1.4);ewZap(b,X,Y,Z,d<R*0.5);if(u.hp<(u.mhp||u.hpMax||60)*0.5&&Math.random()<0.25)fx(X,Y,Z,1,'#3a3532',0.4,0.22,1.2,-0.15,0,0.2)};
+  if(red){for(const k of knights){if(k.heli)continue;const d=dst(k.x,k.y,b.x,b.y);if(d<R){k.hp-=hit(k,d);k.jam=0.3;zap(k,d)}}}
+  else for(const e of enemies){if(!e.fly)continue;const d=dst(e.x,e.y,b.x,b.y);if(d<R){hitEnemy(e,hit(e,d),b);e.jam=0.3;zap(e,d)}}}
 const PMAG=[4,6,9],patMag=b=>PMAG[(b.lvl||1)-1];
 function updPatriot(b,dt,red){if(b.ammo==null)b.ammo=patMag(b);if(b.ammo<patMag(b)){b.rl=(b.rl||0)+dt;if(b.rl>=BT.patriot.reload/CDM[b.lvl-1]){b.ammo=patMag(b);b.rl=0}}if(b.ammo<=0)return;b.cd=(b.cd||0)-dt;if(b.cd>0)return;
   const R=BT.patriot.range*RNG[b.lvl-1];// priority: incoming strikes, then helicopters, then drones
@@ -1630,12 +1642,12 @@ function strikeImpact(p){const S=STRK[p.st],x=p.tx,y=p.ty,ct=cityAt(x,y),cm=ct?0
   lightFlash(X,Y,Z,p.st==='roc'?1.5:3,'#ffb050');AU.bigBoom(p.st==='roc'?0.8:1.3,X,Z);shake=Math.max(shake,p.st==='roc'?0.15:0.45);if(navigator.vibrate&&p.st!=='roc')try{navigator.vibrate(60)}catch(e){}}
 function updStrike(p,dt){p.time+=dt;if(p.time<0)return;const g=strikePos(p);
   // enemy air defense jams / intercepts it on the way in
-  if(p.st!=='hyp'&&g.h>0.8){for(const b of adList(!p.red)){if(b.type!=='ew')continue;const d=dst(g.x,g.y,b.x,b.y),R=ewR(b);if(d<R){p.jam+=dt*(0.4+(1-d/R)*4)*(0.7+0.3*b.lvl);if(p.jam>(p.st==='roc'?1.6:STRK[p.st].jam)&&Math.random()<dt*3){p.dead=1;const[X,Y,Z]=W3(g.x,g.y);fx(X,Y+g.h,Z,12,'#ffb040',2,0.25,0.4,0,1,0.6);fx(X,Y+g.h,Z,10,'#6a625a',1,0.4,1.6,-0.1,0,0.4);AU.boom(0.4);if(!p.red)toast('Strike jammed by Red EW');else if(p.st!=='roc'){toast('🛡 EW jammed the incoming strike');ST.intercepts=(ST.intercepts||0)+1}return}}}}
+  if(p.st!=='hyp'&&g.h>0.8){for(const b of adList(!p.red)){if(b.type!=='ew')continue;const d=dst(g.x,g.y,b.x,b.y),R=ewR(b);if(d<R){p.jam+=dt*(0.4+(1-d/R)*4)*(0.7+0.3*b.lvl);{const[X,Y,Z]=W3(g.x,g.y);ewZap(b,X,Y+g.h,Z,true);if(Math.random()<0.35)fx(X,Y+g.h,Z,1,'#2e2a28',0.3,0.3,1.6,-0.05,0,0.1)}if(p.jam>(p.st==='roc'?1.6:STRK[p.st].jam)&&Math.random()<dt*3){p.dead=1;const[X,Y,Z]=W3(g.x,g.y);airKill(X,Y+g.h,Z,p.st!=='roc');AU.boom(0.4);if(!p.red)toast('Strike jammed by Red EW');else if(p.st!=='roc'){toast('🛡 EW jammed the incoming strike');ST.intercepts=(ST.intercepts||0)+1}return}}}}
   if(Math.random()<0.7){const[X,Y,Z]=W3(g.x,g.y);fx(X,Y+g.h,Z,1,p.st==='hyp'?'#ffe0a0':'#d8d4cc',0.1,p.st==='roc'?0.1:0.18,0.8,-0.05,p.st==='hyp'?1:0,0.2)}
   if(p.time>=p.dur){p.dead=1;strikeImpact(p)}}
 function updIntc(p,dt){const t=p.tg;let tx,ty,tz;if(t.k==='strike'){if(t.dead){p.dead=1;return}const g=strikePos(t);if(!g){p.dead=1;return}tx=g.x/TILE;tz=g.y/TILE;ty=heightAt(tx,tz)+g.h}else{if(t.hp<=0){p.dead=1;return}tx=t.x/TILE;tz=t.y/TILE;ty=heightAt(tx,tz)+(t.fly||1.5)}
   const dx=tx-p.x,dy=ty-p.y,dz=tz-p.z,d=Math.hypot(dx,dy,dz),s=dt*22;motorFx(p.x,p.y,p.z,dx,dy,dz,true);
-  if(d<=s){p.dead=1;fx(tx,ty,tz,16,'#ffd070',2.4,0.22,0.35,0,1,0.6);fx(tx,ty,tz,10,'#6a625a',1.2,0.45,1.6,-0.1,0,0.4);AU.boom(0.5);lightFlash(tx,ty-0.8,tz,1.2);if(Math.random()>p.miss){if(t.k==='strike'){t.dead=1;if(t.red){toast('🛡 Patriot intercept!');ST.intercepts=(ST.intercepts||0)+1}}else{if(t.eagle)t.hp-=400;else hitEnemy(t,400,null)}}else if(t.k==='strike')t.intc=0}else{p.x+=dx/d*s;p.y+=dy/d*s;p.z+=dz/d*s}}
+  if(d<=s){p.dead=1;airKill(tx,ty,tz,true);AU.boom(0.5);if(Math.random()>p.miss){if(t.k==='strike'){t.dead=1;if(t.red){toast('🛡 Patriot intercept!');ST.intercepts=(ST.intercepts||0)+1}}else{if(t.eagle)t.hp-=400;else hitEnemy(t,400,null)}}else if(t.k==='strike')t.intc=0}else{p.x+=dx/d*s;p.y+=dy/d*s;p.z+=dz/d*s}}
 // ---------- enemy FPV drones ----------
 function updEDrone(e,dt){const T=ET.edrone;e.fly=e.fly||1.5;if(e.jam>0)e.jam-=dt;let tg=e.tg;const ok=t=>t&&t.hp>0&&(t.troop?troops.includes(t):buildings.includes(t));if(aimMode&&aimMode.b&&!buildings.includes(aimMode.b)){aimMode=null;updAimBar()}
   if(!ok(tg)||Math.random()<dt*0.3){tg=null;let bs=-1e9;for(const t of troops){const d=dst(t.x,t.y,e.x,e.y);const sc=-d+(UT[t.type].veh?260:0);if(sc>bs){bs=sc;tg=t}}for(const b of buildings){if(b.type==='wall')continue;const d=dst(b.x,b.y,e.x,e.y);const sc=-d+(BT[b.type].kind==='def'?140:30)-120;if(sc>bs){bs=sc;tg=b}}e.tg=tg}
