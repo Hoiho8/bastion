@@ -1333,7 +1333,7 @@ function spawnEnemy(type,n,side){const T=ET[type];const cx=side===1?SP2X:SPX,cy=
   const era=eraOf(n),hm=(1+0.05*(n-1))*(era>=5?1+0.22*(era-4):1)*DIFF[diff].hp,dm=(1+0.03*(n-1))*(era>=5?1+0.1*(era-4):1);enemies.push({type,wl:era>=5?3:era>=3?2:1,side:side||0,sm:DIFF[diff].spd,g:n,spread:!!(grpState[n]&&grpState[n].spread),lure:!!(lureNext>0&&type==='cav'&&(lureNext--,true)),x,y,hp:T.hp*hm,maxhp:T.hp*hm,dm,cd:Math.random(),ang:-0.8,rAng:-0.8,r:T.r,swing:0,flash:0,walk:Math.random()*6,mvT:0,mvb:0})}
 
 // =============== SIMULATION ===============
-function moveUnit(u,tx,ty,spd,dt,others,keep){if(u.dep>0){u.packT=time;return}/* a deployed gun must pack up before it can drive */WSIDE=u.troop?1:2;try{_moveUnit(u,tx,ty,spd,dt,others,keep)}finally{WSIDE=0}}
+function moveUnit(u,tx,ty,spd,dt,others,keep){if(u.dep>0){u.packT=time;return}/* a deployed gun must pack up before it can drive */const ws=WSIDE;WSIDE=u.troop?1:2;try{_moveUnit(u,tx,ty,spd,dt,others,keep)}finally{WSIDE=ws}}
 function _moveUnit(u,tx,ty,spd,dt,others,keep){if(u.sm)spd*=u.sm;{const sp=u.supp||0,inf=kindOf(u)==='inf';if(sp>0.3)spd*=inf?(sp>2.2?0.12:1/(1+sp*0.7)):1/(1+sp*0.12)}spd*=spdW(u);if(u.slowT>0){u.slowT-=dt;spd*=0.5}let dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy);if(d<0.5)return;dx/=d;dy/=d;
   let sx=0,sy=0;for(const o of others){if(o===u)continue;const ox=u.x-o.x,oy=u.y-o.y,rr=((u.r+o.r)*1.2+5)*(u.spread?1.7:1);if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=ox*ox+oy*oy;if(dd<rr*rr&&dd>0.01){const l=Math.sqrt(dd);sx+=ox/l*(rr-l)/rr;sy+=oy/l*(rr-l)/rr}}
   let vx=dx+sx*2.2,vy=dy+sy*2.2;const vl=Math.hypot(vx,vy)||1;const ti=tileAt(u.x,u.y);if(ti>=0&&terrain[ti]===1)spd*=0.72;
@@ -1401,7 +1401,7 @@ function getNav(tx,ty){tx=clamp(tx,0,GW-1);ty=clamp(ty,0,GH-1);const key=tx+ty*G
   navCache.delete(ck);navCache.set(ck,{f,t:time});if(navCache.size>24)navCache.delete(navCache.keys().next().value);return f}
 function los(x0,y0,x1,y1,r){const d=Math.hypot(x1-x0,y1-y0);if(d<1)return true;const n=Math.ceil(d/8),px=-(y1-y0)/d*r,py=(x1-x0)/d*r;
   for(let i=1;i<=n;i++){const x=x0+(x1-x0)*i/n,y=y0+(y1-y0)*i/n;if(!walkable(x,y)||!walkable(x+px,y+py)||!walkable(x-px,y-py))return false}return true}
-function steerPoint(k,X,Y){if(k.eagle||k.heli)return _steer(k,X,Y);WSIDE=k.troop?1:2;try{return _steer(k,X,Y)}finally{WSIDE=0}}
+function steerPoint(k,X,Y){if(k.eagle||k.heli)return _steer(k,X,Y);const ws=WSIDE;WSIDE=k.troop?1:2;try{return _steer(k,X,Y)}finally{WSIDE=ws}}
 function _steer(k,X,Y){if(los(k.x,k.y,X,Y,k.r*0.7))return[X,Y];
   const f=getNav((X/TILE)|0,(Y/TILE)|0);let i=tileAt(k.x,k.y);if(i<0)return[X,Y];let best=null;
   for(let step=0;step<10;step++){const x=i%GW,y=(i/GW)|0;let bi=-1,bv=f[i];for(const[dx,dy]of D8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const j=nx+ny*GW;if(f[j]<bv){bv=f[j];bi=j}}
@@ -1411,7 +1411,8 @@ function flyMove(k,X,Y,spd,dt,stopAt=0){const d=dst(k.x,k.y,X,Y);if(d<=Math.max(
   const dx=(X-k.x)/d,dy=(Y-k.y)/d;let sx=0,sy=0;for(const o of knights){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+5;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
   let wx=dx+sx*1.2,wy=dy+sy*1.2;const wl=Math.hypot(wx,wy)||1,sp=Math.min(spd,(d-stopAt)/dt+5);k.vx=(k.vx||0)+(wx/wl*sp-(k.vx||0))*Math.min(1,dt*5);k.vy=(k.vy||0)+(wy/wl*sp-(k.vy||0))*Math.min(1,dt*5);
   k.x=clamp(k.x+k.vx*dt,8,GW*TILE-8);k.y=clamp(k.y+k.vy*dt,8,GH*TILE-8);const vl=Math.hypot(k.vx,k.vy);if(vl>3)k.ang=Math.atan2(k.vy,k.vx);k.walk+=dt*vl*0.25;k.mvT=0.18}
-function knightMove(k,X,Y,spd,dt,stopAt=0){if(k.eagle)return flyMove(k,X,Y,spd,dt,stopAt);spd*=spdW(k);if(k.slowT>0){k.slowT-=dt;spd*=0.5}const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.8;k.vy=(k.vy||0)*0.8;return}
+function knightMove(k,X,Y,spd,dt,stopAt=0){if(k.eagle)return flyMove(k,X,Y,spd,dt,stopAt);const ws=WSIDE;WSIDE=k.troop?1:2;try{return _kMove(k,X,Y,spd,dt,stopAt)}finally{WSIDE=ws}}
+function _kMove(k,X,Y,spd,dt,stopAt){spd*=spdW(k);if(k.slowT>0){k.slowT-=dt;spd*=0.5}const d=dst(k.x,k.y,X,Y);if(d<=Math.max(1.5,stopAt)){k.vx=(k.vx||0)*0.8;k.vy=(k.vy||0)*0.8;return}
   let [tx,ty]=steerPoint(k,X,Y);let dx=tx-k.x,dy=ty-k.y;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;
   let sx=0,sy=0;for(const o of (k.troop?troops:k.red1?enemies:knights)){if(o===k)continue;const ox=k.x-o.x,oy=k.y-o.y,rr=k.r+o.r+3;if(Math.abs(ox)>rr||Math.abs(oy)>rr)continue;const dd=Math.hypot(ox,oy);if(dd>0.01&&dd<rr){sx+=ox/dd*(rr-dd)/rr;sy+=oy/dd*(rr-dd)/rr}}
   if(k.nudge>0){k.nudge-=dt;dx+=Math.cos(k.nudgeA)*0.9;dy+=Math.sin(k.nudgeA)*0.9}
